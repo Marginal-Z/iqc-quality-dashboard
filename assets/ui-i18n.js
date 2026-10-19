@@ -1,6 +1,7 @@
 // Interface copy only. QMS names, identifiers and status codes remain source data.
 const UI_TEXT = {
   '设置': ['Settings', 'ตั้งค่า'], '显示设置': ['Display settings', 'ตั้งค่าการแสดงผล'],
+  '已连接 QMS 数据源 · 任务每 30 秒自动刷新，统计每 5 分钟同步': ['QMS connected · tasks refresh every 30 sec; statistics sync every 5 min.', 'เชื่อมต่อ QMS แล้ว · งานรีเฟรชทุก 30 วินาที สถิติซิงค์ทุก 5 นาที'],
   'IQC来料检验看板': ['IQC incoming inspection dashboard', 'แดชบอร์ดตรวจสอบขาเข้า IQC'],
   '来料检验看板': ['Incoming inspection dashboard', 'แดชบอร์ดตรวจสอบขาเข้า'],
   '检验状态 · 当日': ['Inspection status · today', 'สถานะการตรวจ · วันนี้'],

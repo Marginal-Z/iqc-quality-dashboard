@@ -54,6 +54,9 @@
     Object.assign(I18N.zh, { range_todo: '待办任务' });
     Object.assign(I18N.th, { range_todo: 'งานที่ต้องทำ' });
     Object.assign(I18N.en, { range_todo: 'To-do tasks' });
+    Object.assign(I18N.zh, { sync_copy: '已连接 QMS 数据源 · 任务每 30 秒刷新，统计每 5 分钟同步。', refresh_every: '任务 30 秒 · 统计 5 分钟' });
+    Object.assign(I18N.th, { sync_copy: 'เชื่อมต่อ QMS แล้ว · งานรีเฟรชทุก 30 วินาที สถิติซิงค์ทุก 5 นาที', refresh_every: 'งาน 30 วินาที · สถิติ 5 นาที' });
+    Object.assign(I18N.en, { sync_copy: 'QMS connected · tasks refresh every 30 sec; statistics sync every 5 min.', refresh_every: 'Tasks 30 sec · Stats 5 min' });
     Object.assign(I18N.zh, {
       breadcrumb_overview: 'IQC 来料检验', breadcrumb_tasks: '检验任务', breadcrumb_suppliers: '供应商质量', supplier_page_kicker: '供应商质量运营', supplier_page_title: '供应商质量分析', supplier_page_subtitle: '按工厂、月份与 QMS 检验结果全面追踪供应商质量表现。', supplier_kpi_total: '供应商总数', supplier_unit_company: '家', supplier_kpi_total_note: '已纳入本月质量评价', supplier_kpi_average: '平均批次合格率', supplier_kpi_average_note: '按供应商加权计算 · 较上月提升', supplier_kpi_risk: '风险供应商', supplier_kpi_risk_note: '需要重点跟进与改善', supplier_kpi_lots: '本月检验批次', supplier_kpi_lots_note: 'QMS 已完成及在检批次', supplier_detail_title: '供应商质量明细', supplier_detail_subtitle: '按供应商汇总本月来料质量、缺陷率、批次与改进状态', supplier_col_name: '供应商', supplier_col_code: '供应商编码', supplier_col_lots: '检验批次', supplier_col_passrate: '批次合格率', supplier_col_defect: '缺陷率', supplier_col_trend: '月度趋势', supplier_col_status: '质量状态', supplier_status_stable: '稳定', supplier_status_watch: '关注', supplier_status_risk: '高风险', supplier_board_subtitle: '供应商质量排名 · 柱状图可横向滚动，排名列表可纵向滚动'
     });
@@ -84,7 +87,7 @@
     let FACTORIES = [];
     let currentFactory = { code: 'STTH', name: '泰国协创' };
     const DASH = {
-      records: [], today: [], week: [], month: [], prevMonth: [],
+      records: [], liveTasks: [], today: [], week: [], month: [], prevMonth: [],
       byDate: {}, suppliers: [], inspectors: [], alerts: [],
       flow: { today: { pending: 0, processing: 0, done: 0, overdue: 0 }, week: { pending: 0, processing: 0, done: 0, overdue: 0 }, month: { pending: 0, processing: 0, done: 0, overdue: 0 } },
       pendingTotal: 0, overdueTotal: 0,
@@ -186,7 +189,7 @@
     }
     function closeSettingsModal() { $('#settingsModalBackdrop').classList.remove('open'); }
     function clearDash() {
-      DASH.records = []; DASH.today = []; DASH.week = []; DASH.month = []; DASH.prevMonth = [];
+      DASH.records = []; DASH.liveTasks = []; DASH.today = []; DASH.week = []; DASH.month = []; DASH.prevMonth = [];
       DASH.byDate = {}; DASH.suppliers = []; DASH.inspectors = []; DASH.alerts = [];
       DASH.flow = { today: { pending: 0, processing: 0, done: 0, overdue: 0 }, week: { pending: 0, processing: 0, done: 0, overdue: 0 }, month: { pending: 0, processing: 0, done: 0, overdue: 0 } };
       DASH.pendingTotal = 0; DASH.overdueTotal = 0;
@@ -344,10 +347,10 @@
     }
     function computeAlerts() {
       const alerts = [];
-      DASH.records.filter((r) => mapStatus(r).key === 'overdue').forEach((r) => {
+      DASH.liveTasks.filter((r) => mapStatus(r).key === 'overdue').forEach((r) => {
         alerts.push({ type: 'danger', titleKey: 'alert_overdue', copy: `${r.orderNumber} · ${cleanSupplierName(r.supplierName)} · ${r.totalTime || '超时'}` });
       });
-      const urgentPending = DASH.records.filter((r) => r.expeditedFlagName === '是' && r.inspectionStatus === '0' && ['组长确认', '配置模板'].includes(r.taskName));
+      const urgentPending = DASH.liveTasks.filter((r) => r.expeditedFlagName === '是' && r.inspectionStatus === '0' && ['组长确认', '配置模板'].includes(r.taskName));
       if (urgentPending.length) alerts.push({ type: 'warn', titleKey: 'alert_urgent', copy: ui('{value} 批等待检验员接单', {value:urgentPending.length}) });
       DASH.month.filter((r) => r.syncInspectionResultName === '退货').forEach((r) => {
         alerts.push({ type: 'info', titleKey: 'alert_fail', copy: `${cleanSupplierName(r.supplierName)} · ${r.materialNumber} · ${t('result_fail')}` });
@@ -363,7 +366,7 @@
       // Standard task view shows unfinished work; the wallboard intentionally cycles the full QMS task set.
       let rows = wallboardMode
         ? [...DASH.records]
-        : applyRangeFilter(DASH.records, range).filter((r) => r.inspectionStatus === '0' || r.inspectionStatus === '2');
+        : applyRangeFilter(DASH.liveTasks, range).filter((r) => r.inspectionStatus === '0' || r.inspectionStatus === '2');
       // A wallboard always cycles the complete QMS task set; hidden page filters must not truncate it.
       if (!wallboardMode && status !== 'all') rows = rows.filter((r) => mapStatus(r).key === status);
       if (!wallboardMode && urgentOnly) rows = rows.filter((r) => r.expeditedFlagName === '是');
@@ -499,7 +502,7 @@
         $('#kpiIncomingFoot').className = 'trend-flat';
       }
       $('#kpiPending').innerHTML = `${DASH.pendingTotal}<small data-i18n="unit_lot">${t('unit_lot')}</small>`;
-      const urgentPending = DASH.records.filter((r) => r.expeditedFlagName === '是' && r.inspectionStatus === '0').length;
+      const urgentPending = DASH.liveTasks.filter((r) => r.expeditedFlagName === '是' && r.inspectionStatus === '0').length;
       $('#kpiPendingFoot').innerHTML = `${urgentPending} <span data-i18n="unit_urgent">${t('unit_urgent')}</span>`;
       $('#kpiOverdue').innerHTML = `${DASH.overdueTotal}<small data-i18n="unit_lot">${t('unit_lot')}</small>`;
       $('#kpiOverdueFoot').textContent = '—';
@@ -1250,7 +1253,7 @@
         copy.textContent = ui('显示上次缓存数据 · 实时接口暂不可用');
       } else {
         dot.style.background = '#46d7ad'; live.textContent = 'LIVE'; live.style.color = '#238e70'; live.style.background = '#e8f7f1';
-        copy.textContent = ui('已连接 QMS 数据源 · 每 5 分钟自动同步');
+        copy.textContent = ui('已连接 QMS 数据源 · 任务每 30 秒自动刷新，统计每 5 分钟同步');
       }
     }
 
@@ -1331,10 +1334,20 @@
       renderSbBoard();
       renderSupplierRankings();
     }
-    function computeDerived(records, active, overdueTotal) {
+    function uniqueRecords(records) {
+      const map = new Map();
+      records.forEach((record, index) => {
+        if (!record) return;
+        const key = record.orderNumber || `__row_${index}_${record.createDate || ''}`;
+        map.set(key, record);
+      });
+      return Array.from(map.values());
+    }
+    function computeDerived(records, active, overdueTotal, overdueRecords) {
       const today = todayStr();
       const mp = monthPrefix(0), pmp = monthPrefix(-1);
       DASH.records = records;
+      DASH.liveTasks = uniqueRecords([...(active || records.filter((r) => r.inspectionStatus === '0')), ...(overdueRecords || records.filter((r) => r.inspectionStatus === '2'))]);
       DASH.today = records.filter((r) => r.createDate === today);
       DASH.week = records.filter((r) => (r.createDate || '') >= daysAgoStr(6));
       DASH.month = records.filter((r) => (r.createDate || '').startsWith(mp));
@@ -1384,6 +1397,53 @@
         localStorage.setItem('qms_dash_cache', JSON.stringify({ version: 2, factoryCode: QMS_CONFIG.factoryCode, ts: Date.now(), records: DASH.records.map(slimRecord), active: active.map(slimRecord), prevMonth: prevMonth.map(slimRecord), overdueTotal: DASH.overdueTotal }));
       } catch (e) {}
     }
+    let liveTaskLoading = false;
+    let lastFullRefreshAt = 0;
+    async function refreshLiveTaskData() {
+      if (liveTaskLoading || qmsLoading || document.visibilityState === 'hidden') return false;
+      const factoryCode = QMS_CONFIG.factoryCode;
+      const startedAtLoadSeq = loadSeq;
+      liveTaskLoading = true;
+      try {
+        const [active, overdue] = await Promise.all([
+          qmsSelectAll({ factoryCode, inspectionStatus: '0' }),
+          qmsSelectAll({ factoryCode, inspectionStatus: '2' })
+        ]);
+        if (startedAtLoadSeq !== loadSeq || factoryCode !== QMS_CONFIG.factoryCode) return false;
+        DASH.liveTasks = uniqueRecords([...active, ...overdue]);
+        DASH.pendingTotal = active.length;
+        DASH.overdueTotal = overdue.length;
+        DASH.inspectors = computeInspectors(active);
+        const currentById = new Map(DASH.liveTasks.filter((r) => r.orderNumber).map((r) => [r.orderNumber, r]));
+        const knownIds = new Set();
+        const records = DASH.records.map((record) => {
+          if (!record.orderNumber) return record;
+          knownIds.add(record.orderNumber);
+          const current = currentById.get(record.orderNumber);
+          if (current) return current;
+          if (String(record.inspectionStatus) === '0' || String(record.inspectionStatus) === '2') {
+            return { ...record, inspectionStatus: '1', inspectionStatusName: '已完成' };
+          }
+          return record;
+        });
+        DASH.liveTasks.forEach((record) => {
+          if (record.orderNumber && !knownIds.has(record.orderNumber)) records.push(record);
+        });
+        DASH.records = uniqueRecords(records).sort((a, b) => (b.createDate || '').localeCompare(a.createDate || ''));
+        DASH.alerts = computeAlerts();
+        renderKpis();
+        renderInspectors();
+        renderAlerts();
+        renderTableRows();
+        $('#lastRefresh').textContent = currentTimeString();
+        return true;
+      } catch (error) {
+        console.error('Live task refresh failed', error);
+        return false;
+      } finally {
+        liveTaskLoading = false;
+      }
+    }
     async function loadDashboardData(silent = false) {
       const mySeq = ++loadSeq;
       qmsLoading = true;
@@ -1411,7 +1471,7 @@
         [...month, ...overdue, ...active].forEach((r) => { if (r.orderNumber) map.set(r.orderNumber, r); });
         const records = Array.from(map.values()).sort((a, b) => (b.createDate || '').localeCompare(a.createDate || ''));
         const overdueTotal = overdue.length;
-        computeDerived(records, active, overdueTotal);
+        computeDerived(records, active, overdueTotal, overdue);
         // 上月汇总（KPI 环比用）
         DASH.prevResultStats = computeResultStats(prevMonth);
         DASH.prevMonth = prevMonth;
@@ -1423,6 +1483,7 @@
         renderAll();
         saveDashCache(active, prevMonth);
         setSyncState(false);
+        lastFullRefreshAt = Date.now();
         if (!sbTrendLoading) fetchSbTrend();
         return true;
       } catch (err) {
@@ -1730,4 +1791,15 @@
     uiReady = true;
     applyFilters();
     loadDashboardData();
-    setInterval(() => { if (!qmsLoading) loadDashboardData(true); }, 5 * 60 * 1000);
+    const FULL_REFRESH_MS = 5 * 60 * 1000;
+    const LIVE_TASK_REFRESH_MS = 30 * 1000;
+    setInterval(() => {
+      if (document.visibilityState !== 'hidden' && !qmsLoading) loadDashboardData(true);
+    }, FULL_REFRESH_MS);
+    setInterval(() => { refreshLiveTaskData(); }, LIVE_TASK_REFRESH_MS);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'hidden') {
+        if (Date.now() - lastFullRefreshAt >= FULL_REFRESH_MS) loadDashboardData(true);
+        else refreshLiveTaskData();
+      }
+    });
