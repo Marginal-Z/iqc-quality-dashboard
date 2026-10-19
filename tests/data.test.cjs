@@ -128,6 +128,41 @@ test('complete refresh populates previous-month statistics and cache', async () 
   assert.equal(a.run('DASH.prevPassRate'), 100);
   assert.equal(JSON.parse(a.store.get('qms_dash_cache')).prevMonth.length, 1);
 });
+test('fast live refresh updates active and overdue tasks without loading monthly datasets', async () => {
+  const a = app(); const queries = [];
+  a.run("DASH.records = [{orderNumber:'old-active',inspectionStatus:'0'},{orderNumber:'active-1',inspectionStatus:'0',inspectorName:'Old'}]");
+  a.ctx.qmsSelectAll = async (query) => {
+    queries.push(query);
+    if (query.inspectionStatus === '0') return [{ orderNumber: 'active-1', inspectionStatus: '0', inspectorName: 'Alice', taskName: '组长确认' }, { orderNumber: 'new-active', inspectionStatus: '0', inspectorName: 'Alice' }];
+    return [{ orderNumber: 'overdue-1', inspectionStatus: '2', inspectorName: 'Bob', totalTime: '1天' }];
+  };
+  for (const name of ['renderKpis', 'renderInspectors', 'renderAlerts', 'renderTableRows']) a.ctx[name] = () => {};
+  assert.equal(await a.run('refreshLiveTaskData()'), true);
+  assert.equal(queries.length, 2);
+  assert.deepEqual(queries.map(q => q.inspectionStatus), ['0', '2']);
+  assert.ok(queries.every(q => q.factoryCode === 'STTH' && !q.createDateStart));
+  assert.equal(a.run('DASH.pendingTotal'), 2);
+  assert.equal(a.run('DASH.overdueTotal'), 1);
+  assert.equal(a.run('DASH.liveTasks.length'), 3);
+  assert.equal(a.run("DASH.inspectors.find(i => i.name === 'Alice').count"), 2);
+  assert.equal(a.run("DASH.records.find(r => r.orderNumber === 'old-active').inspectionStatus"), '1');
+  assert.equal(a.run("DASH.records.find(r => r.orderNumber === 'new-active').inspectionStatus"), '0');
+});
+test('failed fast live refresh preserves the last usable task snapshot', async () => {
+  const a = app();
+  a.run("DASH.liveTasks = [{orderNumber:'cached',inspectionStatus:'0'}]; DASH.pendingTotal = 1");
+  a.ctx.qmsSelectAll = async () => { throw new Error('offline'); };
+  assert.equal(await a.run('refreshLiveTaskData()'), false);
+  assert.equal(a.run('DASH.liveTasks[0].orderNumber'), 'cached');
+  assert.equal(a.run('DASH.pendingTotal'), 1);
+});
+test('fast live refresh skips QMS requests while the page is hidden', async () => {
+  const a = app(); let requests = 0;
+  a.ctx.document.visibilityState = 'hidden';
+  a.ctx.qmsSelectAll = async () => { requests++; return []; };
+  assert.equal(await a.run('refreshLiveTaskData()'), false);
+  assert.equal(requests, 0);
+});
 test('chart recovers after empty-state markup replaced its canvas', () => {
   const a = app(); let disposed = false, cleared = false, created = 0;
   a.ctx.oldChart = { dispose() { disposed = true; } };
