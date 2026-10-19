@@ -165,7 +165,7 @@ test('wallboard cycles the full filtered list and overview retains pagination', 
   a.ctx.computeTableRows = () => Array.from({length: 1500}, (_, id) => ({ id }));
   a.ctx.rowHtml = r => `<tr data-row="${r.id}"></tr>`;
   a.run('wallboardMode = true; renderTableRows()');
-  assert.equal(options.count, 1500); assert.equal(options.speed, 72);
+  assert.equal(options.count, 1500); assert.equal(options.speed, 128);
   assert.equal(a.elements.get('#tablePagination').style.display, 'none');
   options.renderWindow(1499, 3);
   assert.match(a.elements.get('#iqcTableBody').innerHTML, /data-row="1499".*data-row="0".*data-row="1"/);

@@ -126,13 +126,18 @@
         <section class="overview-grid">
           <article class="card overview-card">
             <div class="card-head">
-              <div><h2 class="card-title"><span class="standard-flow-title" data-i18n="flow_title">检验流转总览</span><span class="wallboard-flow-title" data-ui="检验状态-当日">检验状态-当日</span></h2><p class="card-subtitle" data-i18n="flow_subtitle">按检验状态实时分布</p></div>
+              <div><h2 class="card-title"><span class="standard-flow-title" data-i18n="flow_title">检验流转总览</span><span class="wallboard-flow-title" data-ui="检验状态 · 当日">检验状态 · 当日</span></h2><p class="card-subtitle" data-i18n="flow_subtitle">按检验状态实时分布</p><p class="wallboard-flow-subtitle" id="wallboardFlowPlant">—</p></div>
               <div class="segmented" id="flowRange"><button class="active" data-range="today" data-i18n="range_today_short">今日</button><button data-range="week" data-i18n="range_week_short">本周</button><button data-range="month" data-i18n="range_month_short">本月</button></div>
             </div>
             <div class="flow-body">
               <div class="donut-wrap">
-                <div class="donut" id="flowDonut"><svg class="donut-segments" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="43.5" fill="none" stroke="#e4eaf2" stroke-width="13"/></svg><div class="donut-core"><strong id="flowTotal">—</strong><span data-i18n="unit_lot_full">检验批次</span></div></div>
+                <div class="donut" id="flowDonut"><svg class="donut-segments" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="42" fill="none" stroke="#f0f0f0" stroke-width="12"/></svg><div class="donut-core"><strong id="flowTotal">—</strong><span data-i18n="unit_lot_full">检验批次</span></div></div>
                 <div class="donut-caption"><span data-i18n="flow_caption">今日累计送检</span></div>
+              </div>
+              <div class="wallboard-status-stats" data-ui-aria-label="检验状态分布" aria-label="检验状态分布">
+                <div class="wallboard-status-stat processing"><span class="wallboard-stat-label"><i></i><span data-ui="检验中">检验中</span></span><strong id="wallboardProcessing">—</strong></div>
+                <div class="wallboard-status-stat overdue"><span class="wallboard-stat-label"><i></i><span data-ui="超时未完成">超时未完成</span></span><strong id="wallboardOverdue">—</strong></div>
+                <div class="wallboard-status-stat completed"><span class="wallboard-stat-label"><i></i><span data-ui="已检验完成">已检验完成</span></span><strong id="wallboardCompleted">—</strong></div>
               </div>
               <div class="status-stack">
                 <div class="status-row"><i class="status-mark blue"></i><span class="status-name" data-i18n="status_pending">待检</span><strong class="status-value" id="flowPending">—</strong><div class="status-progress"><i class="blue"></i></div></div>
@@ -141,6 +146,7 @@
                 <div class="status-row"><i class="status-mark red"></i><span class="status-name" data-i18n="status_overdue">超时未完成</span><strong class="status-value" id="flowOverdue">—</strong><div class="status-progress"><i class="red"></i></div></div>
               </div>
             </div>
+            <div class="wallboard-status-foot"><span data-ui="今日任务进度">今日任务进度</span><strong id="wallboardProgress">—</strong></div>
           </article>
 
           <article class="card overview-card">
@@ -168,8 +174,9 @@
         </section>
 
         <section class="card table-card" id="tasks">
-          <div class="table-toolbar">
-            <div><h2 class="card-title" data-i18n="table_title">来料检验任务</h2><p class="card-subtitle" data-i18n="table_subtitle">接入 QMS 的最新检验任务 · 支持按状态、加急与关键字快速定位</p></div>
+            <div class="table-toolbar">
+            <div><h2 class="card-title" data-i18n="table_title">来料检验任务</h2><p class="card-subtitle" data-i18n="table_subtitle">接入 QMS 的最新检验任务 · 支持按状态、加急与关键字快速定位</p><p class="wallboard-table-subtitle" data-ui="总任务循环滚动">总任务循环滚动</p></div>
+            <div class="wallboard-table-meta"><span class="rows-badge"><span data-ui="共">共</span> <strong id="wallboardTaskCount">0</strong> <span data-i18n="unit_task">条任务</span></span><span class="status-pill"><i></i><span data-ui="自动轮播">自动轮播</span></span></div>
             <div class="filters">
               <label class="search-box"><svg width="14" height="14"><use href="#icon-search"/></svg><input id="globalSearch" type="search" data-i18n-placeholder="search_placeholder" placeholder="搜索单号 / 料号 / 供应商" /></label>
               <select class="filter-select" id="rangeFilter" aria-label="Date range"><option value="todo" data-i18n="range_todo">待办任务</option><option value="today" data-i18n="range_today">今日</option><option value="week" data-i18n="range_week">本周</option><option value="month" data-i18n="range_month">本月</option><option value="custom" data-ui="自定义日期">自定义日期</option></select>
@@ -213,17 +220,18 @@
 
         <section class="analytics-grid" id="reports">
           <article class="card analytics-card">
-            <div class="card-head"><div><h2 class="card-title" data-i18n="inspector_title">检验员待检统计</h2><p class="card-subtitle" data-i18n="inspector_subtitle">当前待检任务 · 按数量排序</p></div><span class="kpi-icon amber"><svg width="16" height="16"><use href="#icon-user"/></svg></span></div>
+            <div class="card-head"><div><h2 class="card-title" data-i18n="inspector_title">检验员待检统计</h2><p class="card-subtitle" data-i18n="inspector_subtitle">当前待检任务 · 按数量排序</p><p class="card-subtitle wallboard-inspector-subtitle" data-ui="按待检批次排序">按待检批次排序</p></div><span class="rows-badge wallboard-inspector-total" id="wallboardInspectorCount">0 位检验员</span><span class="kpi-icon amber"><svg width="16" height="16"><use href="#icon-user"/></svg></span></div>
             <div class="inspector-summary"><strong id="inspectorTotal">—</strong><span data-i18n="unit_waiting_lot">个待检批次</span></div>
             <div class="inspector-columns" id="inspectorColumns">
               <div class="inspector-column empty"><strong>—</strong><i style="--share:0%"></i><span data-i18n="unit_waiting_lot">个待检批次</span></div>
             </div>
             <div class="wallboard-inspector-bars" id="wallboardInspectorBars" aria-label="检验员待检批次排行"></div>
+            <div class="wallboard-chart-bottom"><span data-ui="当前待检任务总量">当前待检任务总量</span><strong id="wallboardInspectorTotal">—</strong></div>
             <div class="capacity-line"><span data-i18n="capacity_label">团队产能使用率</span><strong id="capacityValue">—</strong></div>
           </article>
 
           <article class="card analytics-card">
-            <div class="card-head"><div><h2 class="card-title"><span class="standard-result-title" data-i18n="result_title">检验结果统计</span><span class="wallboard-result-title" id="wallboardResultTitle">检验结果统计</span></h2><p class="card-subtitle" id="resultSubtitle" data-i18n="result_subtitle">本月累计 · 2026.09</p></div><span class="kpi-icon teal"><svg width="16" height="16"><use href="#icon-chart"/></svg></span></div>
+            <div class="card-head"><div><h2 class="card-title"><span class="standard-result-title" data-i18n="result_title">检验结果统计</span><span class="wallboard-result-title" id="wallboardResultTitle">检验结果统计</span></h2><p class="card-subtitle" id="resultSubtitle" data-i18n="result_subtitle">本月累计 · 2026.09</p><p class="card-subtitle wallboard-month-subtitle" id="wallboardResultMonth">2026 · 10 月</p></div><span class="kpi-icon teal"><svg width="16" height="16"><use href="#icon-chart"/></svg></span></div>
             <div class="result-content">
               <div class="result-donut" id="resultDonut"><svg class="donut-segments" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="43.5" fill="none" stroke="#e4eaf2" stroke-width="13"/></svg><div class="result-core"><strong id="resultTotal">—</strong><span data-i18n="total_inspections">总检验批次</span></div></div>
               <div class="result-legend" id="resultLegend">
@@ -233,14 +241,16 @@
               </div>
             </div>
             <div class="wallboard-result-bars" id="wallboardResultBars" aria-label="检验结果统计图"></div>
+            <div class="wallboard-chart-bottom"><span data-ui="当月累计检验批次">当月累计检验批次</span><strong id="wallboardResultBatchTotal">—</strong></div>
             <div class="result-foot"><span data-i18n="result_note">一次合格率</span><strong id="resultPassRate">—</strong></div>
           </article>
           <section class="card supplier-dashboard" id="supplierRankBoard">
             <div class="card-head">
-              <div><h2 class="card-title" id="supplierRankTitle" data-ui="倒数前10名供应商">倒数前10名供应商</h2><p class="card-subtitle" data-ui="柱 = 不合格批次数 · 折线 = 批次合格率（与 QMS 看板同口径）">柱 = 不合格批次数 · 折线 = 批次合格率（与 QMS 看板同口径）</p></div>
-              <div class="rank-tabs"><button class="active" data-supplier-mode="bottom" data-i18n="bottom_rank">倒数排名</button><button data-supplier-mode="top" data-i18n="top_rank">正向排名</button></div>
+              <div><h2 class="card-title" id="supplierRankTitle" data-ui="倒数前10名供应商">倒数前10名供应商</h2><p class="card-subtitle" id="supplierRankSubtitle">2026 · 10 月</p></div>
+              <div class="supplier-rank-actions"><div class="rank-tabs"><button class="active" data-supplier-mode="bottom" data-i18n="bottom_rank">倒数排名</button><button data-supplier-mode="top" data-i18n="top_rank">正向排名</button></div><div class="chart-key"><span><i class="key-box"></i><span id="supplierBarLegend">不合格批次</span></span><span><i class="key-line"></i><span data-ui="合格率">合格率</span></span></div></div>
             </div>
             <div class="supplier-rank-chart" id="supplierRankChart"></div>
+            <div class="wallboard-chart-bottom"><span id="supplierRankFoot">排序依据：不合格批次从高到低</span><strong id="supplierRankCount">前 10 家</strong></div>
           </section>
         </section>
 
@@ -372,11 +382,13 @@
   </div>
   <div class="toast" id="toast"><svg width="14" height="14"><use href="#icon-check"/></svg><span id="toastText" data-ui="操作完成">操作完成</span></div>
   <div class="wallboard-bar" id="wallboardBar">
-    <div class="wallboard-brand"><span class="wallboard-logo" aria-hidden="true"><i></i><i></i><i></i></span><strong data-ui="IQC来料检验看板">IQC来料检验看板</strong></div>
+    <div class="wallboard-brand"><span class="wallboard-logo" aria-hidden="true"><i></i><i></i><i></i></span><div class="wallboard-brand-titles"><strong><b>IQC</b> <span data-ui="来料检验看板">来料检验看板</span></strong><span class="wallboard-brand-divider"></span><span class="wallboard-brand-sub">INCOMING QUALITY CONTROL</span></div></div>
     <div class="wallboard-actions">
-      <div class="wallboard-factory"><span class="wallboard-factory-label" data-i18n="current_plant">当前工厂</span><strong id="wallboardFactory">—</strong></div>
-      <div class="wallboard-status"><span class="live-dot"></span><strong id="wallboardModeLabel" data-i18n="wallboard_live">来料检验看板 · 实时</strong><span class="wallboard-clock" id="wallboardClock">--:--:--</span></div>
-      <button class="wallboard-exit" id="wallboardExit"><svg width="12" height="12"><use href="#icon-close"/></svg><span id="wallboardExitText" data-i18n="exit_wallboard">退出看板</span></button>
+      <span class="wallboard-live-tag"><i></i><span data-ui="QMS实时数据">QMS 实时数据</span></span>
+      <div class="wallboard-factory"><i class="wallboard-factory-dot"></i><strong id="wallboardFactory">—</strong></div>
+      <span class="wallboard-clock"><strong id="wallboardClock">--:--:--</strong><small>LIVE</small></span>
+      <button class="wallboard-fullscreen" id="wallboardFullscreen" data-ui-title="切换全屏" data-ui-aria-label="切换全屏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 4H4v4M16 4h4v4M4 16v4h4M20 16v4h-4"/></svg></button>
+      <button class="wallboard-exit" id="wallboardExit" data-ui-title="退出看板" data-ui-aria-label="退出看板"><svg width="16" height="16"><use href="#icon-close"/></svg><span id="wallboardExitText" data-i18n="exit_wallboard">退出看板</span></button>
     </div>
   </div>
 

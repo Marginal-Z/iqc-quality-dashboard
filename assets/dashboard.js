@@ -420,8 +420,9 @@
       if (tablePage > totalPages) tablePage = totalPages; if (tablePage < 1) tablePage = 1;
       const rows = wallboardMode ? tableRows.slice(0, 1) : tableRows.slice((tablePage - 1) * TABLE_PAGE_SIZE, tablePage * TABLE_PAGE_SIZE);
       const body = $('#iqcTableBody');
-      body.innerHTML = rows.map(rowHtml).join('') + `<tr class="empty-row" id="emptyRow"><td colspan="14"><span data-i18n="empty_state">${t('empty_state')}</span></td></tr>`;
+      body.innerHTML = rows.map(rowHtml).join('') + `<tr class="empty-row" id="emptyRow"><td colspan="15"><span data-i18n="empty_state">${t('empty_state')}</span></td></tr>`;
       $('#visibleCount').textContent = total;
+      $('#wallboardTaskCount').textContent = nf.format(total);
       const pageRange = $('#pageRange');
       if (pageRange) {
         if (wallboardMode && total > 0) {
@@ -531,12 +532,16 @@
       $('#flowProcessing').textContent = nf.format(wallboardMode ? data.pending + data.processing : data.processing);
       $('#flowDone').textContent = nf.format(data.done);
       $('#flowOverdue').textContent = nf.format(data.overdue);
-      $('.donut-core span').textContent = wallboardMode ? t('total_inspections') : t('unit_lot_full');
+      $('#wallboardProcessing').textContent = nf.format(data.pending + data.processing);
+      $('#wallboardOverdue').textContent = nf.format(data.overdue);
+      $('#wallboardCompleted').textContent = nf.format(data.done);
+      $('#wallboardProgress').textContent = `${nf.format(data.pending + data.processing)} / ${nf.format(total)} ${t('批')}`;
+      $('.donut-core span').textContent = wallboardMode ? t('当日检验任务') : t('unit_lot_full');
       const statusValues = wallboardMode
         ? [data.pending + data.processing, data.overdue, data.done]
         : [data.pending, data.processing, data.done, data.overdue];
       const statusColors = wallboardMode
-        ? ['#5478bd', '#a6a6a6', '#efa33a']
+        ? ['#1677ff', '#ff4d4f', '#52c41a']
         : ['#1677ff', '#fa8c16', '#52c41a', '#ff4d4f'];
       $('#flowDonut .donut-segments').innerHTML = donutSegments(statusValues, statusColors);
       const now = new Date(); const p = (n) => String(n).padStart(2, '0');
@@ -591,19 +596,47 @@
       const total = rs.total || 1;
       const p = rs.pass / total * 100, s = rs.special / total * 100, f = rs.fail / total * 100;
       const wallboardTitle = $('#wallboardResultTitle');
-      if (wallboardTitle) wallboardTitle.textContent = `${t('result_title')}-${monthPrefix(0)}`;
+      if (wallboardTitle) wallboardTitle.textContent = t('result_title');
+      const wallboardMonth = $('#wallboardResultMonth');
+      if (wallboardMonth) {
+        const monthDate = new Date();
+        wallboardMonth.textContent = `${monthDate.getFullYear()} · ${monthDate.getMonth() + 1} ${t('月')}`;
+      }
+      $('#wallboardResultBatchTotal').textContent = `${nf.format(rs.total)} ${t('批')}`;
       const wallboardBars = $('#wallboardResultBars');
       if (wallboardBars) {
-        const maxCount = Math.max(rs.pass, rs.special, rs.fail, 1);
+        const maxCount = Math.max(rs.pass, rs.special, rs.fail, 0);
+        const rawStep = Math.max(1, maxCount / 3);
+        const magnitude = 10 ** Math.floor(Math.log10(rawStep));
+        const normalized = rawStep / magnitude;
+        const step = (normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10) * magnitude;
+        const axisMax = step * 3;
+        const baseline = 250, plotHeight = 180;
+        const ticks = Array.from({ length: 4 }, (_, index) => index * step);
         const entries = [
-          { label: t('result_pass'), count: rs.pass, color: '#dc8549' },
-          { label: t('result_special'), count: rs.special, color: '#6f914b' },
-          { label: ui('退货'), count: rs.fail, color: '#ef3f36' }
+          { label: t('result_pass'), count: rs.pass, x: 125, color: 'pass' },
+          { label: t('result_special'), count: rs.special, x: 264, color: 'special' },
+          { label: ui('退货'), count: rs.fail, x: 403, color: 'fail' }
         ];
-        wallboardBars.innerHTML = entries.map((entry) => {
-          const height = entry.count ? Math.max(7, entry.count / maxCount * 94) : 0;
-          return `<div class="wallboard-result-column"><div class="wallboard-result-bar" style="--bar-height:${height.toFixed(2)}%;--bar-color:${entry.color}"><strong>${nf.format(entry.count)}</strong></div><span>${escHtml(entry.label)}</span></div>`;
+        const grids = ticks.map((value, index) => {
+          const y = baseline - index * plotHeight / 3;
+          return `<line class="wallboard-result-grid" x1="54" y1="${y}" x2="510" y2="${y}"/><text class="wallboard-result-axis" x="49" y="${y + 4}" text-anchor="end">${nf.format(value)}</text>`;
         }).join('');
+        const bars = entries.map((entry) => {
+          const height = axisMax ? entry.count / axisMax * plotHeight : 0;
+          const top = baseline - height;
+          const labelY = height > 32 ? top + 22 : Math.max(66, top - 7);
+          const label = entry.color === 'pass' && height > 40
+            ? `<text class="wallboard-result-pass-label" x="171" y="${labelY}" text-anchor="middle">${nf.format(entry.count)}</text>`
+            : `<text class="wallboard-result-value" x="${entry.x + 46}" y="${labelY}" text-anchor="middle">${nf.format(entry.count)}</text>`;
+          return `<rect class="wallboard-result-bar-${entry.color}" x="${entry.x}" y="${top}" width="92" height="${Math.max(entry.count ? 6 : 0, height)}" rx="${height > 9 ? 4 : 3}"/>${label}<text class="wallboard-result-name" x="${entry.x + 46}" y="277" text-anchor="middle">${escHtml(entry.label)}</text>`;
+        }).join('');
+        const key = [
+          { y: 82, name: t('result_pass'), color: 'pass' },
+          { y: 102, name: t('result_special'), color: 'special' },
+          { y: 122, name: ui('退货'), color: 'fail' }
+        ].map((entry) => `<circle class="wallboard-result-key-dot ${entry.color}" cx="535" cy="${entry.y - 3}" r="4"/><text class="wallboard-result-axis" x="545" y="${entry.y}">${escHtml(entry.name)}</text>`).join('');
+        wallboardBars.innerHTML = `<svg class="wallboard-result-chart" viewBox="0 0 620 300" preserveAspectRatio="none" role="img" aria-label="${escHtml(ui('检验结果统计图'))}">${grids}${bars}${key}</svg>`;
       }
       $('#resultDonut .donut-segments').innerHTML = donutSegments([rs.pass, rs.special, rs.fail], ['var(--green)', 'var(--amber)', 'var(--red)']);
       $('#resultLegend').innerHTML = `
@@ -620,21 +653,29 @@
       $('#inspectorColumns').style.setProperty('--inspector-rows', Math.max(1, Math.ceil(list.length / columns)));
       $('#inspectorTotal').textContent = nf.format(list.reduce((a, b) => a + b.count, 0));
       const wallboardBars = $('#wallboardInspectorBars');
+      const visibleInspectors = list.slice(0, 7);
+      const inspectorTotal = list.reduce((total, entry) => total + entry.count, 0);
+      $('#wallboardInspectorTotal').textContent = `${nf.format(inspectorTotal)} ${t('批')}`;
+      $('#wallboardInspectorCount').textContent = ui('{count} 位检验员', { count: visibleInspectors.length });
       if (wallboardBars) {
-        const ranked = list.slice(0, 7);
-        if (!ranked.length) {
+        if (!visibleInspectors.length) {
           wallboardBars.innerHTML = `<div class="wallboard-inspector-empty">${ui('暂无待检任务')}</div>`;
         } else {
-          const maxCount = ranked[0].count || 1;
-          const axisMax = Math.max(20, Math.ceil(maxCount * 1.2 / 20) * 20);
-          const rows = ranked.map((entry) => {
-            const name = entry.name === '未分配' ? ui('未分配') : entry.name;
-            const safeName = escHtml(name);
-            const share = Math.max(0, Math.min(100, entry.count / axisMax * 100));
-            return `<div class="wallboard-inspector-row"><span class="wallboard-inspector-name" title="${safeName}">${safeName}</span><span class="wallboard-inspector-track"><i style="--bar-share:${share.toFixed(1)}%"><strong class="wallboard-inspector-count">${nf.format(entry.count)}</strong></i></span></div>`;
+          const maxCount = visibleInspectors[0].count || 1;
+          const axisMax = Math.max(120, Math.ceil(maxCount * 1.2 / 30) * 30);
+          const axisLeft = 125, plotWidth = 450, axisBottom = 262;
+          const ticks = Array.from({ length: 5 }, (_, index) => index * axisMax / 4);
+          const grid = ticks.map((value, index) => {
+            const x = axisLeft + index * plotWidth / 4;
+            return `<line class="wallboard-inspector-grid" x1="${x}" y1="18" x2="${x}" y2="${axisBottom}"/><text class="wallboard-inspector-axis" x="${x}" y="286" text-anchor="middle">${nf.format(value)}</text>`;
           }).join('');
-          const ticks = Array.from({ length: axisMax / 20 + 1 }, (_, index) => index * 20);
-          wallboardBars.innerHTML = `<div class="wallboard-inspector-rows">${rows}</div><div class="wallboard-inspector-axis"><span></span><div>${ticks.map((tick) => `<span>${tick}</span>`).join('')}</div></div>`;
+          const rows = visibleInspectors.map((entry, index) => {
+            const name = entry.name === '未分配' ? ui('未分配') : entry.name;
+            const centerY = visibleInspectors.length === 1 ? 140 : 30 + index * (220 / (visibleInspectors.length - 1));
+            const barWidth = Math.max(0, entry.count / axisMax * plotWidth);
+            return `<text class="wallboard-inspector-name" x="4" y="${centerY + 4}" title="${escHtml(name)}">${escHtml(name)}</text><rect class="wallboard-inspector-bar" x="${axisLeft}" y="${centerY - 12}" width="${barWidth.toFixed(2)}" height="24" rx="4"/><text class="wallboard-inspector-value" x="${Math.min(609, axisLeft + barWidth + 8)}" y="${centerY + 4}">${nf.format(entry.count)}</text>`;
+          }).join('');
+          wallboardBars.innerHTML = `<svg class="wallboard-inspector-chart" viewBox="0 0 620 300" preserveAspectRatio="none" role="img" aria-label="${escHtml(ui('检验员待检批次排行'))}">${grid}${rows}</svg>`;
         }
       }
       if (!list.length) { $('#inspectorColumns').innerHTML = `<div style="color:var(--muted);font-size: 12px;align-self:center">${ui('暂无待检任务')}</div>`; $('#capacityValue').textContent = '0%'; return; }
@@ -1225,6 +1266,8 @@
       const el = $('#supplierRankChart');
       if (!board || !el) return;
       const isBottom = supplierMode === 'bottom';
+      const barName = isBottom ? ui('不合格批次') : ui('合格批次');
+      board.dataset.rankMode = supplierMode;
       // 与 QMS 看板同口径：合格率 = (总批次 - 不合格批次) / 总批次，不合格批次 = 退货 + 特采（进行中批次默认算合格）
       const refRate = (s) => (s.batches > 0 ? (s.batches - s.nonconforming) / s.batches * 100 : 0);
       // 倒数=按不合格批次数降序取前10；正向=按合格率降序取前10
@@ -1234,16 +1277,21 @@
       const now = new Date();
       const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
       const titleEl = $('#supplierRankTitle');
-      if (titleEl) titleEl.textContent = (isBottom ? ui('倒数前10名供应商') : ui('正向前10名供应商')) + '-' + ym;
-      if (!window.echarts) { el.innerHTML = `<div class="sb-empty" style="padding:20px"><strong>${ui('图表库未加载')}</strong></div>`; return; }
-      if (!list.length) { el.innerHTML = `<div class="sb-empty" style="padding:20px"><strong>${ui('暂无供应商质量数据')}</strong></div>`; if (sbCharts.supplierRank) { try { sbCharts.supplierRank.clear(); } catch (e) {} } return; }
+      if (titleEl) titleEl.textContent = ui(isBottom ? '倒数前10名供应商' : '正向前10名供应商');
+      const subtitleEl = $('#supplierRankSubtitle');
+      if (subtitleEl) subtitleEl.textContent = `${now.getFullYear()} · ${now.getMonth() + 1} ${t('月')}`;
+      $('#supplierRankFoot').textContent = ui(isBottom ? '排序依据：不合格批次从高到低' : '排序依据：合格率从高到低');
+      $('#supplierRankCount').textContent = ui('前 {count} 家', { count: list.length });
+      const barLegend = $('#supplierBarLegend');
+      if (barLegend) barLegend.textContent = barName;
+      if (!window.echarts) { el.innerHTML = `<div class="wallboard-rank-empty">${ui('图表库未加载')}</div>`; return; }
+      if (!list.length) { el.innerHTML = `<div class="wallboard-rank-empty">${ui('暂无供应商质量数据')}</div>`; if (sbCharts.supplierRank) { try { sbCharts.supplierRank.clear(); } catch (e) {} } return; }
       ensureSbChart('supplierRank', el);
       const c = sbCharts.supplierRank;
       const names = list.map((s) => s.name);
       // 柱：倒数=不合格批次数，正向=合格批次数；线：合格率(0~1)，与 QMS 同口径截断到整数百分比
       const barData = list.map((s) => (isBottom ? s.nonconforming : s.pass));
-      const barName = isBottom ? ui('不合格批次') : ui('合格批次');
-      const rateData = list.map((s) => (Math.floor(refRate(s)) / 100));
+      const rateData = list.map((s) => Math.floor(refRate(s)));
       setChartOption(c, {
         tooltip: {
           trigger: 'axis',
@@ -1252,16 +1300,16 @@
             return `<b>${escHtml(s.name)}</b><br/>${ui('批次合格率')}: ${Math.floor(refRate(s))}%<br/>${barName}：${isBottom ? s.nonconforming : s.pass}<br/>${ui('检验批次')}: ${s.batches}`;
           }
         },
-        legend: { top: 0, right: 0, textStyle: { color: '#64748B', fontSize: 11 } },
-        grid: { left: 6, right: 6, top: 34, bottom: 2, containLabel: true },
-        xAxis: { type: 'category', data: names, axisTick: { show: false }, axisLine: { lineStyle: { color: '#E5E7EB' } }, axisLabel: { color: '#475569', fontSize: 11, interval: 0, rotate: 40, width: 64, overflow: 'truncate' } },
+        legend: { show: false },
+        grid: { left: 8, right: 28, top: 10, bottom: 43, containLabel: true },
+        xAxis: { type: 'category', data: names, axisTick: { show: false }, axisLine: { lineStyle: { color: '#d9d9d9' } }, axisLabel: { color: '#595959', fontSize: 11, interval: 0, rotate: 28, width: 64, overflow: 'truncate' } },
         yAxis: [
-          { type: 'value', name: '', minInterval: 1, axisLabel: { color: '#64748B', fontSize: 11 }, splitLine: { lineStyle: { color: '#F1F5F9' } } },
-          { type: 'value', name: '', min: 0, max: 1, axisLabel: { color: '#64748B', fontSize: 11, formatter: (v) => (v * 100).toFixed(0) + '%' }, splitLine: { show: false } }
+          { type: 'value', name: '', minInterval: 1, axisLabel: { color: '#595959', fontSize: 11 }, splitLine: { lineStyle: { color: '#f0f0f0' } } },
+          { type: 'value', name: '', min: 0, max: 100, interval: 25, axisLabel: { color: '#595959', fontSize: 11, formatter: (v) => `${v}%` }, splitLine: { show: false } }
         ],
         series: [
-          { name: barName, type: 'bar', data: barData, barMaxWidth: 22, itemStyle: { color: isBottom ? '#EF4444' : '#16A34A', borderRadius: [3, 3, 0, 0] }, label: { show: true, position: 'top', color: '#334155', fontSize: 11 } },
-          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: '#fa8c16', width: 2 }, itemStyle: { color: '#fa8c16' }, label: { show: true, position: 'top', formatter: (p) => (p.value * 100).toFixed(0) + '%', color: '#fa8c16', fontSize: 11 } }
+          { name: barName, type: 'bar', data: barData, barMaxWidth: 22, itemStyle: { color: isBottom ? '#ff4d4f' : '#52c41a', borderRadius: [3, 3, 0, 0] }, label: { show: true, position: 'top', color: '#595959', fontSize: 11 } },
+          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: '#fa8c16', width: 3 }, itemStyle: { color: '#fa8c16' }, label: { show: true, position: 'top', formatter: (p) => `${p.value}%`, color: '#fa8c16', fontSize: 11 } }
         ]
       });
       scheduleChartResize();
@@ -1422,9 +1470,9 @@
       supplierButton.setAttribute('aria-pressed', supplierWallboardMode ? 'true' : 'false');
       supplierButton.title = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'supplier_wallboard_entry');
       $('#supplierWallboardToggleText').textContent = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'supplier_wallboard_entry');
-      $('#wallboardModeLabel').textContent = t(supplierWallboardMode ? 'supplier_wallboard_live' : 'wallboard_live');
       $('#wallboardExitText').textContent = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'exit_wallboard');
       $('#wallboardFactory').textContent = $('#plantName')?.textContent.trim() || QMS_CONFIG.factoryName;
+      $('#wallboardFlowPlant').textContent = $('#plantName')?.textContent.trim() || QMS_CONFIG.factoryName;
     }
     let tableScroller = null, riskScroller = null;
     function stopTableAutoScroll() { tableScroller?.stop(); tableScroller = null; }
@@ -1433,7 +1481,7 @@
       if (!wallboardMode) return;
       if (!tableRows.length) return;
       tableScroller = createLoopingTableScroller($('.table-card .table-wrap'), {
-        speed: 72, count: tableRows.length, ...position,
+        speed: 128, count: tableRows.length, ...position,
         renderWindow: (start, count) => {
           $('#iqcTableBody').innerHTML = Array.from({ length: count }, (_, i) => rowHtml(tableRows[(start + i) % tableRows.length])).join('');
         }
@@ -1582,6 +1630,12 @@
       $('#wallboardToggle').addEventListener('click', () => setWallboardMode(!wallboardMode));
       $('#supplierWallboardToggle').addEventListener('click', () => setSupplierWallboardMode(!supplierWallboardMode));
       $('#wallboardExit').addEventListener('click', () => supplierWallboardMode ? setSupplierWallboardMode(false) : setWallboardMode(false));
+      $('#wallboardFullscreen').addEventListener('click', async () => {
+        try {
+          if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+          else await document.exitFullscreen();
+        } catch {}
+      });
       document.addEventListener('fullscreenchange', () => {
         if (document.fullscreenElement) {
           // 进入全屏后，等布局稳定再统一重绘所有图表，消除"先错后对"的缩放跳变
