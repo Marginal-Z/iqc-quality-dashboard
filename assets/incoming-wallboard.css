@@ -429,7 +429,9 @@ body.wallboard-mode .supplier-rank-chart { flex: 1 1 0; min-height: 0; margin: 0
 @media (max-width: 900px) {
   body.wallboard-mode { overflow: auto; }
   body.wallboard-mode .main { height: auto; min-height: 100dvh; overflow: visible; }
-  body.wallboard-mode .wallboard-bar { position: sticky; height: 54px; padding-inline: 10px; }
+  /* The bar is a sibling after .main in the document, so sticky would place it
+     after all dashboard content on small screens. Keep it pinned and reserve space. */
+  body.wallboard-mode .wallboard-bar { position: fixed; inset: 0 0 auto; height: 54px; padding-inline: 10px; gap: 10px; }
   body.wallboard-mode .wallboard-brand-titles strong { max-width: 54vw; font-size: 18px; }
   body.wallboard-mode .wallboard-brand-sub,
   body.wallboard-mode .wallboard-brand-divider,
@@ -439,7 +441,7 @@ body.wallboard-mode .supplier-rank-chart { flex: 1 1 0; min-height: 0; margin: 0
   body.wallboard-mode .wallboard-clock { min-width: 75px; }
   body.wallboard-mode .wallboard-fullscreen,
   body.wallboard-mode .wallboard-exit { width: 34px; height: 34px; }
-  body.wallboard-mode .content { display: grid; height: auto; min-height: 100dvh; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: 10px; padding: 10px; overflow: visible; }
+  body.wallboard-mode .content { display: grid; height: auto; min-height: 100dvh; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: 10px; padding: 64px 10px 10px; overflow: visible; }
   body.wallboard-mode .overview-grid > .overview-card:first-child { grid-column: 1; grid-row: auto; min-height: 330px; }
   body.wallboard-mode .flow-body { grid-template-columns: minmax(130px, 1fr) minmax(120px, .9fr); }
   body.wallboard-mode .table-card { grid-column: 1; grid-row: auto; height: 430px; }
@@ -449,12 +451,16 @@ body.wallboard-mode .supplier-rank-chart { flex: 1 1 0; min-height: 0; margin: 0
   body.wallboard-mode .supplier-rank-actions { gap: 6px; }
 }
 @media (max-width: 640px) {
+  body.wallboard-mode .wallboard-bar { gap: 6px; padding-inline: 8px; }
   body.wallboard-mode .wallboard-brand { gap: 8px; }
   body.wallboard-mode .wallboard-logo { flex-basis: 29px; width: 29px; height: 32px; padding: 4px; }
   body.wallboard-mode .wallboard-brand-titles strong { max-width: 48vw; font-size: 16px; }
+  body.wallboard-mode .wallboard-actions { gap: 6px; }
   body.wallboard-mode .wallboard-clock { min-width: 58px; }
   body.wallboard-mode .wallboard-clock strong { font-size: 11px; }
-  body.wallboard-mode .content { padding: 8px; }
+  body.wallboard-mode .content { padding: 62px 8px 8px; }
+  body.wallboard-mode .table-wrap { overflow-x: auto; overflow-y: hidden; }
+  body.wallboard-mode #iqcTable { width: 1280px; min-width: 1280px; }
   body.wallboard-mode .table-toolbar { padding-inline: 10px; }
   body.wallboard-mode .wallboard-table-meta { gap: 4px; }
   body.wallboard-mode .wallboard-table-meta .rows-badge { font-size: 9px; }

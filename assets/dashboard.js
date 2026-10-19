@@ -1301,7 +1301,8 @@
           }
         },
         legend: { show: false },
-        grid: { left: 8, right: 28, top: 10, bottom: 43, containLabel: true },
+        // Leave enough headroom for percentage labels at the 100% line.
+        grid: { left: 8, right: 28, top: 26, bottom: 43, containLabel: true },
         xAxis: { type: 'category', data: names, axisTick: { show: false }, axisLine: { lineStyle: { color: '#d9d9d9' } }, axisLabel: { color: '#595959', fontSize: 11, interval: 0, rotate: 28, width: 64, overflow: 'truncate' } },
         yAxis: [
           { type: 'value', name: '', minInterval: 1, axisLabel: { color: '#595959', fontSize: 11 }, splitLine: { lineStyle: { color: '#f0f0f0' } } },
