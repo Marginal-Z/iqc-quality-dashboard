@@ -64,6 +64,7 @@
     let locale = 'zh';
     try { const saved = localStorage.getItem('iqc_locale'); if (['zh', 'en', 'th', 'mix'].includes(saved)) locale = saved; } catch {}
     let currentFlowRange = 'today';
+    let wallboardPreviousFlowRange = null;
     let sidebarHidden = false;
     let wallboardMode = false;
     let supplierWallboardMode = false;
@@ -356,12 +357,14 @@
       const range = $('#rangeFilter').value;
       const status = $('#statusFilter').value;
       const query = $('#globalSearch').value.trim().toLowerCase();
-      // 检验任务表只显示未完成（待检/检验中/超时未完成），已完成不展示
-      let rows = applyRangeFilter(DASH.records, range)
-        .filter((r) => r.inspectionStatus === '0' || r.inspectionStatus === '2');
-      if (status !== 'all') rows = rows.filter((r) => mapStatus(r).key === status);
-      if (urgentOnly) rows = rows.filter((r) => r.expeditedFlagName === '是');
-      if (query) {
+      // Standard task view shows unfinished work; the wallboard intentionally cycles the full QMS task set.
+      let rows = wallboardMode
+        ? [...DASH.records]
+        : applyRangeFilter(DASH.records, range).filter((r) => r.inspectionStatus === '0' || r.inspectionStatus === '2');
+      // A wallboard always cycles the complete QMS task set; hidden page filters must not truncate it.
+      if (!wallboardMode && status !== 'all') rows = rows.filter((r) => mapStatus(r).key === status);
+      if (!wallboardMode && urgentOnly) rows = rows.filter((r) => r.expeditedFlagName === '是');
+      if (!wallboardMode && query) {
         rows = rows.filter((r) => {
           const name = r.materialName || '';
           const s = [r.orderNumber, r.materialNumber, name, r.materialCategory, QMS_CONFIG.factoryName, r.supplierName, r.supplierCode].join(' ').toLowerCase();
@@ -516,17 +519,30 @@
     }
     function setFlowRange(range) {
       currentFlowRange = range;
-      const data = DASH.flow[range] || { pending: 0, processing: 0, done: 0, overdue: 0 };
+      // The incoming wallboard cycles every QMS task, so its status summary must
+      // use the same complete record set instead of the dashboard date range.
+      const data = wallboardMode
+        ? computeFlow(DASH.records)
+        : (DASH.flow[range] || { pending: 0, processing: 0, done: 0, overdue: 0 });
       const total = data.pending + data.processing + data.done + data.overdue;
       $('#flowTotal').textContent = nf.format(total);
       $('#flowPending').textContent = nf.format(data.pending);
-      $('#flowProcessing').textContent = nf.format(data.processing);
+      $('#flowProcessing').textContent = nf.format(wallboardMode ? data.pending + data.processing : data.processing);
       $('#flowDone').textContent = nf.format(data.done);
       $('#flowOverdue').textContent = nf.format(data.overdue);
-      $('#flowDonut .donut-segments').innerHTML = donutSegments([data.pending, data.processing, data.done, data.overdue], ['#3977ef', '#14b39e', '#77a4f3', '#e55d68']);
+      $('.donut-core span').textContent = wallboardMode ? t('total_inspections') : t('unit_lot_full');
+      const statusValues = wallboardMode
+        ? [data.pending + data.processing, data.overdue, data.done]
+        : [data.pending, data.processing, data.done, data.overdue];
+      const statusColors = wallboardMode
+        ? ['#1677ff', '#ff4d4f', '#52c41a']
+        : ['#1677ff', '#fa8c16', '#52c41a', '#ff4d4f'];
+      $('#flowDonut .donut-segments').innerHTML = donutSegments(statusValues, statusColors);
       const now = new Date(); const p = (n) => String(n).padStart(2, '0');
       const timeStr = `${p(now.getHours())}:${p(now.getMinutes())}`;
-      $('.donut-caption').textContent = ui('累计送检 · 截止 {time}', {time:timeStr});
+      $('.donut-caption').textContent = wallboardMode
+        ? ''
+        : ui('累计送检 · 截止 {time}', {time:timeStr});
       $$('[data-range]').forEach((b) => b.classList.toggle('active', b.dataset.range === range));
     }
 
@@ -587,6 +603,21 @@
       $('#inspectorColumns').style.setProperty('--inspector-columns', columns);
       $('#inspectorColumns').style.setProperty('--inspector-rows', Math.max(1, Math.ceil(list.length / columns)));
       $('#inspectorTotal').textContent = nf.format(list.reduce((a, b) => a + b.count, 0));
+      const wallboardBars = $('#wallboardInspectorBars');
+      if (wallboardBars) {
+        const ranked = list.slice(0, 7);
+        if (!ranked.length) {
+          wallboardBars.innerHTML = `<div class="wallboard-inspector-empty">${ui('暂无待检任务')}</div>`;
+        } else {
+          const maxCount = ranked[0].count || 1;
+          wallboardBars.innerHTML = ranked.map((entry) => {
+            const name = entry.name === '未分配' ? ui('未分配') : entry.name;
+            const safeName = escHtml(name);
+            const share = Math.max(0, Math.min(100, entry.count / maxCount * 100));
+            return `<div class="wallboard-inspector-row"><span class="wallboard-inspector-name" title="${safeName}">${safeName}</span><span class="wallboard-inspector-track"><i style="--bar-share:${share.toFixed(1)}%"></i></span><strong class="wallboard-inspector-count">${nf.format(entry.count)}</strong></div>`;
+          }).join('');
+        }
+      }
       if (!list.length) { $('#inspectorColumns').innerHTML = `<div style="color:var(--muted);font-size: 12px;align-self:center">${ui('暂无待检任务')}</div>`; $('#capacityValue').textContent = '0%'; return; }
       const max = list[0].count || 1;
       $('#inspectorColumns').innerHTML = list.map(e => `<div class="inspector-column"><strong>${e.count}</strong><i style="--share:${e.count / max * 100}%" aria-hidden="true"></i><span title="${escHtml(e.name === '未分配' ? ui('未分配') : e.name)}">${escHtml(e.name === '未分配' ? ui('未分配') : e.name)}</span></div>`).join('');
@@ -844,7 +875,7 @@
         ],
         series: [
           { name: ui('不合格批次'), type: 'bar', data: barData, barMaxWidth: 22, itemStyle: { color: '#EF4444', borderRadius: [3, 3, 0, 0] }, label: { show: true, position: 'top', color: '#334155', fontSize: 11 } },
-          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: '#F59E0B', width: 2 }, itemStyle: { color: '#F59E0B' }, label: { show: true, position: 'top', formatter: (p) => (p.value * 100).toFixed(0) + '%', color: '#F59E0B', fontSize: 11 } }
+          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: '#fa8c16', width: 2.5 }, itemStyle: { color: '#fa8c16' }, label: { show: true, position: 'top', formatter: (p) => (p.value * 100).toFixed(0) + '%', color: '#fa8c16', fontSize: 11 } }
         ]
       });
       c.off('click'); c.on('click', (p) => { if (list[p.dataIndex]) selectSbSupplier(list[p.dataIndex].code); });
@@ -1211,7 +1242,7 @@
         ],
         series: [
           { name: barName, type: 'bar', data: barData, barMaxWidth: 22, itemStyle: { color: isBottom ? '#EF4444' : '#16A34A', borderRadius: [3, 3, 0, 0] }, label: { show: true, position: 'top', color: '#334155', fontSize: 11 } },
-          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: '#F59E0B', width: 2 }, itemStyle: { color: '#F59E0B' }, label: { show: true, position: 'top', formatter: (p) => (p.value * 100).toFixed(0) + '%', color: '#F59E0B', fontSize: 11 } }
+          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: '#fa8c16', width: 2 }, itemStyle: { color: '#fa8c16' }, label: { show: true, position: 'top', formatter: (p) => (p.value * 100).toFixed(0) + '%', color: '#fa8c16', fontSize: 11 } }
         ]
       });
       scheduleChartResize();
@@ -1374,6 +1405,7 @@
       $('#supplierWallboardToggleText').textContent = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'supplier_wallboard_entry');
       $('#wallboardModeLabel').textContent = t(supplierWallboardMode ? 'supplier_wallboard_live' : 'wallboard_live');
       $('#wallboardExitText').textContent = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'exit_wallboard');
+      $('#wallboardFactory').textContent = $('#plantName')?.textContent.trim() || QMS_CONFIG.factoryName;
     }
     let tableScroller = null, riskScroller = null;
     function stopTableAutoScroll() { tableScroller?.stop(); tableScroller = null; }
@@ -1407,14 +1439,26 @@
       scheduleChartResize();
     }
     function setWallboardMode(enabled, useFullscreen = true) {
+      if (enabled && !wallboardMode) {
+        wallboardPreviousFlowRange = currentFlowRange;
+        currentFlowRange = 'today';
+      } else if (!enabled && wallboardMode && wallboardPreviousFlowRange) {
+        currentFlowRange = wallboardPreviousFlowRange;
+        wallboardPreviousFlowRange = null;
+      }
       if (enabled) supplierWallboardMode = false;
       wallboardMode = Boolean(enabled);
       syncWallboardClasses(); updateWallboardUi();
+      setFlowRange(currentFlowRange);
       renderTableRows();
       if (wallboardMode && useFullscreen && document.documentElement.requestFullscreen && !document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
       if (!wallboardMode && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
     }
     function setSupplierWallboardMode(enabled, useFullscreen = true) {
+      if (enabled && wallboardMode && wallboardPreviousFlowRange) {
+        currentFlowRange = wallboardPreviousFlowRange;
+        wallboardPreviousFlowRange = null;
+      }
       if (enabled) wallboardMode = false;
       supplierWallboardMode = Boolean(enabled);
       syncWallboardClasses(); updateWallboardUi();
