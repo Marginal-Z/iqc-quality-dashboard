@@ -398,6 +398,7 @@
         <td>${escHtml(r.materialCategory || '')}</td>
         <td><span class="factory-cell" title="${escHtml(factory)}">${escHtml(factory)}</span></td>
         <td class="supplier-cell"><strong>${escHtml(supplier)}</strong><small>${escHtml(code)}</small></td>
+        <td class="wallboard-only-col">${escHtml(code)}</td>
         <td class="qty">${fmtQty(r.qty)}</td>
         <td><span class="tag ${urgent === '1' ? 'yes' : 'no'}" data-i18n="${urgent === '1' ? 'yes' : 'no'}">${urgent === '1' ? t('yes') : t('no')}</span></td>
         <td class="mono">${escHtml(r.createDate || '')}</td>
@@ -535,7 +536,7 @@
         ? [data.pending + data.processing, data.overdue, data.done]
         : [data.pending, data.processing, data.done, data.overdue];
       const statusColors = wallboardMode
-        ? ['#1677ff', '#ff4d4f', '#52c41a']
+        ? ['#5478bd', '#a6a6a6', '#efa33a']
         : ['#1677ff', '#fa8c16', '#52c41a', '#ff4d4f'];
       $('#flowDonut .donut-segments').innerHTML = donutSegments(statusValues, statusColors);
       const now = new Date(); const p = (n) => String(n).padStart(2, '0');
@@ -589,6 +590,21 @@
       $('#resultTotal').textContent = nf.format(rs.total);
       const total = rs.total || 1;
       const p = rs.pass / total * 100, s = rs.special / total * 100, f = rs.fail / total * 100;
+      const wallboardTitle = $('#wallboardResultTitle');
+      if (wallboardTitle) wallboardTitle.textContent = `${t('result_title')}-${monthPrefix(0)}`;
+      const wallboardBars = $('#wallboardResultBars');
+      if (wallboardBars) {
+        const maxCount = Math.max(rs.pass, rs.special, rs.fail, 1);
+        const entries = [
+          { label: t('result_pass'), count: rs.pass, color: '#dc8549' },
+          { label: t('result_special'), count: rs.special, color: '#6f914b' },
+          { label: ui('退货'), count: rs.fail, color: '#ef3f36' }
+        ];
+        wallboardBars.innerHTML = entries.map((entry) => {
+          const height = entry.count ? Math.max(7, entry.count / maxCount * 94) : 0;
+          return `<div class="wallboard-result-column"><div class="wallboard-result-bar" style="--bar-height:${height.toFixed(2)}%;--bar-color:${entry.color}"><strong>${nf.format(entry.count)}</strong></div><span>${escHtml(entry.label)}</span></div>`;
+        }).join('');
+      }
       $('#resultDonut .donut-segments').innerHTML = donutSegments([rs.pass, rs.special, rs.fail], ['var(--green)', 'var(--amber)', 'var(--red)']);
       $('#resultLegend').innerHTML = `
         <div class="result-row"><i class="result-mark green"></i><span data-i18n="result_pass">${t('result_pass')}</span><strong>${nf.format(rs.pass)}</strong><small>${(p).toFixed(1)}%</small></div>
@@ -610,12 +626,15 @@
           wallboardBars.innerHTML = `<div class="wallboard-inspector-empty">${ui('暂无待检任务')}</div>`;
         } else {
           const maxCount = ranked[0].count || 1;
-          wallboardBars.innerHTML = ranked.map((entry) => {
+          const axisMax = Math.max(20, Math.ceil(maxCount * 1.2 / 20) * 20);
+          const rows = ranked.map((entry) => {
             const name = entry.name === '未分配' ? ui('未分配') : entry.name;
             const safeName = escHtml(name);
-            const share = Math.max(0, Math.min(100, entry.count / maxCount * 100));
-            return `<div class="wallboard-inspector-row"><span class="wallboard-inspector-name" title="${safeName}">${safeName}</span><span class="wallboard-inspector-track"><i style="--bar-share:${share.toFixed(1)}%"></i></span><strong class="wallboard-inspector-count">${nf.format(entry.count)}</strong></div>`;
+            const share = Math.max(0, Math.min(100, entry.count / axisMax * 100));
+            return `<div class="wallboard-inspector-row"><span class="wallboard-inspector-name" title="${safeName}">${safeName}</span><span class="wallboard-inspector-track"><i style="--bar-share:${share.toFixed(1)}%"><strong class="wallboard-inspector-count">${nf.format(entry.count)}</strong></i></span></div>`;
           }).join('');
+          const ticks = Array.from({ length: axisMax / 20 + 1 }, (_, index) => index * 20);
+          wallboardBars.innerHTML = `<div class="wallboard-inspector-rows">${rows}</div><div class="wallboard-inspector-axis"><span></span><div>${ticks.map((tick) => `<span>${tick}</span>`).join('')}</div></div>`;
         }
       }
       if (!list.length) { $('#inspectorColumns').innerHTML = `<div style="color:var(--muted);font-size: 12px;align-self:center">${ui('暂无待检任务')}</div>`; $('#capacityValue').textContent = '0%'; return; }

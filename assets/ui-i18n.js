@@ -1,6 +1,11 @@
 // Interface copy only. QMS names, identifiers and status codes remain source data.
 const UI_TEXT = {
   '设置': ['Settings', 'ตั้งค่า'], '显示设置': ['Display settings', 'ตั้งค่าการแสดงผล'],
+  'IQC来料检验看板': ['IQC incoming inspection dashboard', 'แดชบอร์ดตรวจสอบขาเข้า IQC'],
+  '检验状态-当日': ['Inspection status - today', 'สถานะการตรวจ - วันนี้'],
+  '倒数前10名供应商': ['Bottom 10 suppliers', 'ซัพพลายเออร์ 10 อันดับท้าย'],
+  '正向前10名供应商': ['Top 10 suppliers', 'ซัพพลายเออร์ 10 อันดับแรก'],
+  '退货': ['Return', 'ส่งคืน'],
   '关闭设置': ['Close settings', 'ปิดการตั้งค่า'], '语言': ['Language', 'ภาษา'],
   '更改即时生效，自动保存': ['Changes apply instantly and save automatically', 'ใช้การเปลี่ยนแปลงทันทีและบันทึกอัตโนมัติ'],
   '全部任务循环滚动': ['Cycling through all tasks', 'เลื่อนวนงานทั้งหมด'],

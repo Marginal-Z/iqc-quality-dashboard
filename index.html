@@ -126,7 +126,7 @@
         <section class="overview-grid">
           <article class="card overview-card">
             <div class="card-head">
-              <div><h2 class="card-title" data-i18n="flow_title">检验流转总览</h2><p class="card-subtitle" data-i18n="flow_subtitle">按检验状态实时分布</p></div>
+              <div><h2 class="card-title"><span class="standard-flow-title" data-i18n="flow_title">检验流转总览</span><span class="wallboard-flow-title" data-ui="检验状态-当日">检验状态-当日</span></h2><p class="card-subtitle" data-i18n="flow_subtitle">按检验状态实时分布</p></div>
               <div class="segmented" id="flowRange"><button class="active" data-range="today" data-i18n="range_today_short">今日</button><button data-range="week" data-i18n="range_week_short">本周</button><button data-range="month" data-i18n="range_month_short">本月</button></div>
             </div>
             <div class="flow-body">
@@ -181,14 +181,15 @@
           <div class="table-meta"><div class="table-meta-left"><span class="live-dot"></span><span data-i18n="live_data">QMS 实时同步</span><span>·</span><span data-i18n="refresh_every">每 5 分钟刷新</span></div><div><span data-ui="共">共</span> <strong id="visibleCount">0</strong> <span data-i18n="unit_task">条任务</span><span id="pageRange" class="page-range"></span></div></div>
           <div class="table-wrap">
             <table id="iqcTable">
-              <colgroup><col style="width:155px;--wallboard-width:10.62371%"><col style="width:92px;--wallboard-width:6.30569%"><col style="width:207px;--wallboard-width:14.18780%"><col style="width:83px;--wallboard-width:5.68883%"><col style="width:98px;--wallboard-width:6.71693%"><col style="width:141px;--wallboard-width:9.66415%"><col style="width:90px;--wallboard-width:6.16861%"><col style="width:66px;--wallboard-width:4.52365%"><col style="width:107px;--wallboard-width:7.33379%"><col style="width:78px;--wallboard-width:5.34613%"><col style="width:84px;--wallboard-width:5.75737%"><col style="width:100px;--wallboard-width:6.85401%"><col style="width:100px;--wallboard-width:6.85401%"><col style="width:58px;--wallboard-width:3.97533%"></colgroup>
+              <colgroup><col style="width:155px"><col style="width:92px"><col style="width:207px"><col style="width:83px"><col style="width:98px"><col style="width:141px"><col class="wallboard-only-col" style="width:90px"><col style="width:90px"><col style="width:66px"><col style="width:107px"><col style="width:78px"><col style="width:84px"><col style="width:100px"><col style="width:100px"><col style="width:58px"></colgroup>
               <thead><tr>
                 <th data-sort="id"><span class="th-wrap"><span data-i18n="col_id">单号</span><i class="sort-arrow">↕</i></span></th>
                 <th data-sort="part"><span class="th-wrap"><span data-i18n="col_part">料号</span><i class="sort-arrow">↕</i></span></th>
                 <th><span data-i18n="col_name">物料名称</span></th>
                 <th><span data-i18n="col_category">物料类别</span></th>
                 <th><span data-i18n="col_factory">收料工厂</span></th>
-                <th><span data-i18n="col_supplier">供应商 / 编码</span></th>
+                <th><span class="standard-supplier-label" data-i18n="col_supplier">供应商 / 编码</span><span class="wallboard-supplier-label" data-ui="供应商">供应商</span></th>
+                <th class="wallboard-only-col"><span data-ui="供应商编码">供应商编码</span></th>
                 <th data-sort="qty"><span class="th-wrap"><span data-i18n="col_qty">来料数量</span><i class="sort-arrow">↕</i></span></th>
                 <th><span data-i18n="col_urgent">加急</span></th>
                 <th data-sort="date"><span class="th-wrap"><span data-i18n="col_date">送检日期</span><i class="sort-arrow">↕</i></span></th>
@@ -199,7 +200,7 @@
                 <th><span data-i18n="col_action">操作</span></th>
               </tr></thead>
               <tbody id="iqcTableBody">
-                <tr class="empty-row" id="emptyRow"><td colspan="14"><span data-i18n="empty_state">没有符合当前筛选条件的任务</span></td></tr>
+                <tr class="empty-row" id="emptyRow"><td colspan="15"><span data-i18n="empty_state">没有符合当前筛选条件的任务</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -222,7 +223,7 @@
           </article>
 
           <article class="card analytics-card">
-            <div class="card-head"><div><h2 class="card-title" data-i18n="result_title">检验结果统计</h2><p class="card-subtitle" id="resultSubtitle" data-i18n="result_subtitle">本月累计 · 2026.09</p></div><span class="kpi-icon teal"><svg width="16" height="16"><use href="#icon-chart"/></svg></span></div>
+            <div class="card-head"><div><h2 class="card-title"><span class="standard-result-title" data-i18n="result_title">检验结果统计</span><span class="wallboard-result-title" id="wallboardResultTitle">检验结果统计</span></h2><p class="card-subtitle" id="resultSubtitle" data-i18n="result_subtitle">本月累计 · 2026.09</p></div><span class="kpi-icon teal"><svg width="16" height="16"><use href="#icon-chart"/></svg></span></div>
             <div class="result-content">
               <div class="result-donut" id="resultDonut"><svg class="donut-segments" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="43.5" fill="none" stroke="#e4eaf2" stroke-width="13"/></svg><div class="result-core"><strong id="resultTotal">—</strong><span data-i18n="total_inspections">总检验批次</span></div></div>
               <div class="result-legend" id="resultLegend">
@@ -231,9 +232,16 @@
                 <div class="result-row"><i class="result-mark red"></i><span data-i18n="result_fail">不合格</span><strong>—</strong><small>—</small></div>
               </div>
             </div>
+            <div class="wallboard-result-bars" id="wallboardResultBars" aria-label="检验结果统计图"></div>
             <div class="result-foot"><span data-i18n="result_note">一次合格率</span><strong id="resultPassRate">—</strong></div>
           </article>
-
+          <section class="card supplier-dashboard" id="supplierRankBoard">
+            <div class="card-head">
+              <div><h2 class="card-title" id="supplierRankTitle" data-ui="倒数前10名供应商">倒数前10名供应商</h2><p class="card-subtitle" data-ui="柱 = 不合格批次数 · 折线 = 批次合格率（与 QMS 看板同口径）">柱 = 不合格批次数 · 折线 = 批次合格率（与 QMS 看板同口径）</p></div>
+              <div class="rank-tabs"><button class="active" data-supplier-mode="bottom" data-i18n="bottom_rank">倒数排名</button><button data-supplier-mode="top" data-i18n="top_rank">正向排名</button></div>
+            </div>
+            <div class="supplier-rank-chart" id="supplierRankChart"></div>
+          </section>
         </section>
 
         <section class="sb-page" id="suppliers">
@@ -306,14 +314,6 @@
       </div>
     </section>
 
-        <section class="card supplier-dashboard" id="supplierRankBoard">
-          <div class="card-head">
-            <div><h2 class="card-title" id="supplierRankTitle" data-ui="倒数前10名供应商">倒数前10名供应商</h2><p class="card-subtitle" data-ui="柱 = 不合格批次数 · 折线 = 批次合格率（与 QMS 看板同口径）">柱 = 不合格批次数 · 折线 = 批次合格率（与 QMS 看板同口径）</p></div>
-            <div class="rank-tabs"><button class="active" data-supplier-mode="bottom" data-i18n="bottom_rank">倒数排名</button><button data-supplier-mode="top" data-i18n="top_rank">正向排名</button></div>
-          </div>
-          <div class="supplier-rank-chart" id="supplierRankChart"></div>
-        </section>
-
         <footer class="page-footer"><span data-ui="SHARETRONIC.IQC · IQC 来料检验看板">SHARETRONIC.IQC · IQC 来料检验看板</span><span><span data-i18n="last_refresh">上次更新</span> <strong id="lastRefresh">—</strong></span></footer>
       </div>
     </main>
@@ -372,7 +372,7 @@
   </div>
   <div class="toast" id="toast"><svg width="14" height="14"><use href="#icon-check"/></svg><span id="toastText" data-ui="操作完成">操作完成</span></div>
   <div class="wallboard-bar" id="wallboardBar">
-    <div class="wallboard-brand"><strong data-ui="SHARETRONIC.IQC · IQC 来料检验看板">SHARETRONIC.IQC · IQC 来料检验看板</strong><span>INCOMING QUALITY CONTROL</span></div>
+    <div class="wallboard-brand"><span class="wallboard-logo" aria-hidden="true"><i></i><i></i><i></i></span><strong data-ui="IQC来料检验看板">IQC来料检验看板</strong></div>
     <div class="wallboard-actions">
       <div class="wallboard-factory"><span class="wallboard-factory-label" data-i18n="current_plant">当前工厂</span><strong id="wallboardFactory">—</strong></div>
       <div class="wallboard-status"><span class="live-dot"></span><strong id="wallboardModeLabel" data-i18n="wallboard_live">来料检验看板 · 实时</strong><span class="wallboard-clock" id="wallboardClock">--:--:--</span></div>
