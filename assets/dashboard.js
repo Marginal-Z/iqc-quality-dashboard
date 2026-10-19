@@ -15,6 +15,9 @@
      * submitTime, inspector, processNode, slaStatus, result.
      */
     const FACTORY_NAME = 'SHARETRONIC DATA TECHNOLOGY (THAILAND)CO.,LTD.';
+    const WALLBOARD_COLORS = Object.freeze({
+      blue: '#1677ff', orange: '#fa8c16', gold: '#faad14', green: '#52c41a', red: '#ff4d4f', secondary: '#595959'
+    });
     const QMS_CONFIG = window.QMS_CONFIG || {
       enabled: true,
       baseUrl: 'https://qms.sharetronic.com',
@@ -541,8 +544,8 @@
         ? [data.pending + data.processing, data.overdue, data.done]
         : [data.pending, data.processing, data.done, data.overdue];
       const statusColors = wallboardMode
-        ? ['#1677ff', '#ff4d4f', '#52c41a']
-        : ['#1677ff', '#fa8c16', '#52c41a', '#ff4d4f'];
+        ? [WALLBOARD_COLORS.blue, WALLBOARD_COLORS.red, WALLBOARD_COLORS.green]
+        : [WALLBOARD_COLORS.blue, WALLBOARD_COLORS.orange, WALLBOARD_COLORS.green, WALLBOARD_COLORS.red];
       $('#flowDonut .donut-segments').innerHTML = donutSegments(statusValues, statusColors);
       const now = new Date(); const p = (n) => String(n).padStart(2, '0');
       const timeStr = `${p(now.getHours())}:${p(now.getMinutes())}`;
@@ -935,7 +938,7 @@
         ],
         series: [
           { name: ui('不合格批次'), type: 'bar', data: barData, barMaxWidth: 22, itemStyle: { color: '#EF4444', borderRadius: [3, 3, 0, 0] }, label: { show: true, position: 'top', color: '#334155', fontSize: 11 } },
-          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: '#fa8c16', width: 2.5 }, itemStyle: { color: '#fa8c16' }, label: { show: true, position: 'top', formatter: (p) => (p.value * 100).toFixed(0) + '%', color: '#fa8c16', fontSize: 11 } }
+          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: WALLBOARD_COLORS.orange, width: 2.5 }, itemStyle: { color: WALLBOARD_COLORS.orange }, label: { show: true, position: 'top', formatter: (p) => (p.value * 100).toFixed(0) + '%', color: WALLBOARD_COLORS.orange, fontSize: 11 } }
         ]
       });
       c.off('click'); c.on('click', (p) => { if (list[p.dataIndex]) selectSbSupplier(list[p.dataIndex].code); });
@@ -1309,8 +1312,8 @@
           { type: 'value', name: '', min: 0, max: 100, interval: 25, axisLabel: { color: '#595959', fontSize: 11, formatter: (v) => `${v}%` }, splitLine: { show: false } }
         ],
         series: [
-          { name: barName, type: 'bar', data: barData, barMaxWidth: 22, itemStyle: { color: isBottom ? '#ff4d4f' : '#52c41a', borderRadius: [3, 3, 0, 0] }, label: { show: true, position: 'top', color: '#595959', fontSize: 11 } },
-          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: '#fa8c16', width: 3 }, itemStyle: { color: '#fa8c16' }, label: { show: true, position: 'top', formatter: (p) => `${p.value}%`, color: '#fa8c16', fontSize: 11 } }
+          { name: barName, type: 'bar', data: barData, barMaxWidth: 22, itemStyle: { color: isBottom ? WALLBOARD_COLORS.red : WALLBOARD_COLORS.green, borderRadius: [3, 3, 0, 0] }, label: { show: true, position: 'top', color: WALLBOARD_COLORS.secondary, fontSize: 11 } },
+          { name: ui('合格率'), type: 'line', yAxisIndex: 1, data: rateData, symbolSize: 6, lineStyle: { color: WALLBOARD_COLORS.orange, width: 3 }, itemStyle: { color: WALLBOARD_COLORS.orange }, label: { show: true, position: 'top', formatter: (p) => `${p.value}%`, color: WALLBOARD_COLORS.orange, fontSize: 11 } }
         ]
       });
       scheduleChartResize();
