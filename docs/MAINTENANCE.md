@@ -53,6 +53,8 @@
 
 GitHub Pages 使用 GitHub Actions 发布，`github-pages` 环境允许 `main` 部署。`gh-pages` 仅保留旧部署历史，不再作为开发或发布源。构建产物采用文件白名单，不包含测试入口、维护文档或本地设置。
 
+Cloudflare Access 迁移准备见 [接入指南](CLOUDFLARE_ACCESS.md)。迁移完成并验证所有公开入口关闭前，GitHub Pages 保持现状；新增的 Cloudflare Pages 工作流只允许从 `main` 手动运行，并要求操作者确认 Access 已就绪。
+
 不要仅覆盖 `index.html`，否则可能遗漏或混用其依赖的脚本和样式。
 
 ### 版本回退
