@@ -1,5 +1,16 @@
 # 独立账号登录部署与维护
 
+## 当前部署记录（2026-10-28）
+
+- 新站：[iqc-quality-dashboard.pages.dev](https://iqc-quality-dashboard.pages.dev/)，通过官方 Wrangler Direct Upload 部署。账户使用免费额度，未启用付费计划或 Access。
+- 正式 D1：`iqc-auth`，绑定名称 `AUTH_DB`；现有 `iqc-proxy` 通过 `QMS_PROXY` 服务绑定连接。生产配置记录在仓库根目录 `wrangler.jsonc`，其中数据库 ID 不是认证凭据。
+- 隔离云端测试通过 20 项检查，覆盖原生 scrypt、管理员/查看者权限、CSRF、密码重置、账号停用和会话撤销；隔离测试不绑定生产 QMS。
+- 现有 QMS 内部绑定通过工厂字典及单页记录的只读请求验证。新站主域和独立部署 URL 均验证了未登录时拒绝页面资源和数据接口。
+- 首个管理员由负责人在本地浏览器自行建立。原 `iqc.namecheap.xin` 域名、旧 GitHub Pages 和公开 QMS Worker 入口尚待完成切换，不能把新站已部署等同于旧公开入口已关闭。
+- Cloudflare 已关联 `iqc.namecheap.xin`，当前等待外部 DNS 设置。现有权威 DNS 为 `ns7.alidns.com` / `ns8.alidns.com`；待新站初始化及验证完成后，仅将 `iqc` 的 CNAME 从 `z-yo-yi.github.io` 改为 `iqc-quality-dashboard.pages.dev`，不改主域名称服务器。DNS 服务商账号需由负责人在本地浏览器登录。
+- 常规预览环境在 `wrangler.jsonc` 中明确不绑定数据库和 QMS，默认返回 503；测试时必须使用单独配置与临时账号库。
+- 云端虚构账号测试部署和临时账号库已经删除；临时探测 Worker 已移除 QMS 服务绑定，并关闭公开 workers.dev 和版本预览 URL。
+
 ## 架构与边界
 
 登录版运行在 Cloudflare Pages 的高级模式 `_worker.js`，使用 D1 保存用户、密码哈希、会话、尝试次数和审计记录。静态 GitHub Pages 版继续保留作迁移前的基线，不提供账号保护。
@@ -67,6 +78,18 @@ pnpm exec wrangler d1 execute iqc-auth --remote --file server/schema.sql
 ## 更新、回滚和故障处理
 
 现有 `.github/workflows/ci.yml` 验证两种构建；GitHub Pages 工作流只发布静态 `dist/`，不会发布认证后端。认证版上线后应使用选定的 Pages Git 集成或经授权的部署工作流，并停止旧 Pages 工作流发布。不要把两种产物混用。
+
+当前选择 Direct Upload，不额外申请 GitHub App 或 CI 部署密钥。后续在已经通过 CI 的提交上，通过已授权的官方 CLI 发布。在 PowerShell 7 或 WSL Ubuntu 中执行：
+
+```sh
+pnpm install --frozen-lockfile
+node scripts/check.mjs
+node --test tests/*.test.cjs
+node scripts/build-auth.mjs
+pnpm exec wrangler pages deploy dist-auth --project-name iqc-quality-dashboard --branch main
+```
+
+常规更新不使用 `--init`，不重新创建或清空 D1；已经初始化的管理员和会话保留。Windows CLI OAuth 凭据使用系统凭据管理器加密存储，不能复制进仓库或 GitHub Secrets。若官方 CLI 的本机回调不可用，可使用 `wrangler login --device --use-keyring` 在独立浏览器标签页完成官方设备授权；只申请实际需要的账户读取、Pages、D1 和 Worker 脚本权限。
 
 数据库采用可重复执行的初始 schema。后续增加字段应使用版本化迁移，先检查 D1 Time Travel/备份能力和可恢复点；不得为了更新界面删除数据库。常规前端更新不应重建数据库、不应更换 QMS 凭证。
 
