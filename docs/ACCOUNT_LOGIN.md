@@ -6,8 +6,10 @@
 - 正式 D1：`iqc-auth`，绑定名称 `AUTH_DB`；现有 `iqc-proxy` 通过 `QMS_PROXY` 服务绑定连接。生产配置记录在仓库根目录 `wrangler.jsonc`，其中数据库 ID 不是认证凭据。
 - 隔离云端测试通过 20 项检查，覆盖原生 scrypt、管理员/查看者权限、CSRF、密码重置、账号停用和会话撤销；隔离测试不绑定生产 QMS。
 - 现有 QMS 内部绑定通过工厂字典及单页记录的只读请求验证。新站主域和独立部署 URL 均验证了未登录时拒绝页面资源和数据接口。
-- 首个管理员由负责人在本地浏览器自行建立。原 `iqc.namecheap.xin` 域名、旧 GitHub Pages 和公开 QMS Worker 入口尚待完成切换，不能把新站已部署等同于旧公开入口已关闭。
-- Cloudflare 已关联 `iqc.namecheap.xin`，当前等待外部 DNS 设置。现有权威 DNS 为 `ns7.alidns.com` / `ns8.alidns.com`；待新站初始化及验证完成后，仅将 `iqc` 的 CNAME 从 `z-yo-yi.github.io` 改为 `iqc-quality-dashboard.pages.dev`，不改主域名称服务器。DNS 服务商账号需由负责人在本地浏览器登录。
+- 首个管理员已由负责人在本地浏览器自行建立；正式数据库的初始化状态和有效会话已确认。主域及当前独立部署 URL 重新验证了匿名资源/API 拒绝和 `/setup` 关闭；常规构建不再包含初始化哈希。
+- 登录后已验证泰国工厂的真实 QMS 月度统计和管理员账号页。刷新时保留工厂选择的修复已部署，仍需完成最新版本的浏览器回归验证。49 项本地测试、静态检查和两种构建均通过。
+- 原 `iqc.namecheap.xin` 域名、旧 GitHub Pages 和公开 QMS Worker 入口尚待完成切换，不能把新站已部署等同于旧公开入口已关闭。
+- Cloudflare 已关联 `iqc.namecheap.xin`，当前等待外部 DNS 设置。现有权威 DNS 为 `ns7.alidns.com` / `ns8.alidns.com`，CNAME 仍为 `z-yo-yi.github.io`。负责人已确认登录 DNS 管理账号；待新站验证完成后，仅将 `iqc` 的 CNAME 改为 `iqc-quality-dashboard.pages.dev`，不改主域名称服务器。
 - 常规预览环境在 `wrangler.jsonc` 中明确不绑定数据库和 QMS，默认返回 503；测试时必须使用单独配置与临时账号库。
 - 云端虚构账号测试部署和临时账号库已经删除；临时探测 Worker 已移除 QMS 服务绑定，并关闭公开 workers.dev 和版本预览 URL。
 
