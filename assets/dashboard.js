@@ -24,7 +24,7 @@
       ssoUrl: 'https://qms.sharetronic.com/qmsSso/oauth/login',
       supplierQualityUrl: 'https://qms.sharetronic.com/qmsSupplierQuality',
       dataUrl: 'https://qms.sharetronic.com/qmsData',
-      proxyUrl: window.IQC_RUNTIME?.qmsProxyUrl ?? (window.IQC_RUNTIME?.authentication === false ? 'https://iqc-proxy.yyiqc1927.workers.dev' : ''),
+      proxyUrl: window.IQC_RUNTIME?.qmsProxyUrl ?? '',
       factoryCode: 'STTH',
       factoryName: 'SHARETRONIC DATA TECHNOLOGY (THAILAND)CO.,LTD.'
     };

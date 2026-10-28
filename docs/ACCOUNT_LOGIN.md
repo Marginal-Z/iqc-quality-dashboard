@@ -77,7 +77,7 @@ pnpm exec wrangler d1 execute iqc-auth --remote --file server/schema.sql
 
 ## 更新、回滚和故障处理
 
-现有 `.github/workflows/ci.yml` 验证两种构建；GitHub Pages 工作流只发布静态 `dist/`，不会发布认证后端。认证版上线后应使用选定的 Pages Git 集成或经授权的部署工作流，并停止旧 Pages 工作流发布。不要把两种产物混用。
+`.github/workflows/ci.yml` 验证两种构建；原 GitHub Pages 发布工作流和 CNAME 文件已从源码移除，避免恢复未认证站点。正式发布使用经授权的 Cloudflare Pages Direct Upload；`dist/` 仅用于界面预览，不能代替 `dist-auth/`。
 
 当前选择 Direct Upload，不额外申请 GitHub App 或 CI 部署密钥。后续在已经通过 CI 的提交上，通过已授权的官方 CLI 发布。在 PowerShell 7 或 WSL Ubuntu 中执行：
 

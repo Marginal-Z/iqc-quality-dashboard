@@ -2,14 +2,13 @@
 
 面向工厂质量团队的来料检验与供应商质量可视化平台。连接 QMS 检验数据，集中展示检验任务、质量指标与供应商风险，支持日常业务查看和车间大屏展示。
 
-[![CI](https://github.com/Z-YO-YI/iqc-quality-dashboard/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Z-YO-YI/iqc-quality-dashboard/actions/workflows/ci.yml)
-[![Deploy Pages](https://github.com/Z-YO-YI/iqc-quality-dashboard/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/Z-YO-YI/iqc-quality-dashboard/actions/workflows/pages.yml)
+[![CI](https://github.com/Marginal-Z/iqc-quality-dashboard/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Marginal-Z/iqc-quality-dashboard/actions/workflows/ci.yml)
 
 [在线访问](https://iqc.namecheap.xin/) · [快速开始](#快速开始) · [维护指南](docs/MAINTENANCE.md) · [更新日志](CHANGELOG.md)
 
 ## 项目概览
 
-项目采用轻量级静态前端架构，通过 Cloudflare Worker 代理读取 QMS 数据，使用 ECharts 展示质量趋势与供应商分析，并由 GitHub Actions 自动验证、构建和发布。
+项目采用轻量级 HTML/CSS/JavaScript 前端，运行于 Cloudflare Pages。服务端验证账号和会话，通过内部服务绑定读取 QMS；ECharts 展示质量趋势与供应商分析，GitHub Actions 负责自动验证和构建。
 
 | 模块 | 功能 |
 | --- | --- |
@@ -20,6 +19,7 @@
 | 供应商质量大屏 | 固定高度的图表与风险区域，列表在区域内部滚动，适用于持续展示 |
 | 多工厂与多语言 | 支持切换工厂；通过右下角设置选择中文、英文、泰文和中泰双语 |
 | 界面设置 | 原始浅色 UI；右下角设置集中管理语言，自动记住选择 |
+| 账号与权限 | 管理员开通、停用、启用账号及重置密码；查看者访问看板；个人修改密码和退出登录 |
 
 待检与超时任务每 30 秒轮询一次，月度统计每 5 分钟完整同步，也可手动刷新；页面在后台时暂停自动请求。当前为定时轮询，并非 QMS 事件推送。界面保留 QMS 返回的供应商名称、料号等业务原始信息，不自动翻译业务数据。
 
@@ -33,12 +33,13 @@
 | --- | --- | --- |
 | 页面与交互 | HTML、CSS、原生 JavaScript | 页面布局、筛选、状态管理与多语言 |
 | 数据可视化 | ECharts | 趋势、排名及风险图表 |
-| 接口代理 | Cloudflare Worker | 服务端认证与 QMS 请求转发 |
+| 账号服务 | Cloudflare Pages Worker、D1 | 账号、会话、权限与同源查询网关 |
+| 接口代理 | 独立 Cloudflare Worker | 内部服务绑定访问 QMS，保存 QMS Secrets |
 | 数据源 | QMS | 提供工厂字典与检验记录 |
 | 检查与测试 | Node.js 内置工具 | 语法检查、资源校验与回归测试 |
-| 持续集成与部署 | GitHub Actions、GitHub Pages | 验证、构建及静态站点发布 |
+| 持续集成与部署 | GitHub Actions、Cloudflare Pages | CI 验证，官方 Wrangler Direct Upload 发布 |
 
-浏览器只向代理发送查询条件，QMS 登录凭证保存在 Worker Secrets 中。本仓库包含前端、开发工具与发布配置；Worker 独立部署，其服务代码不在本仓库内。
+浏览器登录后向同源 `/api/qms` 发送查询条件，QMS 登录凭证保存在独立 Worker Secrets 中。本仓库包含前端、账号服务、数据库结构、测试及部署配置；QMS 代理仍独立部署，通过服务绑定访问。
 
 ## 快速开始
 
@@ -54,7 +55,7 @@
 
 独立登录版采用 Cloudflare Pages Functions + D1，提供管理员开通账号、查看者权限、停用账号、重置密码和个人修改密码；不依赖 Cloudflare Access。看板页面和同源 QMS 接口均由服务端验证会话，密码使用原生 scrypt 加盐哈希，浏览器通过 HttpOnly Cookie 登录。
 
-静态 GitHub Pages 无法运行服务端认证。登录版单独构建到 `dist-auth/`，现有静态构建仍输出到 `dist/`；不能把登录版当作普通静态文件上传。部署完成并关闭旧公开接口后，登录保护才覆盖整个生产入口。详细配置、切换和恢复流程见 [账号登录部署指南](docs/ACCOUNT_LOGIN.md)。
+登录版构建到 `dist-auth/`，仅用于 Cloudflare Pages 高级模式；`dist/` 用于界面静态预览。原 GitHub Pages 发布工作流和 CNAME 文件已经移除。详细配置、切换状态和恢复流程见 [账号登录部署指南](docs/ACCOUNT_LOGIN.md)。
 
 在 PowerShell 7 或 WSL Ubuntu 中执行以下命令，可使用完全独立的虚构数据和内存数据库验证登录界面：
 
@@ -67,12 +68,12 @@ node scripts/serve-auth.mjs
 ### 获取代码并启动
 
 ```sh
-git clone https://github.com/Z-YO-YI/iqc-quality-dashboard.git
+git clone https://github.com/Marginal-Z/iqc-quality-dashboard.git
 cd iqc-quality-dashboard
 node scripts/serve.mjs
 ```
 
-启动后访问 [本地看板](http://127.0.0.1:8765/)。默认页面使用项目配置的真实 QMS 代理，需要代理和上游服务可用。
+上述命令在 PowerShell 7 或 WSL Ubuntu 中执行。启动后访问 [本地测试看板](http://127.0.0.1:8765/__test__/)，使用虚构数据验证界面。静态预览不提供服务端登录或真实 QMS 接口；完整账号流程使用前述 `serve-auth.mjs` 测试入口。
 
 如需使用其他端口：
 
@@ -88,7 +89,7 @@ node scripts/serve.mjs 8766
 
 ## 常用命令
 
-在项目根目录执行：
+在项目根目录的 PowerShell 7 或 WSL Ubuntu 中执行：
 
 | 命令 | 说明 |
 | --- | --- |
@@ -96,17 +97,18 @@ node scripts/serve.mjs 8766
 | `node scripts/check.mjs` | 检查脚本语法、静态资源引用及前端凭证字面量 |
 | `node --test tests/*.test.cjs` | 运行自动化回归测试 |
 | `node scripts/build.mjs` | 生成静态站点构建产物 |
+| `node scripts/build-auth.mjs` | 生成受保护的 Cloudflare Pages 构建产物 |
+| `node scripts/serve-auth.mjs` | 使用内存账号库与虚构 QMS 响应预览登录流程 |
 | `git diff --check` | 检查差异中的空白格式问题 |
 
-构建输出位于 `dist/`，包含页面、样式、业务脚本、ECharts 及域名配置。测试、文档和本地开发配置不包含在构建产物中。
+静态预览输出位于 `dist/`，正式认证版输出位于 `dist-auth/`。两种产物均采用资源白名单；测试、文档、本地凭据和一次性初始化令牌不进入构建产物。
 
 ## 项目结构
 
 ```text
 iqc-quality-dashboard/
 ├── .github/workflows/
-│   ├── ci.yml                 # 持续集成检查
-│   └── pages.yml              # GitHub Pages 构建与发布
+│   └── ci.yml                 # 测试与两种构建验证
 ├── assets/
 │   ├── dashboard.css          # 通用页面与供应商大屏样式
 │   ├── incoming-wallboard.css # 来料大屏布局与尺寸适配
@@ -114,12 +116,14 @@ iqc-quality-dashboard/
 │   ├── ui-i18n.js             # 补充界面翻译与日期格式化
 │   ├── settings.css           # 语言设置面板
 │   └── wallboard.js           # 自动滚动与图表尺寸调度
+├── auth/                      # 登录、首次初始化及账号管理界面
+├── server/                    # 认证 Worker 和 D1 数据库结构
 ├── docs/                      # 维护及验证文档
 ├── scripts/                   # 预览、检查与构建脚本
 ├── tests/                     # 回归测试与本地测试数据
 ├── index.html                 # 页面入口
 ├── echarts.min.js             # 图表库
-├── CNAME                      # GitHub Pages 自定义域名
+├── wrangler.jsonc             # 正式部署与隔离预览绑定配置
 ├── package.json               # 项目信息与命令入口
 └── CHANGELOG.md               # 更新日志
 ```
@@ -136,7 +140,7 @@ iqc-quality-dashboard/
 
 `main` 是正式源码分支。变更通过 Pull Request 与 CI 验证后合并，随后由 **Deploy Pages** 工作流执行检查、测试、构建和部署。
 
-仓库的 GitHub Pages 发布方式应设为 **GitHub Actions**，发布环境为 `github-pages`。当前生产域名为 [iqc.namecheap.xin](https://iqc.namecheap.xin/)。其他环境需使用对应的 `CNAME` 与域名配置。
+正式认证站使用 Cloudflare Pages Direct Upload，配置以 `wrangler.jsonc` 为准。生产域名为 [iqc.namecheap.xin](https://iqc.namecheap.xin/)，迁移和最新验证状态见 [账号登录部署指南](docs/ACCOUNT_LOGIN.md)。不再通过 GitHub Pages 发布；预览环境默认不绑定账号数据库或 QMS。
 
 生产发布应使用完整构建产物，确保 HTML、CSS 和 JavaScript 来自同一版本。具体发布检查与回退方式见[维护指南](docs/MAINTENANCE.md)。
 
