@@ -7,15 +7,18 @@
 - 隔离云端测试通过 20 项检查，覆盖原生 scrypt、管理员/查看者权限、CSRF、密码重置、账号停用和会话撤销；隔离测试不绑定生产 QMS。
 - 现有 QMS 内部绑定通过工厂字典及单页记录的只读请求验证。新站主域和独立部署 URL 均验证了未登录时拒绝页面资源和数据接口。
 - 首个管理员已由负责人在本地浏览器自行建立；正式数据库的初始化状态和有效会话已确认。主域及当前独立部署 URL 重新验证了匿名资源/API 拒绝和 `/setup` 关闭；常规构建不再包含初始化哈希。
-- 登录后已验证泰国工厂的真实 QMS 月度统计和管理员账号页。刷新时保留工厂选择的修复已部署，仍需完成最新版本的浏览器回归验证。49 项本地测试、静态检查和两种构建均通过。
-- 原 `iqc.namecheap.xin` 域名、旧 GitHub Pages 和公开 QMS Worker 入口尚待完成切换，不能把新站已部署等同于旧公开入口已关闭。
-- Cloudflare 已关联 `iqc.namecheap.xin`，当前等待外部 DNS 设置。现有权威 DNS 为 `ns7.alidns.com` / `ns8.alidns.com`，CNAME 仍为 `z-yo-yi.github.io`。负责人已确认登录 DNS 管理账号；待新站验证完成后，仅将 `iqc` 的 CNAME 改为 `iqc-quality-dashboard.pages.dev`，不改主域名称服务器。
+- 登录后已验证泰国工厂的真实 QMS 月度统计和管理员账号页；东莞工厂加载出 260 条待检任务，刷新后仍保留工厂选择与登录状态，两种动态看板均已在生产浏览器中验证。49 项本地测试、静态检查和两种构建均通过。
+- 正式入口为 [iqc.namecheap.xin](https://iqc.namecheap.xin/)。负责人已在该域名自行登录，刷新后会话保持，真实 QMS 统计和同步状态正常；匿名请求不能读取看板资源或 QMS 接口。
+- `iqc.namecheap.xin` 的 CNAME 已从 `z-yo-yi.github.io` 切换为 `iqc-quality-dashboard.pages.dev`。权威 DNS 为 `ns7.alidns.com` / `ns8.alidns.com`，未修改主域名称服务器或其他子域记录。Cloudflare 已确认域名激活并启用 SSL；权威 DNS 和多个公共解析器均已返回新目标。
+- 原 `iqc-proxy` 的 workers.dev 生产 URL 和版本预览 URL 已关闭，域名与路由列表为空。原公开 `/api/qms` 请求返回 404，正式站通过 `QMS_PROXY` 内部绑定刷新仍为 LIVE。关闭入口时只更新路由开关，代理部署版本仍为 `eab0a15a-62c8-4b76-9c50-da94b310e803`，未上传代理脚本或修改其 Secrets。
+- 旧 GitHub Pages 已通过仓库设置的 Unpublish site 撤下；仓库和 `gh-pages` 历史保留。发布工作流与 CNAME 文件已移除，CI 仅验证，不会重新发布旧静态站。
+- 首个管理员建立后，本机一次性初始化令牌已清理。
 - 常规预览环境在 `wrangler.jsonc` 中明确不绑定数据库和 QMS，默认返回 503；测试时必须使用单独配置与临时账号库。
 - 云端虚构账号测试部署和临时账号库已经删除；临时探测 Worker 已移除 QMS 服务绑定，并关闭公开 workers.dev 和版本预览 URL。
 
 ## 架构与边界
 
-登录版运行在 Cloudflare Pages 的高级模式 `_worker.js`，使用 D1 保存用户、密码哈希、会话、尝试次数和审计记录。静态 GitHub Pages 版继续保留作迁移前的基线，不提供账号保护。
+登录版运行在 Cloudflare Pages 的高级模式 `_worker.js`，使用 D1 保存用户、密码哈希、会话、尝试次数和审计记录。静态构建仅用于本机界面预览，历史 GitHub Pages 站点已撤下。
 
 ```text
 浏览器 ── HTTPS + HttpOnly Cookie ── Pages Worker
@@ -80,6 +83,8 @@ pnpm exec wrangler d1 execute iqc-auth --remote --file server/schema.sql
 ## 更新、回滚和故障处理
 
 `.github/workflows/ci.yml` 验证两种构建；原 GitHub Pages 发布工作流和 CNAME 文件已从源码移除，避免恢复未认证站点。正式发布使用经授权的 Cloudflare Pages Direct Upload；`dist/` 仅用于界面预览，不能代替 `dist-auth/`。
+
+维护独立 `iqc-proxy` 时保持 `workers_dev = false`、`preview_urls = false`，并确保没有额外公开域名或区域路由。该 Worker 的脚本与 Secrets 不由本仓库管理；调整 URL 开关时使用 Cloudflare 控制台或仅更新触发器的官方 CLI，不向它上传本仓库的账号服务代码。维护后应同时验证公开 URL 拒绝请求和正式站内部绑定同步成功。
 
 当前选择 Direct Upload，不额外申请 GitHub App 或 CI 部署密钥。后续在已经通过 CI 的提交上，通过已授权的官方 CLI 发布。在 PowerShell 7 或 WSL Ubuntu 中执行：
 
