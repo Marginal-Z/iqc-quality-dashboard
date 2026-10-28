@@ -1,8 +1,8 @@
 (() => {
   const runtime = window.IQC_RUNTIME;
   if (!runtime?.authentication) return;
-  const clearData = () => { try { ['qms_dash_cache', 'qms_factories_cache', 'qms_factory'].forEach(key => localStorage.removeItem(key)); } catch {} };
-  const expire = () => { clearData(); document.body.style.visibility = 'hidden'; location.replace('/login'); };
+  const clearData = (includeFactory = false) => { try { ['qms_dash_cache', 'qms_factories_cache', ...(includeFactory ? ['qms_factory'] : [])].forEach(key => localStorage.removeItem(key)); } catch {} };
+  const expire = () => { clearData(true); document.body.style.visibility = 'hidden'; location.replace('/login'); };
   window.IQCAccount = { expire };
   clearData();
   window.addEventListener('storage', event => { if (event.key === 'iqc_logout_event') expire(); });
