@@ -17,4 +17,5 @@ jobs:
       - run: node scripts/check.mjs
       - run: node --test tests/*.test.cjs
       - run: node scripts/build.mjs
+      - run: node scripts/build-auth.mjs
       - run: git diff --check

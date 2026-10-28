@@ -4,6 +4,8 @@ const files = { '/assets/ui-i18n.js': ['assets/ui-i18n.js', 'text/javascript'], 
 files['/assets/incoming-wallboard.css'] = ['assets/incoming-wallboard.css', 'text/css'];
 files['/assets/settings.css'] = ['assets/settings.css', 'text/css'];
 files['/assets/favicon.svg'] = ['assets/favicon.svg', 'image/svg+xml'];
+files['/assets/runtime-config.js'] = ['assets/runtime-config.js', 'text/javascript'];
+files['/assets/account.js'] = ['assets/account.js', 'text/javascript'];
 createServer(async (req, res) => {
   if (req.url === '/__test__/') {
     const html = (await readFile('index.html', 'utf8')).replaceAll('src="assets/', 'src="/assets/').replaceAll('href="assets/', 'href="/assets/').replace('src="echarts.min.js"', 'src="/echarts.min.js"').replace('<head>', '<head><script src="/__test__/fixture.js"></script>');

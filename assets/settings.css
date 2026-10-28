@@ -14,3 +14,17 @@
 .display-settings :is(button, input):focus-visible, .display-settings-toggle:focus-visible { outline: 2px solid #285bd6; outline-offset: 3px; }
 body.supplier-wallboard-mode .wallboard-bar { right: 156px; bottom: 20px; max-width: calc(100vw - 180px); }
 .toast { bottom: 80px; }
+.display-settings .account-settings { margin-top: 22px; padding-top: 20px; border-top: 1px solid #dce4ef; }
+.account-settings .account-name { color: #142c48; font-size: 14px; margin: 0 0 12px; overflow-wrap: anywhere; }
+.account-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.account-actions :is(button, a) { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 12px; border: 1px solid #dce4ef; border-radius: 8px; background: #fff; color: #0861cd; text-decoration: none; font: inherit; cursor: pointer; }
+.account-actions :is(button, a):hover { border-color: #1677ff; background: #f0f6ff; }
+.account-dialog { width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 40px); overflow: auto; padding: 28px; border: 1px solid #dce4ef; border-radius: 14px; color: #142c48; background: #fff; }
+.account-dialog::backdrop { background: #142c4870; }
+.account-dialog h2 { margin: 0 0 20px; font-size: 22px; }
+.account-dialog label { display: block; margin: 16px 0 6px; font-size: 14px; }
+.account-dialog input { width: 100%; min-height: 46px; border: 1px solid #aebed0; border-radius: 8px; padding: 10px 12px; color: #142c48; background: #fff; font: inherit; }
+.account-dialog p { color: #5e6f84; font-size: 13px; line-height: 1.6; }
+.account-dialog .account-actions { margin-top: 24px; justify-content: flex-end; }
+.account-error, .display-settings .account-error { color: #c62828; font-size: 13px; }
+.account-dialog :is(button, input):focus-visible { outline: 3px solid #1677ff; outline-offset: 3px; }

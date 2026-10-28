@@ -48,7 +48,21 @@
 - Node.js 22 或更新版本
 - 支持现代 JavaScript、Canvas 与 Popover API 的新版浏览器
 
-项目无额外开发依赖，无需执行 `npm install`。
+静态预览、测试和构建只需 Node.js。Cloudflare 登录版部署使用锁定版本的 Wrangler，可通过 pnpm 安装开发依赖。
+
+### 独立账号登录版
+
+独立登录版采用 Cloudflare Pages Functions + D1，提供管理员开通账号、查看者权限、停用账号、重置密码和个人修改密码；不依赖 Cloudflare Access。看板页面和同源 QMS 接口均由服务端验证会话，密码使用原生 scrypt 加盐哈希，浏览器通过 HttpOnly Cookie 登录。
+
+静态 GitHub Pages 无法运行服务端认证。登录版单独构建到 `dist-auth/`，现有静态构建仍输出到 `dist/`；不能把登录版当作普通静态文件上传。部署完成并关闭旧公开接口后，登录保护才覆盖整个生产入口。详细配置、切换和恢复流程见 [账号登录部署指南](docs/ACCOUNT_LOGIN.md)。
+
+在 PowerShell 7 或 WSL Ubuntu 中执行以下命令，可使用完全独立的虚构数据和内存数据库验证登录界面：
+
+```sh
+node scripts/serve-auth.mjs
+```
+
+终端会显示本机初始化链接。此入口不连接 QMS、不使用正式账号，停止进程后测试账号全部清空。不要在本机测试页面使用正式密码。
 
 ### 获取代码并启动
 
