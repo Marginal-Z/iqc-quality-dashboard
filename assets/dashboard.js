@@ -24,7 +24,7 @@
       ssoUrl: 'https://qms.sharetronic.com/qmsSso/oauth/login',
       supplierQualityUrl: 'https://qms.sharetronic.com/qmsSupplierQuality',
       dataUrl: 'https://qms.sharetronic.com/qmsData',
-      proxyUrl: 'https://iqc-proxy.yyiqc1927.workers.dev',
+      proxyUrl: window.IQC_RUNTIME?.qmsProxyUrl ?? '',
       factoryCode: 'STTH',
       factoryName: 'SHARETRONIC DATA TECHNOLOGY (THAILAND)CO.,LTD.'
     };
@@ -118,9 +118,13 @@
           const res = await fetch(QMS_CONFIG.proxyUrl + '/api/qms', {
             method: 'POST',
             signal: controller.signal,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...(window.IQC_RUNTIME?.authentication ? { 'X-CSRF-Token': window.IQC_RUNTIME.csrfToken } : {}) },
             body: JSON.stringify({ path, query })
           });
+          if (res.status === 401 && window.IQC_RUNTIME?.authentication) {
+            const failure = await res.clone().json().catch(() => ({}));
+            if (failure.error === 'UNAUTHENTICATED') { window.IQCAccount?.expire(); throw new Error('QMS 登录已失效'); }
+          }
           // 5xx / 429：代理或服务端繁忙，退避重试
           if (res.status >= 500 || res.status === 429) {
             lastErr = new Error('代理服务繁忙 (' + res.status + ')');
@@ -152,14 +156,14 @@
     }
     async function loadFactories() {
       try {
-        const cached = localStorage.getItem('qms_factories_cache');
+        const cached = window.IQC_RUNTIME?.authentication ? null : localStorage.getItem('qms_factories_cache');
         if (cached) { const arr = JSON.parse(cached); if (Array.isArray(arr) && arr.length) { FACTORIES = arr; return; } }
       } catch (e) {}
       try {
         const res = await qmsRequest(QMS_CONFIG.dataUrl + '/sys/dict/type/factory');
         if (res && res.data && Array.isArray(res.data)) {
           FACTORIES = res.data.map((f) => ({ code: f.code, name: f.name || f.code }));
-          try { localStorage.setItem('qms_factories_cache', JSON.stringify(FACTORIES)); } catch (e) {}
+          try { if (!window.IQC_RUNTIME?.authentication) localStorage.setItem('qms_factories_cache', JSON.stringify(FACTORIES)); } catch (e) {}
         }
       } catch (e) { console.error('loadFactories', e); }
     }
@@ -1369,6 +1373,7 @@
       if (overdueTotal != null) DASH.overdueTotal = overdueTotal;
     }
     function loadCachedDash() {
+      if (window.IQC_RUNTIME?.authentication) return false;
       try {
         const raw = localStorage.getItem('qms_dash_cache');
         if (!raw) return false;
@@ -1393,6 +1398,7 @@
       return false;
     }
     function saveDashCache(active, prevMonth) {
+      if (window.IQC_RUNTIME?.authentication) return;
       try {
         localStorage.setItem('qms_dash_cache', JSON.stringify({ version: 2, factoryCode: QMS_CONFIG.factoryCode, ts: Date.now(), records: DASH.records.map(slimRecord), active: active.map(slimRecord), prevMonth: prevMonth.map(slimRecord), overdueTotal: DASH.overdueTotal }));
       } catch (e) {}

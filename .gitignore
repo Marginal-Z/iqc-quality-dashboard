@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-auth/
 .env
 .env.*
 .dev.vars*
