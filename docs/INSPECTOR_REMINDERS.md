@@ -107,4 +107,6 @@ git diff --check
 
 验证覆盖权限、CSRF、服务鉴权、密钥不回读、完整分页、按人隔离、泰国午夜、空任务、并发领取、重试 UUID、未知结果和停用。2026-11-12 的隔离云端验证使用 300 条虚构任务、7 名虚构检验员，15 项检查通过；真实 D1 和 Worker 运行时验证，不连接真实 QMS 或飞书，测试资源在验证后清理。管理界面在桌面和手机宽度验证，并检查中英泰语言切换。
 
+2026-11-12 首次发布：正式提醒 Worker、独立 D1、内部服务绑定及密钥已建立，Pages 管理入口已发布，保持停用。76 项本地回归测试与两种构建通过，正式域名及独立部署的 12 项匿名拒绝检查通过；临时云端测试 Worker 和数据库已删除。尚未配置真实飞书应用与人员 Open ID，实际私信投递仍待企业管理员配置后验证。
+
 官方参考：[飞书私信接口](https://open.feishu.cn/document/server-docs/im-v1/message/create)、[应用访问令牌](https://open.feishu.cn/document/server-docs/authentication-management/access-token/tenant_access_token_internal)、[Workers 限制](https://developers.cloudflare.com/workers/platform/limits/)、[D1 限制](https://developers.cloudflare.com/d1/platform/limits/)。

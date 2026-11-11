@@ -73,6 +73,16 @@ test('empty morning checks do not consume the day; inspectors are triggered inde
   assert.equal((await f.run()).sent, 0); f.records.STTH = [row('A')]; assert.equal((await f.run()).sent, 1);
   f.records.STTH.push(row('B', '乙')); assert.equal((await f.run()).sent, 1); assert.equal(f.sent.size, 2);
 });
+test('retention still removes expired delivery metadata while reminders are disabled', async t => {
+  const f = await fixture(t); await f.enable(); f.records.STTH = [row('A')];
+  await f.run(); f.advance(86400); await f.run();
+  await f.save({ ...f.body, enabled: false }); f.advance(90 * 86400);
+  let qmsReads = 0; f.onQuery = () => { qmsReads++; };
+  assert.equal((await f.run()).disabled, true);
+  const remaining = f.db.sqlite.prepare('SELECT thai_day,status FROM reminder_deliveries').all();
+  assert.equal(remaining.length, 1); assert.equal(remaining[0].thai_day, '2026-11-12');
+  assert.equal(remaining[0].status, 'sent'); assert.equal(qmsReads, 0); assert.equal(f.messages.length, 2);
+});
 test('private messages contain only mapped materials for that person, combining their factories', async t => {
   const f = await fixture(t); f.body.factories.push('DGXC'); f.body.recipients.push({ factory_code: 'DGXC', inspector_name: '甲（分厂）', open_id: 'ou_inspector_a' }, { factory_code: 'STTH', inspector_name: '乙', open_id: 'ou_inspector_b' }); await f.enable();
   f.records.STTH = [row('A'), row('B', '乙'), row('U', ''), row('NO_MAP', '未绑定')]; f.records.DGXC = [row('C', '甲（分厂）')];

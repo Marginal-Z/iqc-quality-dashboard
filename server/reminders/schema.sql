@@ -21,3 +21,4 @@ CREATE TABLE IF NOT EXISTS reminder_deliveries (
   message_id TEXT NOT NULL DEFAULT '', error_code TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS reminder_day ON reminder_deliveries(thai_day, status);
+CREATE INDEX IF NOT EXISTS reminder_retention ON reminder_deliveries(created_at);

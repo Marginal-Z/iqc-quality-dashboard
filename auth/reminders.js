@@ -28,7 +28,7 @@ function renderMetadata() {
 function time(value) { return value ? new Intl.DateTimeFormat(document.documentElement.lang, { timeZone: 'Asia/Bangkok', dateStyle: 'short', timeStyle: 'medium', hourCycle: 'h23' }).format(new Date(value * 1000)) : '—'; }
 function applySettings(value) {
   settings = value; $('appId').value = settings.appId; $('appSecret').value = ''; $('reminderEnabled').checked = settings.enabled; $('dailyStart').value = settings.dailyStart;
-  const selected = settings.factories.length ? settings.factories : factories.some(factory => factory.code === 'STTH') ? ['STTH'] : [];
+  const selected = settings.factories;
   $('reminderFactories').replaceChildren();
   for (const factory of factories) { const label = document.createElement('label'), input = document.createElement('input'); input.type = 'checkbox'; input.value = factory.code; input.checked = selected.includes(factory.code); label.append(input, document.createTextNode(factory.name + ' · ' + factory.code)); $('reminderFactories').append(label); }
   $('recipientRows').replaceChildren(); for (const row of settings.recipients) addRecipient(row);

@@ -40,6 +40,7 @@ export async function runReminderCycle(env, { clock = () => Date.now(), fetchImp
   if (!db) return { ...result, error: 'DATABASE_NOT_CONFIGURED' };
   try {
     const settings = await readSettings(env);
+    await db.prepare('DELETE FROM reminder_deliveries WHERE created_at<?').bind(seconds(clock) - 90 * 86400).run();
     if (!settings.enabled) return { ...result, disabled: true };
     const instant = new Date(clock()), date = localDate(instant, TIME_ZONE);
     const minute = new Date(instant.getTime() + 7 * 3600000).toISOString().slice(11, 16);
@@ -89,7 +90,6 @@ export async function runReminderCycle(env, { clock = () => Date.now(), fetchImp
       }
     }
     await db.prepare("UPDATE reminder_settings SET last_checked_at=?,last_error='' WHERE id=1").bind(seconds(clock)).run();
-    await db.prepare('DELETE FROM reminder_deliveries WHERE created_at<?').bind(seconds(clock) - 90 * 86400).run();
     return result;
   } catch (error) {
     const code = error.code || 'REMINDER_SERVICE_ERROR';
