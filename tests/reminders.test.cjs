@@ -11,7 +11,7 @@ async function fixture(t) {
   const state = { db, calls, sent, messages, records, appId: 'cli_test_' + ++serial, secret: 'Synthetic_Feishu_Secret_123456', actor: '11111111-1111-4111-8111-111111111111', failAfterAccept: false, failApi: false,
     clock: () => instant, advance: seconds => { instant += seconds * 1000; }, setTime: value => { instant = Date.parse(value); } };
   const fetchImpl = async (url, init) => {
-    assert.equal(new URL(url).hostname, 'open.feishu.cn'); assert.equal(init.redirect, 'error');
+    assert.equal(new URL(url).hostname, 'open.feishu.cn'); assert.equal(init.redirect, 'manual');
     assert.equal(init.headers['X-IQC-Actor'], undefined); assert.equal(init.headers.Cookie, undefined);
     const body = JSON.parse(init.body); calls.push({ url, body });
     if (url.includes('tenant_access_token')) { assert.equal(body.app_secret, state.secret); return Response.json({ code: 0, tenant_access_token: 't-synthetic-token', expire: 7200 }); }
