@@ -7,7 +7,8 @@
     { "binding": "AUTH_DB", "database_name": "iqc-auth", "database_id": "69a1757a-0108-4b73-9d9b-b6f702f59abb" }
   ],
   "services": [
-    { "binding": "QMS_PROXY", "service": "iqc-proxy" }
+    { "binding": "QMS_PROXY", "service": "iqc-proxy" },
+    { "binding": "REMINDERS", "service": "iqc-inspector-reminders" }
   ],
   "env": {
     "preview": {

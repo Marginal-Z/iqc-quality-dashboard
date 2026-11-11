@@ -103,6 +103,21 @@ test('viewer cannot open user management or call administrator APIs', async t =>
   assert.equal((await f.request('/api/admin/users', undefined, f.admin)).status, 200);
   assert.equal((await f.request('/api/admin/users', { username: viewer.user.username, password: PASSWORD }, f.admin)).status, 409);
 });
+test('reminder administration is role and CSRF protected, with no browser credentials passed to the service', async t => {
+  const f = await start(t); const viewer = await createViewer(f), calls = [];
+  f.env.REMINDER_GATEWAY_SECRET = 'synthetic-private-gateway-key-123456789';
+  f.env.REMINDERS = { async fetch(request) { calls.push(request); return Response.json({ settings: { configured: false } }); } };
+  assert.equal((await f.request('/reminders', undefined, viewer.session)).status, 403);
+  assert.equal((await f.request('/api/admin/reminders', undefined, viewer.session)).status, 403);
+  assert.equal((await f.request('/api/admin/reminders', {}, f.admin, { 'X-CSRF-Token': '' })).status, 403);
+  assert.equal(calls.length, 0);
+  assert.equal((await f.request('/api/admin/reminders', undefined, f.admin)).status, 200);
+  assert.equal(calls[0].headers.get('Cookie'), null); assert.equal(calls[0].headers.get('X-CSRF-Token'), null);
+  assert.equal(calls[0].headers.get('Authorization'), 'Bearer ' + f.env.REMINDER_GATEWAY_SECRET);
+  assert.equal(calls[0].headers.get('X-IQC-Actor'), f.admin.user.id);
+  assert.equal((await f.request('/reminders', undefined, f.admin)).status, 200);
+  assert.equal((await f.request('/api/admin/reminders/run', {}, f.admin)).status, 404);
+});
 test('disabling an account revokes sessions and admin cannot disable self', async t => {
   const f = await start(t); const viewer = await createViewer(f);
   assert.equal((await f.request(`/api/admin/users/${f.admin.user.id}/status`, { disabled: true }, f.admin)).status, 400);

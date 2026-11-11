@@ -36,7 +36,7 @@ function secureResponse(response) {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 function safeNext(value) {
-  return typeof value === 'string' && /^(?:\/|\/index\.html|\/accounts)(?:#[a-z]+)?$/.test(value) ? value : '/';
+  return typeof value === 'string' && /^(?:\/|\/index\.html|\/accounts|\/reminders)(?:#[a-z]+)?$/.test(value) ? value : '/';
 }
 function usernameOf(value) {
   if (typeof value !== 'string') return null;
@@ -238,6 +238,19 @@ async function proxyQms(request, env, body) {
 async function serveAsset(request, env, path) {
   return env.ASSETS.fetch(new Request(new URL(path, request.url), { method: request.method === 'HEAD' ? 'HEAD' : 'GET' }));
 }
+async function reminderApi(request, env, session, body, path) {
+  if (session.role !== 'admin') return error(403, 'FORBIDDEN', '需要管理员权限');
+  const target = path === '/api/admin/reminders' ? '/settings' : path.slice('/api/admin/reminders'.length);
+  const allowed = request.method === 'GET' ? ['/settings', '/preview', '/history'] : ['/settings', '/connection'];
+  if (!allowed.includes(target)) return error(404, 'NOT_FOUND', '未找到此操作');
+  if (!env.REMINDERS?.fetch || !env.REMINDER_GATEWAY_SECRET || env.REMINDER_GATEWAY_SECRET.length < 32) return error(503, 'REMINDERS_UNAVAILABLE', '提醒服务尚未配置');
+  const upstream = await env.REMINDERS.fetch(new Request('https://iqc-reminders.internal' + target, {
+    method: request.method, signal: AbortSignal.timeout(30000),
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + env.REMINDER_GATEWAY_SECRET, 'X-IQC-Actor': session.user_id },
+    body: request.method === 'POST' ? JSON.stringify(body) : undefined
+  }));
+  return new Response(upstream.body, { status: upstream.status, headers: { 'Content-Type': 'application/json; charset=utf-8' } });
+}
 async function route(request, env) {
   const url = new URL(request.url), path = url.pathname;
   if (!env.AUTH_DB) return error(503, 'AUTH_UNAVAILABLE', '登录服务尚未配置');
@@ -255,7 +268,7 @@ async function route(request, env) {
   if (path === '/setup' && ['GET', 'HEAD'].includes(request.method)) return await initialized(env.AUTH_DB) ? redirect('/login') : serveAsset(request, env, '/auth/setup/');
   if (!session) {
     if (path.startsWith('/api/')) return json({ error: 'UNAUTHENTICATED', message: '登录已失效，请重新登录' }, 401, { 'Set-Cookie': cookie(request, env, '', 0) });
-    if ((request.headers.get('Accept') || '').includes('text/html') || ['/', '/index.html', '/accounts'].includes(path)) return redirect('/login?next=' + encodeURIComponent(safeNext(path)));
+    if ((request.headers.get('Accept') || '').includes('text/html') || ['/', '/index.html', '/accounts', '/reminders'].includes(path)) return redirect('/login?next=' + encodeURIComponent(safeNext(path)));
     return error(401, 'UNAUTHENTICATED', '请先登录');
   }
   if (path === '/api/auth/me' && request.method === 'GET') return json({ user: publicUser(session), csrfToken: session.csrf_token });
@@ -272,13 +285,15 @@ async function route(request, env) {
       return json({ ok: true }, 200, { 'Set-Cookie': cookie(request, env, '', 0) });
     }
     if (path === '/api/auth/password' && request.method === 'POST') return changePassword(request, env, session, body);
+    if (path === '/api/admin/reminders' || path.startsWith('/api/admin/reminders/')) return reminderApi(request, env, session, body, path);
     if (path.startsWith('/api/admin/')) return manageUsers(request, env, session, body, path);
     if (path === '/api/qms' && request.method === 'POST') return proxyQms(request, env, body);
     return error(404, 'NOT_FOUND', '未找到此接口');
   }
   if (!['GET', 'HEAD'].includes(request.method)) return error(405, 'METHOD_NOT_ALLOWED', '不支持此操作');
   if (path === '/accounts') return session.role === 'admin' ? serveAsset(request, env, '/auth/accounts/') : error(403, 'FORBIDDEN', '需要管理员权限');
-  if (path.startsWith('/auth/') && !['/auth/accounts.js'].includes(path)) return error(404, 'NOT_FOUND', '未找到此页面');
+  if (path === '/reminders') return session.role === 'admin' ? serveAsset(request, env, '/auth/reminders/') : error(403, 'FORBIDDEN', '需要管理员权限');
+  if (path.startsWith('/auth/') && !['/auth/accounts.js', '/auth/reminders.js', '/auth/reminder-i18n.js', '/auth/reminders.css'].includes(path)) return error(404, 'NOT_FOUND', '未找到此页面');
   return serveAsset(request, env, path);
 }
 export default {
