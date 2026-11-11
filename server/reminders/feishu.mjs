@@ -5,7 +5,9 @@ const cache = new Map();
 export function createFeishuClient(appId, appSecret, { fetchImpl = fetch, now = () => Date.now() } = {}) {
   async function request(path, body, bearer) {
     let response;
-    try { response = await fetchImpl('https://open.feishu.cn/open-apis/' + path, { method: 'POST', redirect: 'error', signal: AbortSignal.timeout(15000),
+    // Workers supports manual/follow only. Inspect 3xx as an HTTP failure so
+    // application credentials and message bodies can never follow a redirect.
+    try { response = await fetchImpl('https://open.feishu.cn/open-apis/' + path, { method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(15000),
       headers: { 'Content-Type': 'application/json', ...(bearer ? { Authorization: 'Bearer ' + bearer } : {}) }, body: JSON.stringify(body) }); }
     catch { throw new FeishuError('FEISHU_NETWORK_ERROR', true, Boolean(bearer)); }
     if (!response.ok) { await response.body?.cancel(); throw new FeishuError('FEISHU_HTTP_' + response.status, response.status === 429 || response.status >= 500, Boolean(bearer) && response.status >= 500); }
