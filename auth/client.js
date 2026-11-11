@@ -4,6 +4,7 @@ const translations = {
   th: { title: 'เข้าสู่ระบบ', intro: 'เข้าสู่ระบบเพื่อดูข้อมูลตรวจรับวัตถุดิบและคุณภาพผู้จำหน่าย', username: 'บัญชี', password: 'รหัสผ่าน', show: 'แสดง', hide: 'ซ่อน', submit: 'เปิดแดชบอร์ด', busy: 'กำลังดำเนินการ…', footer: 'ติดต่อผู้ดูแลทีมคุณภาพเพื่อเปิดบัญชีหรือรีเซ็ตรหัสผ่าน', language: 'ภาษา', setupTitle: 'สร้างบัญชีผู้ดูแล', setupIntro: 'ตั้งค่าผู้ดูแลครั้งแรก หน้านี้จะปิดอัตโนมัติเมื่อตั้งค่าเสร็จ', displayName: 'ชื่อที่แสดง', newPassword: 'รหัสผ่านใหม่', passwordHint: '15–128 อักขระ รองรับการวางและโปรแกรมจัดการรหัสผ่าน', usernameHint: '3–64 ตัวอักษรภาษาอังกฤษ ตัวเลข หรือ . _ @ -', confirmPassword: 'ยืนยันรหัสผ่าน', setupSubmit: 'สร้างผู้ดูแลและเข้าสู่แดชบอร์ด', mismatch: 'รหัสผ่านไม่ตรงกัน', network: 'เชื่อมต่อไม่สำเร็จ โปรดตรวจสอบเครือข่ายแล้วลองอีกครั้ง', setupMissing: 'ไม่มีข้อมูลยืนยันการตั้งค่า โปรดใช้ลิงก์ฉบับเต็มจากผู้ดูแล', setupFooter: 'ส่งรหัสผ่านผ่าน HTTPS และจัดเก็บเป็นแฮชแบบใส่เกลือบนเซิร์ฟเวอร์', back: 'แดชบอร์ด', logout: 'ออกจากระบบ', accounts: 'จัดการบัญชี', accountsIntro: 'สร้างบัญชีและจัดการสิทธิ์การเข้าถึง', add: 'เพิ่มบัญชี', role: 'สิทธิ์', viewer: 'ผู้ดู', admin: 'ผู้ดูแล', status: 'สถานะ', enabled: 'ใช้งาน', disabled: 'ปิดใช้งาน', actions: 'การดำเนินการ', disable: 'ปิดใช้งาน', enable: 'เปิดใช้งาน', reset: 'รีเซ็ตรหัสผ่าน', cancel: 'ยกเลิก', save: 'บันทึก', create: 'สร้างบัญชี', noUsers: 'ไม่มีบัญชี', saved: 'บันทึกแล้ว', resetHint: 'หลังบันทึก บัญชีนี้จะออกจากระบบทุกเซสชัน', change: 'เปลี่ยนรหัสผ่าน', currentPassword: 'รหัสผ่านปัจจุบัน', changeHint: 'ต้องเข้าสู่ระบบอีกครั้งหลังเปลี่ยนรหัสผ่าน', account: 'บัญชีปัจจุบัน', expired: 'เซสชันหมดอายุ โปรดเข้าสู่ระบบอีกครั้ง' }
 };
 let language = 'zh';
+export function addTranslations(entries) { for (const [lang, values] of Object.entries(entries)) Object.assign(translations[lang] || (translations[lang] = {}), values); }
 try { language = localStorage.getItem('iqc_locale') || 'zh'; } catch {}
 export const text = key => (translations[language] || translations.zh)[key] || translations.zh[key] || key;
 export function translate() {
@@ -29,7 +30,7 @@ export async function api(path, body, csrf) {
 }
 export function clearData() { try { ['qms_dash_cache', 'qms_factories_cache', 'qms_factory'].forEach(key => localStorage.removeItem(key)); } catch {} }
 export function signedOut() { clearData(); try { localStorage.setItem('iqc_logout_event', String(Date.now())); } catch {} location.replace('/login'); }
-export function safeNext(value) { return /^(?:\/|\/index\.html|\/accounts)(?:#[a-z]+)?$/.test(value || '') ? value : '/'; }
+export function safeNext(value) { return /^(?:\/|\/index\.html|\/accounts|\/reminders)(?:#[a-z]+)?$/.test(value || '') ? value : '/'; }
 export async function submitForm(form, action) {
   const button = form.querySelector('[type="submit"]'), status = form.querySelector('[role="alert"]');
   message(status, ''); button.disabled = true; const label = button.textContent; button.textContent = text('busy');

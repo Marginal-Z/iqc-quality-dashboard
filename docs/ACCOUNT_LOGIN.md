@@ -18,6 +18,8 @@
 
 ## 架构与边界
 
+2026-11-12 起，管理员可访问 `/reminders` 配置飞书私信提醒。Pages 使用 `REMINDERS` 服务绑定和服务端 `REMINDER_GATEWAY_SECRET` 调用私有提醒 Worker；查看者及匿名用户无法访问配置和接口。提醒使用独立 `iqc-reminders` D1，不修改 `iqc-auth` 账号数据。部署 Pages 前先按 [提醒指南](INSPECTOR_REMINDERS.md) 建立服务绑定和密钥。
+
 登录版运行在 Cloudflare Pages 的高级模式 `_worker.js`，使用 D1 保存用户、密码哈希、会话、尝试次数和审计记录。静态构建仅用于本机界面预览，历史 GitHub Pages 站点已撤下。
 
 ```text

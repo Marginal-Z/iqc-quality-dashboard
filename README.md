@@ -20,12 +20,15 @@
 | 多工厂与多语言 | 支持切换工厂；通过右下角设置选择中文、英文、泰文和中泰双语 |
 | 界面设置 | 原始浅色 UI；右下角设置集中管理语言，自动记住选择 |
 | 账号与权限 | 管理员开通、停用、启用账号及重置密码；查看者访问看板；个人修改密码和退出登录 |
+| 飞书待检提醒 | 管理员配置检验员私信映射；按泰国日期，每人当天首次检测到待检物料时提醒一次 |
 
 待检与超时任务每 30 秒轮询一次，月度统计每 5 分钟完整同步，也可手动刷新；页面在后台时暂停自动请求。当前为定时轮询，并非 QMS 事件推送。界面保留 QMS 返回的供应商名称、料号等业务原始信息，不自动翻译业务数据。
 
 界面使用原始浅色背景与实色卡片，不提供额外主题或透明度调节，不使用渐变背景。环形统计图采用纯色 SVG 分段展示数据占比。
 
 点击右下角 **设置** 可展开语言设置，普通页面及两种大屏均可使用，语言选择会自动保存。点击面板外部、关闭按钮或按 Escape 可收起设置。
+
+管理员可通过设置中的 **机器人提醒** 打开配置页。提醒由独立后台定时检查，关闭浏览器后仍可运行；默认停用，需配置飞书企业自建应用、检验员 Open ID 并检查连接后启用。配置步骤及提醒口径见 [检验员待检提醒指南](docs/INSPECTOR_REMINDERS.md)。
 
 ## 技术架构
 
@@ -35,6 +38,7 @@
 | 数据可视化 | ECharts | 趋势、排名及风险图表 |
 | 账号服务 | Cloudflare Pages Worker、D1 | 账号、会话、权限与同源查询网关 |
 | 接口代理 | 独立 Cloudflare Worker | 内部服务绑定访问 QMS，保存 QMS Secrets |
+| 待检提醒 | 定时 Cloudflare Worker、独立 D1、飞书应用机器人 | 完整查询待检任务、按人和泰国日期去重、私信发送及状态记录 |
 | 数据源 | QMS | 提供工厂字典与检验记录 |
 | 检查与测试 | Node.js 内置工具 | 语法检查、资源校验与回归测试 |
 | 持续集成与部署 | GitHub Actions、Cloudflare Pages | CI 验证，官方 Wrangler Direct Upload 发布 |
@@ -99,6 +103,7 @@ node scripts/serve.mjs 8766
 | `node scripts/build.mjs` | 生成静态站点构建产物 |
 | `node scripts/build-auth.mjs` | 生成受保护的 Cloudflare Pages 构建产物 |
 | `node scripts/serve-auth.mjs` | 使用内存账号库与虚构 QMS 响应预览登录流程 |
+| `node scripts/provision-reminders.mjs` | 首次配置提醒服务密钥；先按提醒指南部署独立数据库与 Worker |
 | `git diff --check` | 检查差异中的空白格式问题 |
 
 静态预览输出位于 `dist/`，正式认证版输出位于 `dist-auth/`。两种产物均采用资源白名单；测试、文档、本地凭据和一次性初始化令牌不进入构建产物。
@@ -116,14 +121,16 @@ iqc-quality-dashboard/
 │   ├── ui-i18n.js             # 补充界面翻译与日期格式化
 │   ├── settings.css           # 语言设置面板
 │   └── wallboard.js           # 自动滚动与图表尺寸调度
-├── auth/                      # 登录、首次初始化及账号管理界面
-├── server/                    # 认证 Worker 和 D1 数据库结构
+├── auth/                      # 登录、账号管理及机器人提醒配置界面
+├── server/                    # 认证 Worker、待检查询及数据库结构
+│   └── reminders/             # 独立提醒 Worker、飞书客户端与可靠发送记录
 ├── docs/                      # 维护及验证文档
 ├── scripts/                   # 预览、检查与构建脚本
 ├── tests/                     # 回归测试与本地测试数据
 ├── index.html                 # 页面入口
 ├── echarts.min.js             # 图表库
 ├── wrangler.jsonc             # 正式部署与隔离预览绑定配置
+├── wrangler.reminders.jsonc   # 私有提醒 Worker、独立 D1 与定时触发器
 ├── package.json               # 项目信息与命令入口
 └── CHANGELOG.md               # 更新日志
 ```
@@ -138,7 +145,7 @@ iqc-quality-dashboard/
 
 ### 自动发布
 
-`main` 是正式源码分支。变更通过 Pull Request 与 CI 验证后合并，随后由 **Deploy Pages** 工作流执行检查、测试、构建和部署。
+`main` 是正式源码分支。变更通过 Pull Request 与 CI 验证后合并，随后通过已授权的官方 Wrangler CLI 发布；当前 CI 负责检查、测试和构建，不自动部署。提醒 Worker 与 Pages 分别发布，步骤见 [提醒维护指南](docs/INSPECTOR_REMINDERS.md#发布与回滚)。
 
 正式认证站使用 Cloudflare Pages Direct Upload，配置以 `wrangler.jsonc` 为准。生产域名为 [iqc.namecheap.xin](https://iqc.namecheap.xin/)，迁移和最新验证状态见 [账号登录部署指南](docs/ACCOUNT_LOGIN.md)。不再通过 GitHub Pages 发布；预览环境默认不绑定账号数据库或 QMS。
 
@@ -152,7 +159,7 @@ iqc-quality-dashboard/
 4. 更新相关文档，以 Conventional Commits 格式提交变更。
 5. 推送分支并创建 Pull Request，说明变更范围与验证结果。
 
-问题反馈可提交至 [Issues](https://github.com/Z-YO-YI/iqc-quality-dashboard/issues)。请说明页面、语言、工厂范围及复现步骤；涉及业务数据的截图应先脱敏。
+问题反馈可提交至 [Issues](https://github.com/Marginal-Z/iqc-quality-dashboard/issues)。请说明页面、语言、工厂范围及复现步骤；涉及业务数据的截图应先脱敏。
 
 ## 数据口径与使用说明
 

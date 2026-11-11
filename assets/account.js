@@ -20,6 +20,9 @@
   panel.innerHTML = '<legend data-account-label="account"></legend><p class="account-name"></p><div class="account-actions"><button type="button" data-action="password" data-account-label="change"></button><a href="/accounts" data-account-label="accounts" hidden></a><button type="button" data-action="logout" data-account-label="logout"></button></div><p class="account-error" role="alert" hidden></p>';
   panel.querySelector('.account-name').textContent = runtime.user?.displayName || runtime.user?.username || '';
   panel.querySelector('a').hidden = runtime.user?.role !== 'admin';
+  const remindersLink = document.createElement('a'); remindersLink.href = '/reminders'; remindersLink.dataset.accountLabel = 'reminders'; remindersLink.hidden = runtime.user?.role !== 'admin';
+  labels.zh.reminders = '机器人提醒'; labels.en.reminders = 'Bot reminders'; labels.th.reminders = 'แจ้งเตือนผ่านบอต';
+  panel.querySelector('.account-actions').insertBefore(remindersLink, panel.querySelector('[data-action="logout"]'));
   document.getElementById('displaySettings').append(panel);
   const dialog = document.createElement('dialog'); dialog.className = 'account-dialog';
   dialog.innerHTML = '<h2 data-account-label="change"></h2><form><label for="accountCurrent" data-account-label="current"></label><input id="accountCurrent" name="currentPassword" type="password" autocomplete="current-password" maxlength="256" required><label for="accountNew" data-account-label="password"></label><input id="accountNew" name="password" type="password" autocomplete="new-password" maxlength="256" required aria-describedby="accountPasswordHint"><p id="accountPasswordHint" data-account-label="hint"></p><p class="account-error" role="alert" hidden></p><div class="account-actions"><button type="button" data-action="cancel" data-account-label="cancel"></button><button type="submit" data-account-label="save"></button></div></form>';

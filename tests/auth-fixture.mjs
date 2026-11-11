@@ -4,9 +4,9 @@ import { createHash } from 'node:crypto';
 import worker from '../server/worker.mjs';
 
 // Small D1 adapter for real SQLite queries, constraints and atomic batch behavior.
-export function database(filename = ':memory:') {
+export function database(filename = ':memory:', schemaUrl = new URL('../server/schema.sql', import.meta.url)) {
   const sqlite = new DatabaseSync(filename);
-  sqlite.exec(readFileSync(new URL('../server/schema.sql', import.meta.url), 'utf8'));
+  sqlite.exec(readFileSync(schemaUrl, 'utf8'));
   const wrap = (sql, params = []) => ({
     sql, params,
     bind(...values) { return wrap(sql, values); },
@@ -26,8 +26,8 @@ export function fixture(options = {}) {
   const qmsCalls = [];
   const env = { AUTH_DB: db, LOCAL_DEV: true, SETUP_TOKEN_HASH: createHash('sha256').update(SETUP_TOKEN).digest('hex'),
     ASSETS: { async fetch(request) { const path = new URL(request.url).pathname; try {
-      const file = path === '/' ? 'index.html' : /^\/auth\/(login|setup|accounts)\/$/.test(path) ? path.slice(1, -1) + '.html' : path.slice(1);
-      const allowed = /^(?:index\.html|echarts\.min\.js|assets\/[a-z0-9-]+\.(?:js|css|svg)|auth\/[a-z-]+\.(?:js|css|html))$/;
+      const file = path === '/' ? 'index.html' : /^\/auth\/(login|setup|accounts|reminders)\/$/.test(path) ? path.slice(1, -1) + '.html' : path.slice(1);
+      const allowed = /^(?:index\.html|echarts\.min\.js|assets\/[a-z0-9-]+\.(?:js|css|svg)|auth\/[a-z0-9-]+\.(?:js|css|html))$/;
       if (!allowed.test(file)) return new Response('Not found', { status: 404 });
       const types = { html: 'text/html', js: 'text/javascript', css: 'text/css', svg: 'image/svg+xml' };
       return new Response(request.method === 'HEAD' ? null : readFileSync(new URL('../' + file, import.meta.url)), { headers: { 'Content-Type': types[file.split('.').pop()] + '; charset=utf-8' } });

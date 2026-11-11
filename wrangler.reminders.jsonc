@@ -1,0 +1,14 @@
+{
+  "name": "iqc-inspector-reminders",
+  "account_id": "0788b55315084e3ff5707462aa89d051",
+  "main": "server/reminders/worker.mjs",
+  "compatibility_date": "2026-10-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": { "crons": ["* * * * *"] },
+  "d1_databases": [
+    { "binding": "REMINDER_DB", "database_name": "iqc-reminders", "database_id": "b34bbaec-8108-4883-8b37-f909de4d3bbb" }
+  ],
+  "services": [{ "binding": "QMS_PROXY", "service": "iqc-proxy" }]
+}
