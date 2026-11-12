@@ -87,8 +87,10 @@ test('private messages contain only mapped materials for that person, combining 
   const f = await fixture(t); f.body.factories.push('DGXC'); f.body.recipients.push({ factory_code: 'DGXC', inspector_name: '甲（分厂）', open_id: 'ou_inspector_a' }, { factory_code: 'STTH', inspector_name: '乙', open_id: 'ou_inspector_b' }); await f.enable();
   f.records.STTH = [row('A'), row('B', '乙'), row('U', ''), row('NO_MAP', '未绑定')]; f.records.DGXC = [row('C', '甲（分厂）')];
   const result = await f.run(); assert.equal(result.sent, 2);
-  const a = f.messages.find(message => message.receive_id === 'ou_inspector_a'), text = JSON.parse(a.content).text;
-  assert.ok(text.includes('TEST-A') && text.includes('TEST-C')); assert.ok(!text.includes('TEST-B') && !text.includes('NO_MAP')); assert.ok(text.includes('待检 2 批'));
+  const a = f.messages.find(message => message.receive_id === 'ou_inspector_a'), card = JSON.parse(a.content), text = JSON.stringify(card);
+  assert.equal(a.msg_type, 'interactive'); assert.equal(card.schema, '2.0');
+  assert.ok(text.includes('TEST-A') && text.includes('TEST-C')); assert.ok(!text.includes('TEST-B') && !text.includes('NO_MAP'));
+  assert.ok(card.config.summary.content.includes('待检 / รอตรวจ 2 批'));
 });
 test('parallel cron invocations claim one durable delivery lease', async t => {
   const f = await fixture(t); await f.enable(); f.records.STTH = [row('A')];
@@ -103,6 +105,17 @@ test('an ambiguous delivery never automatically retries outside the deduplicatio
   const f = await fixture(t); await f.enable(); f.records.STTH = [row('A')]; f.failAfterAccept = true; await f.run(); f.advance(56 * 60);
   assert.equal((await f.run()).sent, 0); assert.equal(f.messages.length, 1);
   assert.equal(f.db.sqlite.prepare('SELECT status FROM reminder_deliveries').get().status, 'uncertain');
+});
+test('an old encrypted text delivery keeps its original message type, body and UUID during upgrade retries', async t => {
+  const f = await fixture(t); await f.enable(); f.records.STTH = [row('A')];
+  const [, , { deliveryId }, { encrypt }] = await modules;
+  const now = Math.floor(f.clock() / 1000), id = deliveryId('2026-11-11', f.appId, 'ou_inspector_a');
+  const oldText = 'IQC 待检物料提醒\n旧版已发送正文 TEST-A';
+  f.db.sqlite.prepare(`INSERT INTO reminder_deliveries(id,thai_day,app_id,open_id,inspector_names,total,urgent,overdue,payload,status,send_uuid,config_revision,attempts,uncertain,first_attempt_at,created_at)
+    VALUES(?,?,?,?,?,1,0,0,?,'retry',?,?,1,1,?,?)`).run(id, '2026-11-11', f.appId, 'ou_inspector_a', '["甲"]', encrypt(f.env, oldText), id, f.body.revision, now - 60, now - 60);
+  assert.equal((await f.run()).sent, 1);
+  assert.equal(f.messages[0].msg_type, 'text'); assert.equal(f.messages[0].uuid, id); assert.deepEqual(JSON.parse(f.messages[0].content), { text: oldText });
+  assert.equal((await f.run()).sent, 0); assert.equal(f.messages.length, 1);
 });
 test('Thailand start time and midnight boundaries control the daily reminder', async t => {
   const f = await fixture(t); f.body.dailyStart = '08:00'; await f.enable(); f.records.STTH = [row('A')];

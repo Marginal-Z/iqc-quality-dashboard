@@ -4,7 +4,7 @@ for (const path of ['assets/dashboard.js', 'assets/ui-i18n.js', 'assets/wallboar
   execFileSync(process.execPath, ['--check', path], { stdio: 'inherit' });
 }
 const html = readFileSync('index.html', 'utf8');
-for (const path of ['auth/reminders.js', 'auth/reminder-i18n.js', 'server/pending-inspections.mjs', 'server/reminders/worker.mjs', 'server/reminders/store.mjs', 'server/reminders/feishu.mjs', 'server/reminders/delivery.mjs', 'scripts/provision-reminders.mjs']) execFileSync(process.execPath, ['--check', path], { stdio: 'inherit' });
+for (const path of ['auth/reminders.js', 'auth/reminder-i18n.js', 'auth/reminder-card-preview.js', 'server/pending-inspections.mjs', 'server/reminders/worker.mjs', 'server/reminders/store.mjs', 'server/reminders/feishu.mjs', 'server/reminders/message.mjs', 'server/reminders/delivery.mjs', 'scripts/provision-reminders.mjs']) execFileSync(process.execPath, ['--check', path], { stdio: 'inherit' });
 for (const path of ['assets/dashboard.js', 'assets/dashboard.css', 'assets/ui-i18n.js', 'assets/wallboard.js', 'assets/settings.css', 'assets/incoming-wallboard.css', 'assets/favicon.svg', 'assets/runtime-config.js', 'assets/account.js', 'echarts.min.js']) {
   if (!html.includes(path)) throw new Error(`Missing asset reference: ${path}`);
   readFileSync(path);

@@ -18,7 +18,23 @@
 .save-bar .message { flex: 1 1 400px; }
 .preview-message { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 16px; }
 .preview-message pre { font: inherit; white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; border-radius: 8px; background: var(--surface); }
+.reminder-card { max-width: 640px; margin-top: 12px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; color: #1f2329; font-size: 15px; line-height: 1.65; overflow-wrap: anywhere; }
+.reminder-card-header { padding: 18px 20px; }
+.reminder-card-header.blue { background: #e1eaff; }
+.reminder-card-header.orange { background: #fff0d9; }
+.reminder-card-header.red { background: #ffe5e5; }
+.reminder-card-header h3 { margin: 0; font-size: 18px; line-height: 1.6; }
+.reminder-card-header p { margin: 4px 0 0; color: #4e5969; font-size: 13px; }
+.reminder-card-body { padding: 4px 20px 20px; }
+.reminder-card-text { white-space: pre-line; margin: 16px 0; }
+.reminder-card-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px 0; }
+.reminder-card-metric { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.reminder-card-metric strong { font-size: 28px; font-variant-numeric: tabular-nums; }
+.reminder-card-metric span { font-size: 14px; }
+.reminder-card-body hr { border: 0; border-top: 1px solid var(--line); margin: 12px 0; }
+.reminder-card-action { display: block; padding: 10px 14px; border-radius: 6px; color: #fff; background: #1456f0; text-align: center; text-decoration: none; font-weight: 600; }
+.reminder-card-action:focus-visible { outline: 3px solid #1456f0; outline-offset: 3px; }
 #lastCheck { margin-bottom: 16px; }
 #recipientRows:empty::after { content: '—'; color: var(--muted); }
 @media (max-width: 800px) { .reminder-fields { grid-template-columns: 1fr; gap: 0; } .recipient-row { grid-template-columns: 1fr 1fr; } .recipient-row .recipient-id { grid-column: 1 / -1; } .recipient-row button { justify-self: start; } }
-@media (max-width: 480px) { .reminder-panel { padding: 18px; } .recipient-row { grid-template-columns: 1fr; } .accounts-header nav .button { padding-inline: 12px; } }
+@media (max-width: 480px) { .reminder-panel { padding: 18px; } .recipient-row { grid-template-columns: 1fr; } .accounts-header nav .button { padding-inline: 12px; } .reminder-card-header { padding: 14px; } .reminder-card-body { padding-inline: 14px; } .reminder-card-metrics { gap: 4px; } .reminder-card-metric span { font-size: 13px; } }

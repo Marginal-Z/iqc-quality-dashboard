@@ -15,7 +15,7 @@ if (process.argv.includes('--init')) {
 if (setupHash && !/^[a-f0-9]{64}$/.test(setupHash)) throw new Error('IQC_SETUP_TOKEN_HASH must be a SHA-256 hex digest');
 buildStatic(output);
 mkdirSync(`${output}/auth`, { recursive: true });
-for (const file of ['auth.css', 'client.js', 'login.js', 'setup.js', 'accounts.js', 'reminders.js', 'reminder-i18n.js', 'reminders.css']) copyFileSync(`auth/${file}`, `${output}/auth/${file}`);
+for (const file of ['auth.css', 'client.js', 'login.js', 'setup.js', 'accounts.js', 'reminders.js', 'reminder-i18n.js', 'reminder-card-preview.js', 'reminders.css']) copyFileSync(`auth/${file}`, `${output}/auth/${file}`);
 for (const page of ['login', 'setup', 'accounts', 'reminders']) {
   mkdirSync(`${output}/auth/${page}`, { recursive: true });
   copyFileSync(`auth/${page}.html`, `${output}/auth/${page}/index.html`);

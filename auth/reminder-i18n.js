@@ -1,6 +1,6 @@
 export default {
   zh: {
-    reminders: '机器人提醒', reminderIntro: '飞书私信 · 每位检验员每天首次出现待检物料时提醒一次。',
+    reminders: '机器人提醒', reminderIntro: '中泰双语卡片私信 · 每位检验员每天首次出现待检物料时提醒一次。',
     botTitle: '飞书应用', botHint: '使用企业自建应用并启用机器人能力，开通“以应用的身份发消息”权限，将检验员纳入应用可用范围。',
     secretHint: '密钥加密保存，不回显。留空保留已有密钥；更换应用时需重新填写。', checkConnection: '检查飞书连接', connectionHint: '先保存配置。连接检查只验证凭证，不发送消息。',
     configured: '凭证已保存，待验证', notConfigured: '尚未配置', connected: '连接已验证', connectionOk: '飞书凭证验证成功，可以启用提醒。',
@@ -9,7 +9,7 @@ export default {
     dailyStart: '每日开始检查时间（泰国时间）', startHint: '00:00 表示全天检测；昨日遗留待检会在新一天首次检查时提醒。', selectedFactories: '检查工厂',
     recipientsTitle: '检验员与飞书账号', recipientsHint: '填写 QMS 中的完整检验员姓名，以及当前飞书应用下该人员的 Open ID。同一人请始终使用同一个 Open ID。', addRecipient: '新增检验员',
     factory: '工厂', inspector: '检验员', openId: '飞书 Open ID', removeRecipient: '移除', openIdHelp: '如何获取当前应用下的 Open ID',
-    previewTitle: '消息预览', preview: '预览本次提醒', previewHint: '先保存配置。预览使用当前待检数据，不发送私信；已经提醒过的人在当天不会再次收到。',
+    previewTitle: '双语卡片预览', preview: '预览本次提醒', previewHint: '先保存配置。中泰双语卡片使用当前待检数据，不发送私信；实际样式以飞书客户端为准，已提醒过的人当天不会再次收到。',
     noMessages: '当前没有可推送的已绑定待检任务。', unmapped: '以下待检人员尚未绑定，不会收到私信：',
     historyTitle: '发送记录', refreshHistory: '刷新记录', day: '泰国日期', pendingCount: '待检批次', sentAt: '发送时间（泰国）', noHistory: '暂无发送记录',
     lastChecked: '最近检测', notChecked: '尚未检测', lastError: '最近检测失败', sent: '已发送', sending: '发送中', pending: '等待发送', retry: '等待重试', failed: '失败', uncertain: '结果待核对', cancelled: '已取消',
@@ -21,7 +21,7 @@ export default {
     error_FEISHU: '飞书请求失败，请检查应用凭证、消息权限和应用可用范围。', error_QMS: '待检数据暂时不可用，本次未发送提醒。'
   },
   en: {
-    reminders: 'Bot reminders', reminderIntro: 'Feishu direct messages when each inspector first has pending materials each day.',
+    reminders: 'Bot reminders', reminderIntro: 'Chinese–Thai cards when each inspector first has pending materials each day.',
     botTitle: 'Feishu application', botHint: 'Use an enterprise custom app with a bot, permission to send messages as the app, and the inspectors in its availability scope.',
     secretHint: 'Encrypted and never displayed. Leave blank to keep the current secret. Enter a new secret when changing apps.', checkConnection: 'Check Feishu connection', connectionHint: 'Save first. This checks credentials without sending messages.',
     configured: 'Saved; verification required', notConfigured: 'Not configured', connected: 'Connection verified', connectionOk: 'Credentials verified. Automatic reminders can now be enabled.',
@@ -30,7 +30,7 @@ export default {
     dailyStart: 'Daily checking starts at (Thailand time)', startHint: '00:00 checks all day. Backlogs trigger a reminder at the first check of the new day.', selectedFactories: 'Factories to check',
     recipientsTitle: 'Inspectors and Feishu accounts', recipientsHint: 'Use the exact QMS inspector name and the person’s Open ID for this app. Always use the same Open ID for the same person.', addRecipient: 'Add inspector',
     factory: 'Factory', inspector: 'Inspector', openId: 'Feishu Open ID', removeRecipient: 'Remove', openIdHelp: 'How to obtain an Open ID for this app',
-    previewTitle: 'Message preview', preview: 'Preview reminders', previewHint: 'Save first. Previews use current pending data and do not send messages. People already reminded today will not receive another message.',
+    previewTitle: 'Bilingual card preview', preview: 'Preview reminders', previewHint: 'Save first. Chinese–Thai cards use current pending data without sending. Appearance depends on the Feishu client. People already reminded today will not receive another message.',
     noMessages: 'No mapped pending tasks to send.', unmapped: 'These pending inspectors have no account mapping and will not receive messages:',
     historyTitle: 'Delivery history', refreshHistory: 'Refresh history', day: 'Thailand date', pendingCount: 'Pending batches', sentAt: 'Sent at (Thailand)', noHistory: 'No delivery history',
     lastChecked: 'Last check', notChecked: 'Not checked yet', lastError: 'Last check failed', sent: 'Sent', sending: 'Sending', pending: 'Queued', retry: 'Retry queued', failed: 'Failed', uncertain: 'Verify delivery', cancelled: 'Cancelled',
@@ -42,7 +42,7 @@ export default {
     error_FEISHU: 'Feishu request failed. Check credentials, messaging permission and app availability.', error_QMS: 'Pending data is unavailable. No reminders were sent in this check.'
   },
   th: {
-    reminders: 'แจ้งเตือนผ่านบอต', reminderIntro: 'ส่งข้อความส่วนตัวผ่าน Feishu เมื่อผู้ตรวจแต่ละคนมีวัตถุดิบรอตรวจครั้งแรกของวัน',
+    reminders: 'แจ้งเตือนผ่านบอต', reminderIntro: 'ส่งการ์ดสองภาษาจีน–ไทย เมื่อผู้ตรวจสอบแต่ละคนมีวัสดุรอตรวจครั้งแรกของวัน',
     botTitle: 'แอปพลิเคชัน Feishu', botHint: 'ใช้แอปองค์กรที่เปิดบอตและสิทธิ์ส่งข้อความในนามแอป โดยเพิ่มผู้ตรวจในขอบเขตการใช้งานของแอป',
     secretHint: 'จัดเก็บแบบเข้ารหัสและไม่แสดงซ้ำ เว้นว่างเพื่อเก็บค่าเดิม เปลี่ยนแอปต้องกรอกใหม่', checkConnection: 'ตรวจสอบการเชื่อมต่อ Feishu', connectionHint: 'บันทึกก่อน ตรวจสอบข้อมูลยืนยันเท่านั้น ไม่ส่งข้อความ',
     configured: 'บันทึกแล้ว รอตรวจสอบ', notConfigured: 'ยังไม่ได้ตั้งค่า', connected: 'ยืนยันการเชื่อมต่อแล้ว', connectionOk: 'ยืนยันข้อมูลแล้ว สามารถเปิดการแจ้งเตือนได้',
@@ -51,7 +51,7 @@ export default {
     dailyStart: 'เวลาเริ่มตรวจสอบประจำวัน (เวลาไทย)', startHint: '00:00 ตรวจทั้งวัน งานค้างจะเตือนในการตรวจสอบครั้งแรกของวันใหม่', selectedFactories: 'โรงงานที่ตรวจสอบ',
     recipientsTitle: 'ผู้ตรวจและบัญชี Feishu', recipientsHint: 'กรอกชื่อผู้ตรวจตรงตาม QMS และ Open ID ของบุคคลนั้นสำหรับแอปนี้ ใช้ Open ID เดิมสำหรับคนเดียวกันเสมอ', addRecipient: 'เพิ่มผู้ตรวจ',
     factory: 'โรงงาน', inspector: 'ผู้ตรวจ', openId: 'Feishu Open ID', removeRecipient: 'นำออก', openIdHelp: 'วิธีรับ Open ID สำหรับแอปนี้',
-    previewTitle: 'ตัวอย่างข้อความ', preview: 'ดูตัวอย่างการแจ้งเตือน', previewHint: 'บันทึกก่อน ใช้งานรอตรวจปัจจุบันเพื่อแสดงตัวอย่าง ไม่ส่งข้อความ ผู้ที่เตือนแล้ววันนี้จะไม่ได้รับซ้ำ',
+    previewTitle: 'ตัวอย่างการ์ดสองภาษา', preview: 'ดูตัวอย่างการแจ้งเตือน', previewHint: 'บันทึกก่อน การ์ดจีน–ไทยใช้ข้อมูลงานรอตรวจปัจจุบันโดยไม่ส่งข้อความ รูปแบบจริงขึ้นอยู่กับแอป Feishu ผู้ที่เตือนแล้ววันนี้จะไม่ได้รับซ้ำ',
     noMessages: 'ไม่มีงานรอตรวจที่ผูกบัญชีไว้', unmapped: 'ผู้ตรวจต่อไปนี้ยังไม่ผูกบัญชี จึงจะไม่ได้รับข้อความ:',
     historyTitle: 'ประวัติการส่ง', refreshHistory: 'รีเฟรชประวัติ', day: 'วันที่ไทย', pendingCount: 'ล็อตรอตรวจ', sentAt: 'เวลาส่ง (ไทย)', noHistory: 'ยังไม่มีประวัติ',
     lastChecked: 'ตรวจสอบล่าสุด', notChecked: 'ยังไม่ตรวจสอบ', lastError: 'ตรวจสอบล่าสุดไม่สำเร็จ', sent: 'ส่งแล้ว', sending: 'กำลังส่ง', pending: 'รอส่ง', retry: 'รอลองใหม่', failed: 'ไม่สำเร็จ', uncertain: 'โปรดตรวจสอบผลส่ง', cancelled: 'ยกเลิกแล้ว',

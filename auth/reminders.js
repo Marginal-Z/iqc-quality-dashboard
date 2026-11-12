@@ -1,5 +1,6 @@
 import { initForms, api, text, message, signedOut, submitForm, addTranslations, translate } from './client.js';
 import translations from './reminder-i18n.js';
+import { renderReminderCard } from './reminder-card-preview.js';
 addTranslations(translations); initForms();
 const $ = id => document.getElementById(id), form = $('reminderForm');
 let csrf = '', settings, factories = [], history = [], previewData, dirty = false;
@@ -69,7 +70,7 @@ function renderPreview(data) {
   const unmapped = data.inspectors.filter(row => !row.mapped);
   if (unmapped.length) { const note = document.createElement('p'); note.textContent = text('unmapped') + ' ' + unmapped.map(row => row.factoryName + ' · ' + row.name + ` (${row.total})`).join('、'); root.append(note); }
   if (!data.messages.length) { const note = document.createElement('p'); note.textContent = text('noMessages'); root.append(note); }
-  for (const entry of data.messages) { const article = document.createElement('article'); article.className = 'preview-message'; const title = document.createElement('strong'); title.textContent = entry.openId; const pre = document.createElement('pre'); pre.textContent = entry.text; article.append(title, pre); root.append(article); }
+  for (const entry of data.messages) { const article = document.createElement('article'); article.className = 'preview-message'; const title = document.createElement('strong'); title.textContent = entry.openId; article.append(title, renderReminderCard(entry.card, entry.text)); root.append(article); }
 }
 $('previewReminders').addEventListener('click', event => action(event.currentTarget, async () => { previewData = await request('/preview'); renderPreview(previewData); }));
 document.addEventListener('auth-language', () => { renderMetadata(); renderHistory(); if (previewData) renderPreview(previewData); message($('pageStatus'), ''); message(form.querySelector('[role="alert"]'), ''); });
