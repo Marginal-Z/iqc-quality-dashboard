@@ -109,4 +109,14 @@ git diff --check
 
 2026-11-12 首次发布：正式提醒 Worker、独立 D1、内部服务绑定及密钥已建立，Pages 管理入口已发布，保持停用。76 项本地回归测试与两种构建通过，正式域名及独立部署的 12 项匿名拒绝检查通过；临时云端测试 Worker 和数据库已删除。尚未配置真实飞书应用与人员 Open ID，实际私信投递仍待企业管理员配置后验证。
 
+## 正式启用记录（2026-11-12）
+
+- 复用负责人指定的企业自建应用，正式凭据通过管理页直接保存并完成真实连接验证；不在仓库保存密钥、访问令牌或人员 Open ID。
+- 修复真实 Workers 环境对 `redirect: error` 的不支持，改为 `manual` 并拒绝 3xx；77 项回归测试和 CI 通过，隔离云端验证请求可达飞书。连接修复见 [PR #18](https://github.com/Marginal-Z/iqc-quality-dashboard/pull/18)。临时网络探测 Worker 已删除。
+- 经负责人授权，应用 1.0.1 已发布，保留原所有者并增加首位目标检验员的可用范围；没有新增 API 权限，外部群和外部用户单聊保持关闭。
+- 看板已启用 `STTH` 泰国工厂的首位检验员映射，每日从 **泰国时间 08:00** 开始按分钟检查。08:00 前不查询待检任务，“最近检测”仍可能显示尚未检测；网页是否打开不影响后台调度。
+- 启用时只读预览没有可推送任务，发送记录为空。应用发布、真实凭据验证与后台启用已确认，首条实际私信投递仍需出现真实待检任务后核实；未制造虚构业务任务或发送额外测试消息。
+
+后续增加检验员时，先核对当前应用下的 Open ID 与飞书应用可用范围，再保存看板映射。修改页面设置不会自动扩大飞书应用范围；应由企业管理员按飞书流程更新并发布。敏感配置及当前人员名单以受保护管理页为准，不在更新日志中记录个人标识。
+
 官方参考：[飞书私信接口](https://open.feishu.cn/document/server-docs/im-v1/message/create)、[应用访问令牌](https://open.feishu.cn/document/server-docs/authentication-management/access-token/tenant_access_token_internal)、[Workers 限制](https://developers.cloudflare.com/workers/platform/limits/)、[D1 限制](https://developers.cloudflare.com/d1/platform/limits/)。
