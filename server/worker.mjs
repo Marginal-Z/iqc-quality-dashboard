@@ -293,7 +293,7 @@ async function route(request, env) {
   if (!['GET', 'HEAD'].includes(request.method)) return error(405, 'METHOD_NOT_ALLOWED', '不支持此操作');
   if (path === '/accounts') return session.role === 'admin' ? serveAsset(request, env, '/auth/accounts/') : error(403, 'FORBIDDEN', '需要管理员权限');
   if (path === '/reminders') return session.role === 'admin' ? serveAsset(request, env, '/auth/reminders/') : error(403, 'FORBIDDEN', '需要管理员权限');
-  if (path.startsWith('/auth/') && !['/auth/accounts.js', '/auth/reminders.js', '/auth/reminder-i18n.js', '/auth/reminders.css'].includes(path)) return error(404, 'NOT_FOUND', '未找到此页面');
+  if (path.startsWith('/auth/') && !['/auth/accounts.js', '/auth/reminders.js', '/auth/reminder-i18n.js', '/auth/reminder-card-preview.js', '/auth/reminders.css'].includes(path)) return error(404, 'NOT_FOUND', '未找到此页面');
   return serveAsset(request, env, path);
 }
 export default {

@@ -24,29 +24,17 @@ export function createFeishuClient(appId, appSecret, { fetchImpl = fetch, now = 
     if (cache.size > 8) cache.clear(); cache.set(key, { value: data.tenant_access_token, expires: now() + Math.max(0, data.expire - 120) * 1000 });
     return data.tenant_access_token;
   }
-  return { verify: (force = false) => token(force), async send(openId, text, uuid) {
+  return { verify: (force = false) => token(force), async send(openId, message, uuid) {
+    const envelope = typeof message === 'string' ? { msg_type: 'text', content: { text: message } } : message;
+    if (!envelope || !['text', 'interactive'].includes(envelope.msg_type) || !envelope.content || typeof envelope.content !== 'object' ||
+      (envelope.msg_type === 'text' && typeof envelope.content.text !== 'string') ||
+      (envelope.msg_type === 'interactive' && (!Array.isArray(envelope.content.body?.elements) || envelope.content.schema !== '2.0'))) throw new FeishuError('FEISHU_INVALID_MESSAGE');
     let data;
     for (let attempt = 0; attempt < 2; attempt++) {
-      try { data = await request('im/v1/messages?receive_id_type=open_id', { receive_id: openId, msg_type: 'text', content: JSON.stringify({ text }), uuid }, await token(attempt > 0)); break; }
+      try { data = await request('im/v1/messages?receive_id_type=open_id', { receive_id: openId, msg_type: envelope.msg_type, content: JSON.stringify(envelope.content), uuid }, await token(attempt > 0)); break; }
       catch (error) { if (attempt === 0 && ['FEISHU_CODE_99991663', 'FEISHU_CODE_99991668', 'FEISHU_CODE_99991677'].includes(error.code)) continue; throw error; }
     }
     if (typeof data?.data?.message_id !== 'string' || !data.data.message_id) throw new FeishuError('FEISHU_MISSING_MESSAGE_ID', true, true);
     return data.data.message_id;
   } };
-}
-const safe = (value, size = 100) => [...String(value || '').replace(/[\x00-\x1f\x7f]/g, ' ').replace(/[<>&]/g, c => ({ '<': '＜', '>': '＞', '&': '＆' })[c])].slice(0, size).join('');
-export function reminderText(groups, date) {
-  const total = groups.reduce((n, group) => n + group.total, 0), urgent = groups.reduce((n, group) => n + group.urgent, 0), overdue = groups.reduce((n, group) => n + group.overdue, 0);
-  const lines = ['【IQC 待检物料提醒】', date + ' · 泰国时间 UTC+7', '检验员：' + [...new Set(groups.map(group => safe(group.name, 80)))].join('、'), `待检 ${total} 批 · 加急 ${urgent} 批 · 超时 ${overdue} 批`, ''];
-  let shown = 0;
-  for (const group of groups) {
-    lines.push(`${safe(group.factoryName)}（${safe(group.factoryCode, 32)}）：${group.total} 批`);
-    for (const item of group.items) {
-      if (shown >= 15) break; shown++;
-      lines.push(`${shown}. ${item.urgent ? '【加急】' : ''}${item.overdue ? '【超时】' : ''}${safe(item.orderNumber, 64)} · ${safe(item.materialNumber, 64)}`, `   ${safe(item.materialName)} · 数量 ${item.quantity} · ${safe(item.createDate, 10)}`);
-    }
-  }
-  if (shown < total) lines.push(`另有 ${total - shown} 批，请登录看板查看全部待检物料。`);
-  lines.push('', 'https://iqc.namecheap.xin/', '每日每人首次检测到待检物料时提醒一次。');
-  return { text: lines.join('\n'), total, urgent, overdue };
 }
