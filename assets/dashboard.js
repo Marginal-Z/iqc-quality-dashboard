@@ -68,7 +68,7 @@
     });
 
     let locale = 'zh';
-    try { const saved = localStorage.getItem('iqc_locale'); if (['zh', 'en', 'th', 'mix'].includes(saved)) locale = saved; } catch {}
+    try { const saved = localStorage.getItem('iqc_locale'); if (['zh', 'en', 'th', 'mix', 'en-th'].includes(saved)) locale = saved; } catch {}
     let currentFlowRange = 'today';
     let wallboardPreviousFlowRange = null;
     let sidebarHidden = false;
@@ -634,6 +634,10 @@
           const y = baseline - index * plotHeight / 3;
           return `<line class="wallboard-result-grid" x1="54" y1="${y}" x2="510" y2="${y}"/><text class="wallboard-result-axis" x="49" y="${y + 4}" text-anchor="end">${nf.format(value)}</text>`;
         }).join('');
+        const svgLabel = (label, x, y, className, anchor = '') => {
+          const lines = locale === 'en-th' ? label.split(' · ') : [label];
+          return `<text class="${className}" x="${x}" y="${y}"${anchor ? ` text-anchor="${anchor}"` : ''}>${lines.map((line, index) => `<tspan x="${x}" dy="${index ? 14 : 0}">${escHtml(line)}</tspan>`).join('')}</text>`;
+        };
         const bars = entries.map((entry) => {
           const height = axisMax ? entry.count / axisMax * plotHeight : 0;
           const top = baseline - height;
@@ -641,13 +645,16 @@
           const label = entry.color === 'pass' && height > 40
             ? `<text class="wallboard-result-pass-label" x="171" y="${labelY}" text-anchor="middle">${nf.format(entry.count)}</text>`
             : `<text class="wallboard-result-value" x="${entry.x + 46}" y="${labelY}" text-anchor="middle">${nf.format(entry.count)}</text>`;
-          return `<rect class="wallboard-result-bar-${entry.color}" x="${entry.x}" y="${top}" width="92" height="${Math.max(entry.count ? 6 : 0, height)}" rx="${height > 9 ? 4 : 3}"/>${label}<text class="wallboard-result-name" x="${entry.x + 46}" y="277" text-anchor="middle">${escHtml(entry.label)}</text>`;
+          return `<rect class="wallboard-result-bar-${entry.color}" x="${entry.x}" y="${top}" width="92" height="${Math.max(entry.count ? 6 : 0, height)}" rx="${height > 9 ? 4 : 3}"/>${label}${svgLabel(entry.label, entry.x + 46, 277, 'wallboard-result-name', 'middle')}`;
         }).join('');
         const key = [
           { y: 82, name: t('result_pass'), color: 'pass' },
           { y: 102, name: t('result_special'), color: 'special' },
           { y: 122, name: ui('退货'), color: 'fail' }
-        ].map((entry) => `<circle class="wallboard-result-key-dot ${entry.color}" cx="500" cy="${entry.y - 3}" r="4"/><text class="wallboard-result-axis" x="510" y="${entry.y}">${escHtml(entry.name)}</text>`).join('');
+        ].map((entry, index) => {
+          const y = entry.y + (locale === 'en-th' ? index * 12 : 0);
+          return `<circle class="wallboard-result-key-dot ${entry.color}" cx="500" cy="${y - 3}" r="4"/>${svgLabel(entry.name, 510, y, 'wallboard-result-axis')}`;
+        }).join('');
         wallboardBars.innerHTML = `<svg class="wallboard-result-chart" viewBox="0 0 620 300" preserveAspectRatio="none" role="img" aria-label="${escHtml(ui('检验结果统计图'))}">${grids}${bars}${key}</svg>`;
       }
       $('#resultDonut .donut-segments').innerHTML = donutSegments([rs.pass, rs.special, rs.fail], ['var(--green)', 'var(--amber)', 'var(--red)']);
@@ -876,12 +883,12 @@
       const rates = sbTrend12.map((d) => d.passRate === null ? null : Number(d.passRate.toFixed(1)));
       setChartOption(c, {
         tooltip: { trigger: 'axis', axisPointer: { type: 'cross' }, formatter: (params) => { const i = params && params[0] ? params[0].dataIndex : -1; const d = sbTrend12[i]; if (!d) return ''; const prevD = sbTrend12[i - 1]; const momTxt = (d.passRate !== null && prevD && prevD.passRate !== null) ? ((d.passRate - prevD.passRate >= 0 ? '+' : '') + (d.passRate - prevD.passRate).toFixed(1) + 'pp') : '—'; const rateTxt = d.passRate === null ? ui('无数据') : d.passRate.toFixed(1) + '%'; return `<strong>${d.month}</strong><br/>${ui('合格率')}: ${rateTxt}<br/>${ui('检验批次')}: ${nf.format(d.batches)}<br/>${ui('不合格批次')}: ${nf.format(d.nonconforming)}<br/>${ui('环比')}: ${momTxt}`; } },
-        legend: { data: [ui('检验批次'), ui('批次合格率')], top: 0, textStyle: { color: '#64748B', fontSize: 12 } },
-        grid: { left: 50, right: 50, top: 34, bottom: 28 },
+        legend: { data: [ui('检验批次'), ui('批次合格率')], top: 0, formatter: chartLabel, textStyle: { color: '#64748B', fontSize: 12 } },
+        grid: { left: locale === 'en-th' ? 65 : 50, right: locale === 'en-th' ? 65 : 50, top: locale === 'en-th' ? 45 : 34, bottom: 28 },
         xAxis: { type: 'category', data: months, axisLabel: { color: '#64748B', fontSize: 11 }, axisLine: { lineStyle: { color: '#E5E7EB' } } },
         yAxis: [
-          { type: 'value', name: ui('合格率%'), min: 0, max: 100, splitLine: { lineStyle: { color: '#F1F5F9' } }, axisLabel: { color: '#64748B', fontSize: 11 } },
-          { type: 'value', name: ui('批次'), splitLine: { show: false }, axisLabel: { color: '#64748B', fontSize: 11 } }
+          { type: 'value', name: chartLabel(ui('合格率%')), ...(locale === 'en-th' ? { nameLocation: 'middle', nameGap: 42, nameTextStyle: { fontSize: 10, lineHeight: 13 } } : {}), min: 0, max: 100, splitLine: { lineStyle: { color: '#F1F5F9' } }, axisLabel: { color: '#64748B', fontSize: 11 } },
+          { type: 'value', name: chartLabel(ui('批次')), ...(locale === 'en-th' ? { nameLocation: 'middle', nameGap: 42, nameTextStyle: { fontSize: 10, lineHeight: 13 } } : {}), splitLine: { show: false }, axisLabel: { color: '#64748B', fontSize: 11 } }
         ],
         series: [
           { name: ui('检验批次'), type: 'bar', yAxisIndex: 1, data: batches, barMaxWidth: 22, itemStyle: { color: '#BFDBFE' } },
@@ -909,10 +916,10 @@
       }));
       setChartOption(c, {
         tooltip: { formatter: (p) => { const d = p.data; return `${escHtml(d.name)}<br/>${ui('合格率')}: ${d.value[1]}%<br/>${ui('检验批次')}: ${d.value[0]}<br/>${ui('不合格批次')}: ${d.nc}<br/>${ui('风险等级')}: ${p.seriesName}`; } },
-        legend: { top: 0, textStyle: { color: '#64748B', fontSize: 11 } },
-        grid: { left: 50, right: 20, top: 34, bottom: 32 },
-        xAxis: { type: 'value', name: ui('检验批次'), splitLine: { lineStyle: { color: '#F1F5F9' } }, axisLabel: { color: '#64748B', fontSize: 11 } },
-        yAxis: { type: 'value', name: ui('合格率%'), min: 0, max: 100, splitLine: { lineStyle: { color: '#F1F5F9' } }, axisLabel: { color: '#64748B', fontSize: 11 } },
+        legend: { top: 0, formatter: chartLabel, textStyle: { color: '#64748B', fontSize: 11 } },
+        grid: { left: locale === 'en-th' ? 65 : 50, right: 20, top: locale === 'en-th' ? 45 : 34, bottom: locale === 'en-th' ? 48 : 32 },
+        xAxis: { type: 'value', name: chartLabel(ui('检验批次')), ...(locale === 'en-th' ? { nameLocation: 'middle', nameGap: 25, nameTextStyle: { fontSize: 10, lineHeight: 13 } } : {}), splitLine: { lineStyle: { color: '#F1F5F9' } }, axisLabel: { color: '#64748B', fontSize: 11 } },
+        yAxis: { type: 'value', name: chartLabel(ui('合格率%')), ...(locale === 'en-th' ? { nameLocation: 'middle', nameGap: 42, nameTextStyle: { fontSize: 10, lineHeight: 13 } } : {}), min: 0, max: 100, splitLine: { lineStyle: { color: '#F1F5F9' } }, axisLabel: { color: '#64748B', fontSize: 11 } },
         series: series.concat([{ name: ui('参考线'), type: 'line', data: [], markLine: { silent: true, symbol: 'none', label: { show: true, fontSize: 11, color: '#94A3B8' }, lineStyle: { color: '#94A3B8', type: 'dashed' }, data: [{ yAxis: SB_TARGET, label: { formatter: ui('目标 ') + SB_TARGET + '%', color: '#F59E0B', position: 'insideEndTop' } }, { xAxis: SB_MIN_SAMPLE, label: { formatter: ui('样本 ') + SB_MIN_SAMPLE + ui(' 批'), color: '#94A3B8', position: 'insideEndBottom' } }] } }])
       });
       c.off('click'); c.on('click', (p) => { if (p.data && p.data.code) selectSbSupplier(p.data.code); });
@@ -938,8 +945,8 @@
             return `<b>${escHtml(s.name)}</b><br/>${ui('批次合格率')}: ${Math.floor(refRate(s))}%<br/>${ui('不合格批次')}: ${s.nonconforming}<br/>${ui('检验批次')}: ${s.batches}`;
           }
         },
-        legend: { top: 0, right: 0, textStyle: { color: '#64748B', fontSize: 11 } },
-        grid: { left: 6, right: 6, top: 34, bottom: 2, containLabel: true },
+        legend: { top: 0, right: 0, formatter: chartLabel, textStyle: { color: '#64748B', fontSize: 11 } },
+        grid: { left: 6, right: 6, top: locale === 'en-th' ? 48 : 34, bottom: 2, containLabel: true },
         xAxis: { type: 'category', data: names, axisTick: { show: false }, axisLine: { lineStyle: { color: '#E5E7EB' } }, axisLabel: { color: '#475569', fontSize: 11, interval: 0, rotate: 40, width: 64, overflow: 'truncate' } },
         yAxis: [
           { type: 'value', name: '', minInterval: 1, axisLabel: { color: '#64748B', fontSize: 11 }, splitLine: { lineStyle: { color: '#F1F5F9' } } },
@@ -1502,6 +1509,7 @@
 
     /* ===================== 原有 UI 逻辑 ===================== */
     function t(key) {
+      if (locale === 'en-th' && I18N.en[key] && I18N.th[key]) return `${I18N.en[key]} · ${I18N.th[key]}`;
       if (locale === 'mix' && I18N.zh[key]) return `${I18N.zh[key]} · ${I18N.th[key] || I18N.zh[key]}`;
       return I18N[locale]?.[key] || ui(I18N.zh[key] || key);
     }
@@ -1613,7 +1621,8 @@
       translateStaticUi();
       $('#sbMonthLabel').textContent = supplierMonthLabel(supplierMonthOffset);
       setSyncState(syncState.loading, syncState.error, syncState.mode);
-      document.documentElement.lang = locale === 'th' ? 'th' : locale === 'en' ? 'en' : 'zh-CN';
+      document.documentElement.lang = locale === 'th' ? 'th' : ['en', 'en-th'].includes(locale) ? 'en' : 'zh-CN';
+      document.documentElement.dataset.uiLocale = locale;
       $$('[data-i18n]').forEach((node) => { node.textContent = t(node.dataset.i18n); });
       $$('[data-i18n-placeholder]').forEach((node) => { node.placeholder = t(node.dataset.i18nPlaceholder); });
       $$('[data-locale]').forEach((button) => { button.classList.toggle('active', button.dataset.locale === locale); button.setAttribute('aria-pressed', button.dataset.locale === locale ? 'true' : 'false'); });
