@@ -170,9 +170,12 @@
     function applyFactory() {
       QMS_CONFIG.factoryCode = currentFactory.code;
       QMS_CONFIG.factoryName = currentFactory.name;
-      const pn = $('#plantName'); if (pn) pn.textContent = currentFactory.name;
-      const ps = $('#plantSub'); if (ps) ps.textContent = `${currentFactory.code} · ${currentFactory.name}`;
-      $$('.factory-name').forEach((el) => { el.textContent = currentFactory.name; });
+      const name = factoryDisplayName(currentFactory.code, currentFactory.name);
+      for (const el of [$('#plantName'), $('#plantSub'), $('#wallboardFactory'), $('#wallboardFlowPlant'), ...$$('.factory-name')]) {
+        if (!el) continue;
+        el.textContent = el.id === 'plantSub' ? `${currentFactory.code} · ${name}` : name;
+        el.classList.toggle('factory-thailand', currentFactory.code === 'STTH');
+      }
     }
     function renderFactoryList() {
       const el = $('#factoryList'); if (!el) return;
@@ -180,7 +183,7 @@
       el.innerHTML = FACTORIES.map((f) => {
         const active = f.code === currentFactory.code;
         return `<div class="factory-item ${active ? 'active' : ''}" data-code="${escHtml(f.code)}" role="button" tabindex="0">
-          <span class="factory-item-name">${escHtml(f.name)}</span>
+          <span class="factory-item-name${f.code === 'STTH' ? ' factory-thailand' : ''}">${escHtml(factoryDisplayName(f.code, f.name))}</span>
           <span class="factory-item-code">${escHtml(f.code)}</span>
           <svg class="factory-item-check" width="16" height="16"><use href="#icon-check"/></svg>
         </div>`;
@@ -377,7 +380,7 @@
       if (!wallboardMode && query) {
         rows = rows.filter((r) => {
           const name = r.materialName || '';
-          const s = [r.orderNumber, r.materialNumber, name, r.materialCategory, QMS_CONFIG.factoryName, r.supplierName, r.supplierCode].join(' ').toLowerCase();
+          const s = [r.orderNumber, r.materialNumber, name, r.materialCategory, ui(r.materialCategory || ''), QMS_CONFIG.factoryName, factoryDisplayName(QMS_CONFIG.factoryCode, QMS_CONFIG.factoryName), r.supplierName, r.supplierCode, r.taskName, ui(r.taskName || '')].join(' ').toLowerCase();
           return s.includes(query);
         });
       }
@@ -399,21 +402,21 @@
       const urgent = r.expeditedFlagName === '是' ? '1' : '0';
       const name = r.materialName || '';
       const supplier = cleanSupplierName(r.supplierName), code = r.supplierCode || '';
-      const factory = QMS_CONFIG.factoryName;
-      const search = [r.orderNumber, r.materialNumber, name, r.materialCategory, factory, r.supplierName, code].join(' ');
+      const factory = factoryDisplayName(QMS_CONFIG.factoryCode, QMS_CONFIG.factoryName);
+      const search = [r.orderNumber, r.materialNumber, name, r.materialCategory, ui(r.materialCategory || ''), QMS_CONFIG.factoryName, factory, r.supplierName, code].join(' ');
       return `<tr data-status="${st.key}" data-urgent="${urgent}" data-id="${escHtml(r.orderNumber)}" data-search="${escHtml(search)}">
         <td><span class="id-link mono">${escHtml(r.orderNumber)}</span></td>
         <td class="mono">${escHtml(r.materialNumber)}</td>
         <td title="${escHtml(name)}"><span class="material-name">${escHtml(name)}</span></td>
-        <td>${escHtml(r.materialCategory || '')}</td>
-        <td><span class="factory-cell" title="${escHtml(factory)}">${escHtml(factory)}</span></td>
+        <td>${escHtml(ui(r.materialCategory || ''))}</td>
+        <td><span class="factory-cell${QMS_CONFIG.factoryCode === 'STTH' ? ' factory-thailand' : ''}" title="${escHtml(factory)}">${escHtml(factory)}</span></td>
         <td class="supplier-cell"><strong>${escHtml(supplier)}</strong><small>${escHtml(code)}</small></td>
         <td class="wallboard-only-col">${escHtml(code)}</td>
         <td class="qty">${fmtQty(r.qty)}</td>
         <td><span class="tag ${urgent === '1' ? 'yes' : 'no'}" data-i18n="${urgent === '1' ? 'yes' : 'no'}">${urgent === '1' ? t('yes') : t('no')}</span></td>
         <td class="mono">${escHtml(r.createDate || '')}</td>
         <td>${escHtml(r.inspectorName || '—')}</td>
-        <td>${escHtml(r.taskName || '')}</td>
+        <td>${escHtml(ui(r.taskName || ''))}</td>
         <td><span class="status-pill ${st.key}" data-i18n="${st.i18n}">${st.label}</span></td>
         <td><span class="status-pill ${res.key}" data-i18n="${res.i18n}">${res.label}</span></td>
         <td><button class="action-btn detail-btn" title="${ui('View')}"><svg width="13" height="13"><use href="#icon-external"/></svg></button></td>
@@ -609,8 +612,7 @@
       if (wallboardTitle) wallboardTitle.textContent = t('result_title');
       const wallboardMonth = $('#wallboardResultMonth');
       if (wallboardMonth) {
-        const monthDate = new Date();
-        wallboardMonth.textContent = `${monthDate.getFullYear()} · ${monthDate.getMonth() + 1} ${t('月')}`;
+        wallboardMonth.textContent = supplierMonthLabel(0);
       }
       $('#wallboardResultBatchTotal').textContent = `${nf.format(rs.total)} ${t('批')}`;
       const wallboardBars = $('#wallboardResultBars');
@@ -645,7 +647,7 @@
           { y: 82, name: t('result_pass'), color: 'pass' },
           { y: 102, name: t('result_special'), color: 'special' },
           { y: 122, name: ui('退货'), color: 'fail' }
-        ].map((entry) => `<circle class="wallboard-result-key-dot ${entry.color}" cx="535" cy="${entry.y - 3}" r="4"/><text class="wallboard-result-axis" x="545" y="${entry.y}">${escHtml(entry.name)}</text>`).join('');
+        ].map((entry) => `<circle class="wallboard-result-key-dot ${entry.color}" cx="500" cy="${entry.y - 3}" r="4"/><text class="wallboard-result-axis" x="510" y="${entry.y}">${escHtml(entry.name)}</text>`).join('');
         wallboardBars.innerHTML = `<svg class="wallboard-result-chart" viewBox="0 0 620 300" preserveAspectRatio="none" role="img" aria-label="${escHtml(ui('检验结果统计图'))}">${grids}${bars}${key}</svg>`;
       }
       $('#resultDonut .donut-segments').innerHTML = donutSegments([rs.pass, rs.special, rs.fail], ['var(--green)', 'var(--amber)', 'var(--red)']);
@@ -994,9 +996,9 @@
     function renderSbFilters() {
       const catEl = $('#sbCategoryFilter'), supEl = $('#sbSupplierFilter'), facEl = $('#sbFactoryFilter');
       sbCategories = Array.from(new Set(sbSuppliersData.flatMap((s) => s.categories || []))).sort();
-      if (catEl) { const cur = catEl.value; catEl.innerHTML = `<option value="">${ui('物料类别')}</option>` + sbCategories.map((c) => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join(''); catEl.value = cur; }
+      if (catEl) { const cur = catEl.value; catEl.innerHTML = `<option value="">${ui('物料类别')}</option>` + sbCategories.map((c) => `<option value="${escHtml(c)}">${escHtml(ui(c))}</option>`).join(''); catEl.value = cur; }
       if (supEl) { const cur = supEl.value; const names = sbSuppliersData.map((s) => s.name).sort(); supEl.innerHTML = `<option value="">${ui('供应商')}</option>` + names.map((n) => `<option value="${escHtml(n)}">${escHtml(n)}</option>`).join(''); supEl.value = cur; }
-      if (facEl) { const cur = facEl.value; facEl.innerHTML = `<option value="">${ui('工厂')}</option>` + FACTORIES.map((f) => `<option value="${escHtml(f.code)}">${escHtml(f.name)}</option>`).join(''); facEl.value = cur; }
+      if (facEl) { const cur = facEl.value; facEl.innerHTML = `<option value="">${ui('工厂')}</option>` + FACTORIES.map((f) => `<option value="${escHtml(f.code)}">${escHtml(factoryDisplayName(f.code, f.name))}</option>`).join(''); facEl.value = cur; }
     }
 
     function sbApplyFilters() {
@@ -1028,9 +1030,9 @@
     function renderSbFilterTags() {
       const el = $('#sbFilterTags'); if (!el) return;
       const tags = [];
-      if (sbSelectedSupplier) { const s = sbSuppliersData.find((x) => x.code === sbSelectedSupplier); tags.push(`<span class="sb-filter-tag">${ui('供应商')}: ${escHtml(s ? s.name : sbSelectedSupplier)}<button data-clear-supplier="1" title="取消">×</button></span>`); }
+      if (sbSelectedSupplier) { const s = sbSuppliersData.find((x) => x.code === sbSelectedSupplier); tags.push(`<span class="sb-filter-tag">${ui('供应商')}: ${escHtml(s ? s.name : sbSelectedSupplier)}<button data-clear-supplier="1" title="${ui('取消')}">×</button></span>`); }
       const cat = $('#sbCategoryFilter') ? $('#sbCategoryFilter').value : '';
-      if (cat) tags.push(`<span class="sb-filter-tag">${ui('物料类别')}: ${escHtml(cat)}</span>`);
+      if (cat) tags.push(`<span class="sb-filter-tag">${ui('物料类别')}: ${escHtml(ui(cat))}</span>`);
       el.innerHTML = tags.join('');
       const clearBtn = el.querySelector('[data-clear-supplier]');
       if (clearBtn) clearBtn.addEventListener('click', () => { sbSelectedSupplier = null; $('#sbCategoryFilter').value = ''; $('#sbSupplierFilter').value = ''; renderSbBoard(); });
@@ -1137,7 +1139,7 @@
       // 风险等级 + 环比 + 物料类别
       const deltaTxt = s.delta === null ? (sbPrevMap.has(s.code) ? '0.0pp' : ui('新增')) : (s.delta >= 0 ? '+' : '') + s.delta.toFixed(1) + 'pp';
       const cats = (s.categories && s.categories.length) ? s.categories : Array.from(new Set(DASH.month.filter((x) => (x.supplierName || '') === code).map((x) => x.materialCategory).filter(Boolean)));
-      $('#supplierDetailModalMeta').innerHTML = `<span class="m-label">${ui('风险等级')}</span><span>${sbLevelTag(r.level)}</span><span class="m-label">${ui('环比')}</span><strong>${deltaTxt}</strong><span class="m-label">${ui('物料类别')}</span><strong>${escHtml(cats.join('、') || '—')}</strong>`;
+      $('#supplierDetailModalMeta').innerHTML = `<span class="m-label">${ui('风险等级')}</span><span>${sbLevelTag(r.level)}</span><span class="m-label">${ui('环比')}</span><strong>${deltaTxt}</strong><span class="m-label">${ui('物料类别')}</span><strong>${escHtml(cats.map(c => ui(c)).join(' / ') || '—')}</strong>`;
       // 风险提示
       const reasons = r.reasons;
       const riskBox = $('#supplierDetailModalStats');
@@ -1235,9 +1237,8 @@
     function closeAlertsModal() { $('#alertsModalBackdrop').classList.remove('open'); }
     function updateDatePill() {
       const now = new Date();
-      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-      const zh = `${now.getFullYear()}年${pad2(now.getMonth() + 1)}月${pad2(now.getDate())}日 · 周${weekdays[now.getDay()]}`;
-      $$('.date-pill span[data-i18n="date_today"]').forEach((el) => { el.textContent = zh; });
+      const date = formatUiDate(now, { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
+      $$('.date-pill span[data-i18n="date_today"]').forEach((el) => { el.textContent = date; });
       const rs = $('#resultSubtitle');
       if (rs) rs.textContent = t('result_subtitle') + ' · ' + monthPrefix(0).replace('-', '.');
     }
@@ -1284,12 +1285,10 @@
       const list = isBottom
         ? [...DASH.suppliers].filter((s) => s.nonconforming > 0).sort((a, b) => (b.nonconforming - a.nonconforming) || (refRate(a) - refRate(b))).slice(0, 10)
         : [...DASH.suppliers].sort((a, b) => (refRate(b) - refRate(a)) || (b.batches - a.batches)).slice(0, 10);
-      const now = new Date();
-      const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
       const titleEl = $('#supplierRankTitle');
       if (titleEl) titleEl.textContent = ui(isBottom ? '倒数前10名供应商' : '正向前10名供应商');
       const subtitleEl = $('#supplierRankSubtitle');
-      if (subtitleEl) subtitleEl.textContent = `${now.getFullYear()} · ${now.getMonth() + 1} ${t('月')}`;
+      if (subtitleEl) subtitleEl.textContent = supplierMonthLabel(0);
       $('#supplierRankFoot').textContent = ui(isBottom ? '排序依据：不合格批次从高到低' : '排序依据：合格率从高到低');
       $('#supplierRankCount').textContent = ui('前 {count} 家', { count: list.length });
       const barLegend = $('#supplierBarLegend');
@@ -1503,11 +1502,12 @@
 
     /* ===================== 原有 UI 逻辑 ===================== */
     function t(key) {
-      if (locale === 'mix') return `${I18N.zh[key] || key} · ${I18N.th[key] || key}`;
-      return I18N[locale][key] || I18N.zh[key] || key;
+      if (locale === 'mix' && I18N.zh[key]) return `${I18N.zh[key]} · ${I18N.th[key] || I18N.zh[key]}`;
+      return I18N[locale]?.[key] || ui(I18N.zh[key] || key);
     }
     function updatePageUi() {
       document.body.dataset.page = currentPage;
+      document.title = t(currentPage === 'suppliers' ? 'supplier_page_title' : 'hero_title');
       const breadcrumbKey = currentPage === 'suppliers' ? 'breadcrumb_suppliers' : 'breadcrumb_overview';
       const breadcrumb = $('#breadcrumbCurrent');
       if (breadcrumb) breadcrumb.textContent = t(breadcrumbKey);
@@ -1542,8 +1542,7 @@
       supplierButton.title = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'supplier_wallboard_entry');
       $('#supplierWallboardToggleText').textContent = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'supplier_wallboard_entry');
       $('#wallboardExitText').textContent = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'exit_wallboard');
-      $('#wallboardFactory').textContent = $('#plantName')?.textContent.trim() || QMS_CONFIG.factoryName;
-      $('#wallboardFlowPlant').textContent = $('#plantName')?.textContent.trim() || QMS_CONFIG.factoryName;
+      applyFactory();
     }
     let tableScroller = null, riskScroller = null;
     function stopTableAutoScroll() { tableScroller?.stop(); tableScroller = null; }
@@ -1646,13 +1645,13 @@
       $('#detailTitle').textContent = id;
       $('#detailPart').textContent = rec.materialNumber != null ? rec.materialNumber : c[1].textContent.trim();
       $('#detailMaterial').textContent = rec.materialName != null ? rec.materialName : c[2].textContent.trim();
-      $('#detailCategory').textContent = rec.materialCategory != null ? rec.materialCategory : c[3].textContent.trim();
+      $('#detailCategory').textContent = rec.materialCategory != null ? ui(rec.materialCategory) : c[3].textContent.trim();
       $('#detailSupplier').textContent = `${cleanSupplierName(rec.supplierName || '')} / ${rec.supplierCode || ''}`;
       $('#detailQuantity').textContent = rec.qty != null ? fmtQty(rec.qty) : c[6].textContent.trim();
       $('#detailInspector').textContent = rec.inspectorName || c[9].textContent.trim();
       $('#detailDate').textContent = rec.createDate || c[8].textContent.trim();
       $('#detailStatus').innerHTML = c[11].innerHTML;
-      $('#detailSla').textContent = rec.totalTime || ui(row.dataset.status === 'overdue' ? '已超时' : 'SLA 内');
+      $('#detailSla').textContent = rec.totalTime ? durationDisplay(rec.totalTime) : ui(row.dataset.status === 'overdue' ? '已超时' : 'SLA 内');
       const done = (rec.inspectionStatus === '1' || rec.inspectionStatus === '3');
       $$('.timeline-step').forEach((step, i) => { step.classList.toggle('current', done ? i === 3 : i === 2); step.classList.toggle('done', done ? i < 4 : i < 2); });
       $('#detailBackdrop').classList.add('open');
@@ -1662,7 +1661,7 @@
       const headers = [ui('单号'), ui('料号'), ui('物料名称'), ui('物料类别'), ui('收料工厂'), ui('供应商'), ui('供应商编码'), ui('来料数量'), ui('是否加急'), ui('送检日期'), ui('检验员'), ui('流程节点'), ui('时效状态'), ui('检验结果')];
       const values = tableRows.map((r) => {
         const st = mapStatus(r), res = mapResult(r);
-        return [r.orderNumber, r.materialNumber, r.materialName || '', r.materialCategory || '', QMS_CONFIG.factoryName, cleanSupplierName(r.supplierName), r.supplierCode || '', r.qty != null ? r.qty : '', r.expeditedFlagName === '是' ? t('yes') : t('no'), r.createDate || '', r.inspectorName || '', r.taskName || '', st.label, res.label];
+        return [r.orderNumber, r.materialNumber, r.materialName || '', ui(r.materialCategory || ''), factoryDisplayName(QMS_CONFIG.factoryCode, QMS_CONFIG.factoryName), cleanSupplierName(r.supplierName), r.supplierCode || '', r.qty != null ? r.qty : '', r.expeditedFlagName === '是' ? t('yes') : t('no'), r.createDate || '', r.inspectorName || '', ui(r.taskName || ''), st.label, res.label];
       });
       const csv = [headers, ...values].map((line) => line.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(',')).join('\n');
       const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8;' });

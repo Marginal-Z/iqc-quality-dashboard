@@ -346,7 +346,8 @@ body.wallboard-mode #iqcTable th {
   font-size: clamp(9px, .78vw, 11px);
   font-weight: 750;
   line-height: 1.25;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   box-shadow: inset 0 -1px 0 var(--wallboard-border);
 }
 body.wallboard-mode #iqcTable tbody tr { height: 40px; border: 0; }
@@ -369,6 +370,7 @@ body.wallboard-mode #iqcTable .supplier-cell strong { color: var(--wallboard-sec
 body.wallboard-mode #iqcTable .supplier-cell small { display: none; }
 body.wallboard-mode .wallboard-only-col { display: table-cell; }
 body.wallboard-mode .wallboard-supplier-label { display: inline; }
+body.wallboard-mode .standard-supplier-label { display: none; }
 body.wallboard-mode .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border: 0; border-radius: 6px; color: var(--wallboard-blue-strong); background: var(--wallboard-blue-bg); font-size: inherit; font-weight: 740; }
 body.wallboard-mode .status-pill::before { display: none; }
 body.wallboard-mode #iqcTable .status-pill.overdue { color: var(--wallboard-red-strong); background: var(--wallboard-red-bg); }

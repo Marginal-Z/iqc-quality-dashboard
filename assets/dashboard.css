@@ -90,6 +90,11 @@
       font-weight: 650;
     }
     .plant-name > span { min-width: 0; line-height: 1.35; }
+    /* Stable display branding; QMS factory identifiers and values stay raw. */
+    #plantName.factory-thailand, #plantSub.factory-thailand,
+    #wallboardFactory.factory-thailand, #wallboardFlowPlant.factory-thailand,
+    .factory-name.factory-thailand, .factory-item .factory-item-name.factory-thailand,
+    .factory-cell.factory-thailand, body.wallboard-mode .factory-cell.factory-thailand { color: #cf1322; }
     .plant-name svg { color: #d9858e; }
     .plant-sub {
       display: block;

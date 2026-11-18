@@ -7,6 +7,16 @@ let csrf = '', settings, factories = [], history = [], previewData, dirty = fals
 function errorText(code) { const key = 'error_' + code; if (text(key) !== key) return text(key); if (code?.startsWith('FEISHU_')) return text('error_FEISHU') + ` (${code})`; if (code?.startsWith('QMS_')) return text('error_QMS'); return text('reminderError'); }
 async function request(path, body) { try { return await api('/api/admin/reminders' + path, body, csrf); } catch (error) { if (error.code === 'UNAUTHENTICATED') signedOut(); error.message = errorText(error.code); throw error; } }
 const selectedFactories = () => [...$('reminderFactories').querySelectorAll('input:checked')].map(input => input.value);
+const factoryName = factory => factory.code === 'STTH' ? 'SHARETRONIC Thailand' : factory.code === 'DGXC' ? text('factoryDongguan') : factory.name;
+function renderFactoryLabels() {
+  for (const span of $('reminderFactories').querySelectorAll('[data-factory-label]')) {
+    const factory = factories.find(value => value.code === span.dataset.factoryLabel);
+    if (factory) span.textContent = factoryName(factory) + ' · ' + factory.code;
+  }
+  for (const select of $('recipientRows').querySelectorAll('select[data-field="factory_code"]')) {
+    for (const option of select.options) { const factory = factories.find(value => value.code === option.value); if (factory) option.textContent = factoryName(factory) + ' · ' + factory.code; }
+  }
+}
 function markDirty() { dirty = true; $('previewReminders').disabled = true; $('checkConnection').disabled = true; }
 form.addEventListener('input', markDirty);
 function field(row, key, control, className = '') { const div = document.createElement('div'); div.className = 'field ' + className; const label = document.createElement('label'), caption = document.createElement('span'); caption.dataset.authText = key; caption.textContent = text(key); label.append(caption, control); div.append(label); row.append(div); return control; }
@@ -14,8 +24,9 @@ function addRecipient(value = {}) {
   if ($('recipientRows').children.length >= 50) return;
   const row = document.createElement('div'); row.className = 'recipient-row';
   const select = document.createElement('select'); select.dataset.field = 'factory_code'; select.required = true;
-  for (const factory of factories) select.add(new Option(factory.name + ' · ' + factory.code, factory.code));
-  select.value = value.factory_code || selectedFactories()[0] || factories[0]?.code || ''; field(row, 'factory', select);
+  for (const factory of factories) { const option = new Option(factoryName(factory) + ' · ' + factory.code, factory.code); option.classList.toggle('factory-thailand', factory.code === 'STTH'); select.add(option); }
+  select.value = value.factory_code || selectedFactories()[0] || factories[0]?.code || ''; select.classList.toggle('factory-thailand', select.value === 'STTH');
+  select.addEventListener('change', () => select.classList.toggle('factory-thailand', select.value === 'STTH')); field(row, 'factory', select);
   const name = document.createElement('input'); name.dataset.field = 'inspector_name'; name.required = true; name.maxLength = 80; name.value = value.inspector_name || ''; field(row, 'inspector', name);
   const id = document.createElement('input'); id.dataset.field = 'open_id'; id.required = true; id.pattern = 'ou_[A-Za-z0-9_\\-]{4,124}'; id.maxLength = 127; id.spellcheck = false; id.autocomplete = 'off'; id.value = value.open_id || ''; field(row, 'openId', id, 'recipient-id');
   const remove = document.createElement('button'); remove.type = 'button'; remove.dataset.authText = 'removeRecipient'; remove.textContent = text('removeRecipient'); remove.addEventListener('click', () => { row.remove(); markDirty(); }); row.append(remove); $('recipientRows').append(row);
@@ -31,7 +42,7 @@ function applySettings(value) {
   settings = value; $('appId').value = settings.appId; $('appSecret').value = ''; $('reminderEnabled').checked = settings.enabled; $('dailyStart').value = settings.dailyStart;
   const selected = settings.factories;
   $('reminderFactories').replaceChildren();
-  for (const factory of factories) { const label = document.createElement('label'), input = document.createElement('input'); input.type = 'checkbox'; input.value = factory.code; input.checked = selected.includes(factory.code); label.append(input, document.createTextNode(factory.name + ' · ' + factory.code)); $('reminderFactories').append(label); }
+  for (const factory of factories) { const label = document.createElement('label'), input = document.createElement('input'), span = document.createElement('span'); input.type = 'checkbox'; input.value = factory.code; input.checked = selected.includes(factory.code); span.dataset.factoryLabel = factory.code; span.textContent = factoryName(factory) + ' · ' + factory.code; span.classList.toggle('factory-thailand', factory.code === 'STTH'); label.append(input, span); $('reminderFactories').append(label); }
   $('recipientRows').replaceChildren(); for (const row of settings.recipients) addRecipient(row);
   for (const id of ['saveReminders', 'addRecipient', 'previewReminders', 'refreshHistory']) $(id).disabled = false;
   $('checkConnection').disabled = !settings.configured; dirty = false; renderMetadata(); translate();
@@ -68,12 +79,12 @@ $('refreshHistory').addEventListener('click', event => action(event.currentTarge
 function renderPreview(data) {
   const root = $('reminderPreview'); root.replaceChildren(); root.hidden = false;
   const unmapped = data.inspectors.filter(row => !row.mapped);
-  if (unmapped.length) { const note = document.createElement('p'); note.textContent = text('unmapped') + ' ' + unmapped.map(row => row.factoryName + ' · ' + row.name + ` (${row.total})`).join('、'); root.append(note); }
+  if (unmapped.length) { const note = document.createElement('p'); note.textContent = text('unmapped') + ' '; unmapped.forEach((row, index) => { const span = document.createElement('span'); span.textContent = factoryName({ code: row.factoryCode, name: row.factoryName }); span.classList.toggle('factory-thailand', row.factoryCode === 'STTH'); note.append(index ? '、' : '', span, ` · ${row.name} (${row.total})`); }); root.append(note); }
   if (!data.messages.length) { const note = document.createElement('p'); note.textContent = text('noMessages'); root.append(note); }
   for (const entry of data.messages) { const article = document.createElement('article'); article.className = 'preview-message'; const title = document.createElement('strong'); title.textContent = entry.openId; article.append(title, renderReminderCard(entry.card, entry.text)); root.append(article); }
 }
 $('previewReminders').addEventListener('click', event => action(event.currentTarget, async () => { previewData = await request('/preview'); renderPreview(previewData); }));
-document.addEventListener('auth-language', () => { renderMetadata(); renderHistory(); if (previewData) renderPreview(previewData); message($('pageStatus'), ''); message(form.querySelector('[role="alert"]'), ''); });
+document.addEventListener('auth-language', () => { renderMetadata(); renderHistory(); renderFactoryLabels(); if (previewData) renderPreview(previewData); message($('pageStatus'), ''); message(form.querySelector('[role="alert"]'), ''); });
 window.addEventListener('storage', event => { if (event.key === 'iqc_logout_event') location.replace('/login'); });
 window.addEventListener('pageshow', event => { if (event.persisted) location.reload(); });
 try { const me = await api('/api/auth/me'); csrf = me.csrfToken; if (me.user.role !== 'admin') location.replace('/'); else { await loadSettings(); await loadHistory(); message($('pageStatus'), ''); } }

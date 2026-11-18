@@ -6,7 +6,7 @@ const IDLE_AGE = 12 * 60 * 60;
 const HASH_OPTIONS = { N: 32768, r: 8, p: 3, maxmem: 64 * 1024 * 1024 };
 const DUMMY_HASH = `scrypt$32768$8$3$${'00'.repeat(16)}$${'00'.repeat(32)}`;
 const QMS_PATHS = new Set(['/qmsData/sys/dict/type/factory', '/qmsSupplierQuality/iqc/documents/selectPage']);
-const PUBLIC_ASSETS = new Set(['/auth/auth.css', '/auth/client.js', '/auth/login.js', '/auth/setup.js', '/assets/favicon.svg']);
+const PUBLIC_ASSETS = new Set(['/auth/auth.css', '/auth/client.js', '/auth/errors.js', '/auth/login.js', '/auth/setup.js', '/assets/favicon.svg']);
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'";
 const now = () => Math.floor(Date.now() / 1000);
 const digest = value => createHash('sha256').update(value).digest('hex');
