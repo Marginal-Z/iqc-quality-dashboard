@@ -1,6 +1,7 @@
-(() => {
+(async () => {
   const runtime = window.IQC_RUNTIME;
   if (!runtime?.authentication) return;
+  const { authError } = await import('/auth/errors.js');
   const clearData = (includeFactory = false) => { try { ['qms_dash_cache', 'qms_factories_cache', ...(includeFactory ? ['qms_factory'] : [])].forEach(key => localStorage.removeItem(key)); } catch {} };
   const expire = () => { clearData(true); document.body.style.visibility = 'hidden'; location.replace('/login'); };
   window.IQCAccount = { expire };
@@ -31,8 +32,10 @@
   function translate() { try { lang = localStorage.getItem('iqc_locale') || 'zh'; } catch {} [panel, dialog].forEach(root => root.querySelectorAll('[data-account-label]').forEach(el => { el.textContent = t(el.dataset.accountLabel); })); }
   translate(); document.querySelectorAll('[data-locale]').forEach(button => button.addEventListener('click', () => setTimeout(translate, 0)));
   async function post(path, body) {
-    const response = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': runtime.csrfToken }, body: JSON.stringify(body) });
-    const data = await response.json(); if (response.status === 401) expire(); if (!response.ok) throw new Error(data.message || t('failed')); return data;
+    let response, data;
+    try { response = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': runtime.csrfToken }, body: JSON.stringify(body) }); data = await response.json(); }
+    catch { throw new Error(t('failed')); }
+    if (response.status === 401) expire(); if (!response.ok) throw new Error(authError(data.error, lang, data.message || t('failed'))); return data;
   }
   const showError = (root, value) => { const el = root.querySelector('[role="alert"]'); el.hidden = !value; el.textContent = value; };
   panel.querySelector('[data-action="password"]').addEventListener('click', () => { document.getElementById('displaySettings').hidePopover(); showError(dialog, ''); dialog.showModal(); });

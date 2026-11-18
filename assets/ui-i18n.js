@@ -1,4 +1,4 @@
-// Interface copy only. QMS names, identifiers and status codes remain source data.
+// Display translations only. QMS records, identifiers and filter values stay unchanged.
 const UI_TEXT = {
   '设置': ['Settings', 'ตั้งค่า'], '显示设置': ['Display settings', 'ตั้งค่าการแสดงผล'],
   '已连接 QMS 数据源 · 任务每 30 秒自动刷新，统计每 5 分钟同步': ['QMS connected · tasks refresh every 30 sec; statistics sync every 5 min.', 'เชื่อมต่อ QMS แล้ว · งานรีเฟรชทุก 30 วินาที สถิติซิงค์ทุก 5 นาที'],
@@ -7,6 +7,37 @@ const UI_TEXT = {
   '检验状态 · 当日': ['Inspection status · today', 'สถานะการตรวจ · วันนี้'],
   '检验状态分布': ['Inspection status distribution', 'การกระจายสถานะการตรวจ'],
   '当日检验任务': ['Inspections today', 'งานตรวจวันนี้'],
+  '批': ['lots', 'ล็อต'],
+  '来料质量控制': ['INCOMING QUALITY CONTROL', 'การควบคุมคุณภาพขาเข้า'],
+  '实时': ['LIVE', 'สด'],
+  '中泰': ['Chinese + Thai', 'จีน + ไทย'],
+  '通知': ['Notifications', 'การแจ้งเตือน'],
+  '搜索任务': ['Search inspection tasks', 'ค้นหางานตรวจสอบ'],
+  '日期范围': ['Date range', 'ช่วงวันที่'],
+  '状态': ['Status', 'สถานะ'],
+  '合格率趋势': ['Pass rate trend', 'แนวโน้มอัตราผ่าน'],
+  '关闭': ['Close', 'ปิด'],
+  '东莞协创': ['SHARETRONIC Dongguan', 'SHARETRONIC ตงก่วน'],
+  '结构件': ['Structural parts', 'ชิ้นส่วนโครงสร้าง'],
+  '非五金件类': ['Non-hardware parts', 'ชิ้นส่วนที่ไม่ใช่โลหะ'],
+  '包装材料': ['Packaging materials', 'วัสดุบรรจุภัณฑ์'],
+  '线缆': ['Cables', 'สายเคเบิล'],
+  '电子件': ['Electronic parts', 'ชิ้นส่วนอิเล็กทรอนิกส์'],
+  '五金件': ['Metal parts', 'ชิ้นส่วนโลหะ'],
+  '塑胶件': ['Plastic parts', 'ชิ้นส่วนพลาสติก'],
+  '注塑件': ['Injection-molded parts', 'ชิ้นส่วนฉีดพลาสติก'],
+  '成品': ['Finished products', 'ผลิตภัณฑ์สำเร็จรูป'],
+  'IQC检验': ['IQC inspection', 'ตรวจรับเข้า IQC'],
+  'IQC检查': ['IQC inspection', 'ตรวจรับเข้า IQC'],
+  '已同步': ['Synced', 'ซิงค์แล้ว'],
+  '已关闭': ['Closed', 'ปิดแล้ว'],
+  '组长确认': ['Team lead approval', 'การยืนยันจากหัวหน้าทีม'],
+  '配置模板': ['Configure template', 'ตั้งค่าเทมเพลต'],
+  '待检': ['Pending', 'รอตรวจ'],
+  '待检验': ['Awaiting inspection', 'รอการตรวจสอบ'],
+  '检验完成': ['Inspection completed', 'ตรวจสอบเสร็จแล้ว'],
+  '天': ['d', 'วัน'], '时': ['h', 'ชม.'], '小时': ['h', 'ชม.'],
+  '分': ['min', 'นาที'], '分钟': ['min', 'นาที'], '秒': ['sec', 'วินาที'],
   '检验中': ['In progress', 'กำลังตรวจ'],
   '超时未完成': ['Overdue', 'เกินกำหนด'],
   '已检验完成': ['Completed', 'ตรวจเสร็จแล้ว'],
@@ -119,6 +150,21 @@ function translateStaticUi(root = document) {
 
 function supplierMonthLabel(offset) {
   const date = new Date(); date.setDate(1); date.setMonth(date.getMonth() + offset);
-  const format = lang => new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'long', calendar: 'gregory' }).format(date);
+  return formatUiDate(date, { year: 'numeric', month: 'long' });
+}
+
+function formatUiDate(date, options) {
+  const format = lang => new Intl.DateTimeFormat(lang, { ...options, calendar: 'gregory' }).format(date);
   return locale === 'mix' ? `${format('zh-CN')} · ${format('th')}` : format(locale === 'zh' ? 'zh-CN' : locale);
+}
+
+function factoryDisplayName(code, sourceName) {
+  if (code === 'STTH') return 'SHARETRONIC Thailand';
+  if (code === 'DGXC') return ui('东莞协创');
+  return ui(sourceName || code || '');
+}
+
+function durationDisplay(value) {
+  if (locale === 'zh') return String(value || '');
+  return String(value || '').replace(/(\d+(?:\.\d+)?)\s*(小时|分钟|天|时|分|秒)/g, (_, number, unit) => `${number} ${ui(unit)} `).trim();
 }

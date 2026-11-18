@@ -8,7 +8,7 @@ function app() {
   const store = new Map();
   const ctx = vm.createContext({ URL, URLSearchParams, AbortController, setTimeout, clearTimeout, Intl,
     console: { error() {} }, window: { location: { hash: '' } },
-    document: { querySelector(s) { if (!elements.has(s)) elements.set(s, { style: {}, classList: { toggle() {}, remove() {} } }); return elements.get(s); }, querySelectorAll() { return []; } },
+    document: { querySelector(s) { if (!elements.has(s)) elements.set(s, { dataset: {}, style: {}, classList: { toggle() {}, remove() {} } }); return elements.get(s); }, querySelectorAll() { return []; } },
     localStorage: { getItem(k) { return store.get(k) || null; }, setItem(k, v) { store.set(k, v); } }
   });
   vm.runInContext(fs.readFileSync('assets/ui-i18n.js', 'utf8'), ctx);
@@ -230,4 +230,51 @@ test('refresh retains the current task after insertion; explicit filtering reset
   rows = [{ orderNumber: 'NEW' }, ...rows]; a.run('renderTableRows()');
   assert.equal(options.initialIndex, 3); assert.equal(options.initialOffset, 12);
   a.run('applyFilters()'); assert.equal(options.initialIndex, undefined);
+});
+
+test('wallboard source-key labels, units and month captions follow English, Thai and mixed locale', () => {
+  const a = app();
+  for (const [lang,caption,unit] of [['en','Inspections today','lots'],['th','งานตรวจวันนี้','ล็อต'],['mix','当日检验任务 · งานตรวจวันนี้','批 · ล็อต']]) {
+    a.run(`locale=${JSON.stringify(lang)}; wallboardMode=true; DASH.records=[{inspectionStatus:'1'}]; setFlowRange('today'); renderResultStats(); renderSupplierRankings();`);
+    assert.equal(a.elements.get('.donut-core span').textContent,caption);
+    assert.match(a.elements.get('#wallboardProgress').textContent,new RegExp(unit+'$'));
+    const month=a.elements.get('#wallboardResultMonth').textContent;
+    assert.equal(month,a.elements.get('#supplierRankSubtitle').textContent);
+    if(lang==='en') assert.doesNotMatch(month,/[\u4e00-\u9fff\u0e00-\u0e7f]/);
+    if(lang==='th') { assert.match(month,/[\u0e00-\u0e7f]/); assert.doesNotMatch(month,/[\u4e00-\u9fff]/); }
+    assert.ok(month.includes(String(new Date().getFullYear())));
+  }
+});
+
+test('factory presentation is translated consistently without changing QMS identity or stored source names', () => {
+  const a = app();
+  for(const [lang,dongguan] of [['zh','东莞协创'],['en','SHARETRONIC Dongguan'],['th','SHARETRONIC ตงก่วน']]) {
+    a.run(`locale=${JSON.stringify(lang)}; currentFactory={code:'STTH',name:'泰国协创'}; applyFactory();`);
+    for(const selector of ['#plantName','#wallboardFactory','#wallboardFlowPlant']) assert.equal(a.elements.get(selector).textContent,'SHARETRONIC Thailand');
+    assert.equal(a.run('QMS_CONFIG.factoryName'),'泰国协创'); assert.equal(a.run('QMS_CONFIG.factoryCode'),'STTH');
+    assert.equal(a.run("factoryDisplayName('DGXC','东莞协创')"),dongguan);
+    assert.equal(a.run("factoryDisplayName('CUSTOM','未映射企业原名')"),'未映射企业原名');
+  }
+});
+
+test('translated task labels preserve material names, people, supplier identities and raw filtering values', () => {
+  const a = app(); a.run("locale='en'; QMS_CONFIG.factoryCode='STTH'; QMS_CONFIG.factoryName='泰国协创';");
+  const markup=a.run("rowHtml({orderNumber:'DEMO-001',materialNumber:'PART-001',materialName:'业务物料原名',materialCategory:'结构件',supplierName:'业务供应商原名',supplierCode:'S001',inspectorName:'检验员原名',taskName:'已同步',inspectionStatus:'1'})");
+  for(const value of ['DEMO-001','PART-001','业务物料原名','业务供应商原名','检验员原名','Structural parts','Synced','SHARETRONIC Thailand','factory-thailand']) assert.ok(markup.includes(value),value);
+  a.run("FACTORIES=[{code:'STTH',name:'泰国协创'}]; sbSuppliersData=[{name:'业务供应商原名',categories:['结构件']}]; renderSbFilters();");
+  assert.match(a.elements.get('#sbCategoryFilter').innerHTML,/value="结构件">Structural parts/);
+  assert.match(a.elements.get('#sbFactoryFilter').innerHTML,/value="STTH">SHARETRONIC Thailand/);
+  assert.equal(a.run("durationDisplay('1天2时30分')"),'1 d 2 h 30 min');
+  a.run("locale='th'"); assert.equal(a.run("ui('已同步')"),'ซิงค์แล้ว'); assert.equal(a.run("ui('结构件')"),'ชิ้นส่วนโครงสร้าง');
+  a.run("locale='zh'"); assert.equal(a.run("durationDisplay('1天2时30分')"),'1天2时30分');
+});
+
+test('every source-key translation call and declared HTML label has an English and Thai mapping', () => {
+  const a=app(); const missing=[];
+  const keys=[...source.matchAll(/\bt\(['"]([^'"]*[\u4e00-\u9fff][^'"]*)['"]/g)].map(m=>m[1]);
+  for(const key of keys) if(!a.run(`Boolean(UI_TEXT[${JSON.stringify(key)}] || (I18N.en[${JSON.stringify(key)}] && I18N.th[${JSON.stringify(key)}]))`)) missing.push(key);
+  assert.deepEqual(missing,[]);
+  for(const lang of ['en','th']) assert.deepEqual(Array.from(a.run(`Object.keys(I18N.zh).filter(key=>!I18N.${lang}[key])`)),[]);
+  const html=fs.readFileSync('index.html','utf8');
+  for(const [,key] of html.matchAll(/data-ui(?:-title|-aria-label)?="([^"]+)"/g)) assert.ok(a.run(`Boolean(UI_TEXT[${JSON.stringify(key)}])`),key);
 });
