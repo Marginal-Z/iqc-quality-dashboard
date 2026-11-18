@@ -10,9 +10,10 @@ Object.assign(translations.th, { dashboardName: 'แดชบอร์ดตร�
 let language = 'zh';
 export function addTranslations(entries) { for (const [lang, values] of Object.entries(entries)) Object.assign(translations[lang] || (translations[lang] = {}), values); }
 try { language = localStorage.getItem('iqc_locale') || 'zh'; } catch {}
-export const text = key => (translations[language] || translations.zh)[key] || translations.zh[key] || key;
+export const text = key => language === 'en-th' && translations.en[key] && translations.th[key] ? `${translations.en[key]} · ${translations.th[key]}` : (translations[language] || translations.zh)[key] || translations.zh[key] || key;
 export function translate() {
-  document.documentElement.lang = language === 'mix' ? 'zh' : language;
+  document.documentElement.lang = language === 'mix' ? 'zh' : language === 'en-th' ? 'en' : language;
+  document.documentElement.dataset.uiLocale = language;
   document.querySelectorAll('[data-auth-text]').forEach(el => { el.textContent = text(el.dataset.authText); });
   const heading = document.querySelector('h1[data-auth-text]');
   if (heading) document.title = text(heading.dataset.authText) + ' · IQC';

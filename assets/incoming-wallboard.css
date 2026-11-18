@@ -503,3 +503,40 @@ body.wallboard-mode .supplier-rank-chart { flex: 1 1 0; min-height: 0; margin: 0
 @media (prefers-reduced-motion: reduce) {
   body.wallboard-mode .table-wrap { overflow-y: auto; }
 }
+
+/* The English + Thai option uses the same board, with room for both labels. */
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles { flex-direction: column; align-items: flex-start; gap: 4px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles strong { font-size: 22px; line-height: 1.25; white-space: normal; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-divider { display: none; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-sub { font-size: 9px; letter-spacing: .03em; white-space: normal; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-actions { gap: 12px; flex-shrink: 0; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-live-tag { max-width: 160px; white-space: normal; }
+html[data-ui-locale="en-th"] body.wallboard-mode .card-title { white-space: normal; }
+html[data-ui-locale="en-th"] body.wallboard-mode .overview-grid > .overview-card:first-child .card-head,
+html[data-ui-locale="en-th"] body.wallboard-mode .analytics-grid > .card .card-head { height: 82px; flex-basis: 82px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .overview-grid > .overview-card:first-child .card-head > div:first-child { display: grid; gap: 4px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .donut-core span { max-width: 75%; margin-inline: auto; line-height: 1.4; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-status-stat { gap: 5px; padding: 8px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-stat-label { line-height: 1.4; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-stat-label span { white-space: normal; }
+html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar > div:first-child { display: grid; gap: 3px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar { height: 68px; flex-basis: 68px; gap: 10px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar .card-title { flex-shrink: 1; font-size: 15px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-table-meta { flex-shrink: 0; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-table-meta .status-pill { max-width: 130px; white-space: normal; }
+html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(thead tr, th) { height: 70px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(tbody tr, tbody td) { height: 64px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(td:nth-child(9), td:nth-child(12), td:nth-child(13), td:nth-child(14)) { white-space: normal; font-size: 10.5px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(.status-pill, .tag) { display: block; box-sizing: border-box; width: 100%; max-width: 100%; padding: 4px 3px; white-space: normal; line-height: 1.2; font-size: 10.5px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .analytics-grid > .card .card-head { align-items: flex-start; padding-block: 9px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #supplierRankBoard .card-head { height: auto; flex-basis: auto; min-height: 82px; flex-wrap: wrap; gap: 5px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #supplierRankBoard .supplier-rank-actions { width: 100%; justify-content: space-between; gap: 5px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .rank-tabs button { height: auto; min-height: 26px; max-width: 135px; white-space: normal; line-height: 1.3; }
+html[data-ui-locale="en-th"] body.wallboard-mode .chart-key { flex-wrap: wrap; gap: 4px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .chart-key span { white-space: normal; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-chart-bottom { gap: 6px; min-height: 36px; line-height: 1.4; }
+@media (max-width: 900px) {
+  html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles strong { font-size: 16px; }
+  html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-sub { display: none; }
+  html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-live-tag { display: none; }
+}

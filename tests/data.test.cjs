@@ -3,9 +3,9 @@ const assert = require('node:assert/strict');
 const vm = require('node:vm');
 const fs = require('node:fs');
 const source = fs.readFileSync('assets/dashboard.js', 'utf8');
-function app() {
+function app(savedLocale) {
   const elements = new Map();
-  const store = new Map();
+  const store = new Map(savedLocale ? [['iqc_locale', savedLocale]] : []);
   const ctx = vm.createContext({ URL, URLSearchParams, AbortController, setTimeout, clearTimeout, Intl,
     console: { error() {} }, window: { location: { hash: '' } },
     document: { querySelector(s) { if (!elements.has(s)) elements.set(s, { dataset: {}, style: {}, classList: { toggle() {}, remove() {} } }); return elements.get(s); }, querySelectorAll() { return []; } },
@@ -234,7 +234,7 @@ test('refresh retains the current task after insertion; explicit filtering reset
 
 test('wallboard source-key labels, units and month captions follow English, Thai and mixed locale', () => {
   const a = app();
-  for (const [lang,caption,unit] of [['en','Inspections today','lots'],['th','งานตรวจวันนี้','ล็อต'],['mix','当日检验任务 · งานตรวจวันนี้','批 · ล็อต']]) {
+  for (const [lang,caption,unit] of [['en','Inspections today','lots'],['th','งานตรวจวันนี้','ล็อต'],['mix','当日检验任务 · งานตรวจวันนี้','批 · ล็อต'],['en-th','Inspections today · งานตรวจวันนี้','lots · ล็อต']]) {
     a.run(`locale=${JSON.stringify(lang)}; wallboardMode=true; DASH.records=[{inspectionStatus:'1'}]; setFlowRange('today'); renderResultStats(); renderSupplierRankings();`);
     assert.equal(a.elements.get('.donut-core span').textContent,caption);
     assert.match(a.elements.get('#wallboardProgress').textContent,new RegExp(unit+'$'));
@@ -242,8 +242,27 @@ test('wallboard source-key labels, units and month captions follow English, Thai
     assert.equal(month,a.elements.get('#supplierRankSubtitle').textContent);
     if(lang==='en') assert.doesNotMatch(month,/[\u4e00-\u9fff\u0e00-\u0e7f]/);
     if(lang==='th') { assert.match(month,/[\u0e00-\u0e7f]/); assert.doesNotMatch(month,/[\u4e00-\u9fff]/); }
+    if(lang==='en-th') { assert.match(month,/[A-Za-z]+.* · .*?[\u0e00-\u0e7f]/); assert.doesNotMatch(month,/[\u4e00-\u9fff]/); }
     assert.ok(month.includes(String(new Date().getFullYear())));
   }
+});
+
+test('English + Thai restores a distinct saved locale and combines keyed and source translations', () => {
+  const a = app('en-th');
+  assert.equal(a.run('locale'),'en-th');
+  assert.equal(a.run("t('col_id')"),'Inspection no. · เลขที่');
+  assert.equal(a.run("ui('{count} 位检验员',{count:7})"),'7 inspectors · 7 ผู้ตรวจ');
+  assert.equal(a.run("factoryDisplayName('STTH','泰国协创')"),'SHARETRONIC Thailand');
+  assert.equal(a.run("ui('未映射物料原文')"),'未映射物料原文');
+  for (const key of Array.from(a.run('Object.keys(I18N.zh)'))) {
+    const label = a.run(`t(${JSON.stringify(key)})`);
+    assert.ok(label.includes(' · '),key);
+    assert.doesNotMatch(label,/[\u4e00-\u9fff]/,key);
+  }
+  a.run('renderResultStats()');
+  const markup = a.elements.get('#wallboardResultBars').innerHTML;
+  assert.match(markup,/>Special acceptance<\/tspan><tspan[^>]*>ยอมรับพิเศษ<\/tspan>/);
+  a.run("locale='mix'"); assert.equal(a.run("ui('当日检验任务')"),'当日检验任务 · งานตรวจวันนี้');
 });
 
 test('factory presentation is translated consistently without changing QMS identity or stored source names', () => {
@@ -272,7 +291,7 @@ test('translated task labels preserve material names, people, supplier identitie
 test('QMS category catalog translates labels in both languages while preserving every filter value', () => {
   const a = app();
   const categories = ['PCB','Test阶半成品','五金件类','包装材料','变压器','处理器芯片','天线及馈线','射频器件','开关','振荡器','接插件','晶体管','模拟/混合/保护芯片','电声器件','电容器','电感器','电池','电源模组和适配器','电源管理芯片','电阻器','线缆','结构件','辅料类','通信电路芯片','配件类','非五金件类'];
-  for (const lang of ['en','th']) {
+  for (const lang of ['en','th','en-th']) {
     a.run(`locale=${JSON.stringify(lang)}; sbSuppliersData=[{name:'Catalog fixture',categories:${JSON.stringify(categories)}}]; renderSbFilters();`);
     const markup = a.elements.get('#sbCategoryFilter').innerHTML;
     for (const category of categories) {

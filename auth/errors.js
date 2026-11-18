@@ -24,6 +24,7 @@ const errors = {
   SERVICE_UNAVAILABLE: ['The service is unavailable. Please try again later.', 'บริการไม่พร้อมใช้งาน โปรดลองใหม่ภายหลัง']
 };
 export function authError(code, language, fallback = '') {
+  if (language === 'en-th') return `${authError(code, 'en')} · ${authError(code, 'th')}`;
   if (language !== 'en' && language !== 'th') return fallback || '操作失败，请稍后重试';
   return errors[code]?.[language === 'en' ? 0 : 1] || (language === 'en' ? 'Request failed. Please try again later.' : 'ดำเนินการไม่สำเร็จ โปรดลองใหม่ภายหลัง');
 }

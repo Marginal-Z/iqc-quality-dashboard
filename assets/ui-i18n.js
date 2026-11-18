@@ -158,7 +158,7 @@ const UI_TEXT = {
 
 function ui(source, params = {}) {
   const pair = UI_TEXT[source];
-  const text = !pair ? source : locale === 'en' ? pair[0] : locale === 'th' ? pair[1] : locale === 'mix' ? `${source} · ${pair[1]}` : source;
+  const text = !pair ? source : locale === 'en' ? pair[0] : locale === 'th' ? pair[1] : locale === 'en-th' ? `${pair[0]} · ${pair[1]}` : locale === 'mix' ? `${source} · ${pair[1]}` : source;
   return text.replace(/\{(\w+)\}/g, (match, key) => params[key] ?? match);
 }
 
@@ -169,6 +169,10 @@ function translateStaticUi(root = document) {
   }
 }
 
+function chartLabel(value) {
+  return locale === 'en-th' ? value.replace(' · ', '\n') : value;
+}
+
 function supplierMonthLabel(offset) {
   const date = new Date(); date.setDate(1); date.setMonth(date.getMonth() + offset);
   return formatUiDate(date, { year: 'numeric', month: 'long' });
@@ -176,6 +180,7 @@ function supplierMonthLabel(offset) {
 
 function formatUiDate(date, options) {
   const format = lang => new Intl.DateTimeFormat(lang, { ...options, calendar: 'gregory' }).format(date);
+  if (locale === 'en-th') return `${format('en')} · ${format('th')}`;
   return locale === 'mix' ? `${format('zh-CN')} · ${format('th')}` : format(locale === 'zh' ? 'zh-CN' : locale);
 }
 

@@ -28,7 +28,7 @@
   const dialog = document.createElement('dialog'); dialog.className = 'account-dialog';
   dialog.innerHTML = '<h2 data-account-label="change"></h2><form><label for="accountCurrent" data-account-label="current"></label><input id="accountCurrent" name="currentPassword" type="password" autocomplete="current-password" maxlength="256" required><label for="accountNew" data-account-label="password"></label><input id="accountNew" name="password" type="password" autocomplete="new-password" maxlength="256" required aria-describedby="accountPasswordHint"><p id="accountPasswordHint" data-account-label="hint"></p><p class="account-error" role="alert" hidden></p><div class="account-actions"><button type="button" data-action="cancel" data-account-label="cancel"></button><button type="submit" data-account-label="save"></button></div></form>';
   document.body.append(dialog);
-  let lang = 'zh'; const t = key => (labels[lang] || labels.zh)[key];
+  let lang = 'zh'; const t = key => lang === 'en-th' ? `${labels.en[key]} · ${labels.th[key]}` : (labels[lang] || labels.zh)[key];
   function translate() { try { lang = localStorage.getItem('iqc_locale') || 'zh'; } catch {} [panel, dialog].forEach(root => root.querySelectorAll('[data-account-label]').forEach(el => { el.textContent = t(el.dataset.accountLabel); })); }
   translate(); document.querySelectorAll('[data-locale]').forEach(button => button.addEventListener('click', () => setTimeout(translate, 0)));
   async function post(path, body) {
