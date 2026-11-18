@@ -269,6 +269,21 @@ test('translated task labels preserve material names, people, supplier identitie
   a.run("locale='zh'"); assert.equal(a.run("durationDisplay('1天2时30分')"),'1天2时30分');
 });
 
+test('QMS category catalog translates labels in both languages while preserving every filter value', () => {
+  const a = app();
+  const categories = ['PCB','Test阶半成品','五金件类','包装材料','变压器','处理器芯片','天线及馈线','射频器件','开关','振荡器','接插件','晶体管','模拟/混合/保护芯片','电声器件','电容器','电感器','电池','电源模组和适配器','电源管理芯片','电阻器','线缆','结构件','辅料类','通信电路芯片','配件类','非五金件类'];
+  for (const lang of ['en','th']) {
+    a.run(`locale=${JSON.stringify(lang)}; sbSuppliersData=[{name:'Catalog fixture',categories:${JSON.stringify(categories)}}]; renderSbFilters();`);
+    const markup = a.elements.get('#sbCategoryFilter').innerHTML;
+    for (const category of categories) {
+      const label = a.run(`ui(${JSON.stringify(category)})`);
+      assert.doesNotMatch(label,/[\u4e00-\u9fff]/,`${lang}: ${category}`);
+      assert.ok(markup.includes(`value="${category}">${label}</option>`),`${lang}: raw filter value retained for ${category}`);
+    }
+    assert.equal(a.run("ui('客户自定义分类原文')"),'客户自定义分类原文');
+  }
+});
+
 test('every source-key translation call and declared HTML label has an English and Thai mapping', () => {
   const a=app(); const missing=[];
   const keys=[...source.matchAll(/\bt\(['"]([^'"]*[\u4e00-\u9fff][^'"]*)['"]/g)].map(m=>m[1]);
