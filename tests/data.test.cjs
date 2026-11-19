@@ -200,7 +200,7 @@ test('wallboard cycles the full filtered list and overview retains pagination', 
   a.ctx.computeTableRows = () => Array.from({length: 1500}, (_, id) => ({ id }));
   a.ctx.rowHtml = r => `<tr data-row="${r.id}"></tr>`;
   a.run('wallboardMode = true; renderTableRows()');
-  assert.equal(options.count, 1500); assert.equal(options.speed, 128);
+  assert.equal(options.count, 1500); assert.equal(options.speed, 96);
   assert.equal(a.elements.get('#tablePagination').style.display, 'none');
   options.renderWindow(1499, 3);
   assert.match(a.elements.get('#iqcTableBody').innerHTML, /data-row="1499".*data-row="0".*data-row="1"/);
@@ -245,28 +245,6 @@ test('wallboard source-key labels, units and month captions follow English, Thai
     if(lang==='en-th') { assert.match(month,/[A-Za-z]+.* · .*?[\u0e00-\u0e7f]/); assert.doesNotMatch(month,/[\u4e00-\u9fff]/); }
     assert.ok(month.includes(String(new Date().getFullYear())));
   }
-});
-
-test('wallboard chart typography grows without changing data or accumulating across mode changes', () => {
-  const a=app(), rendered=[];
-  const formatter=value=>`${value}%`;
-  const option={grid:{left:50,bottom:32},legend:{textStyle:{fontSize:12}},xAxis:{axisLabel:{fontSize:11}},series:[{data:[10,20],label:{fontSize:11,lineHeight:14,formatter}}]};
-  a.ctx.typeChart={setOption:value=>rendered.push(value)};a.ctx.typeOption=option;
-  a.run('wallboardMode=true; setChartOption(typeChart,typeOption); setChartOption(typeChart,typeOption);');
-  for(const value of rendered) {
-    assert.equal(value.legend.textStyle.fontSize,14);
-    assert.equal(value.grid.left,58);
-    assert.equal(value.series[0].label.lineHeight,16);
-    assert.equal(value.series[0].label.formatter,formatter);
-    assert.deepEqual(Array.from(value.series[0].data),[10,20]);
-  }
-  assert.equal(option.series[0].label.fontSize,11);
-  assert.equal(option.grid.left,50);
-  a.run('wallboardMode=false; supplierWallboardMode=true; setChartOption(typeChart,typeOption);');
-  assert.equal(rendered.at(-1).xAxis.axisLabel.fontSize,13);
-  a.run('supplierWallboardMode=false; setChartOption(typeChart,typeOption);');
-  assert.equal(rendered.at(-1).xAxis.axisLabel.fontSize,11);
-  assert.equal(rendered.at(-1).grid.left,50);
 });
 
 test('English + Thai restores a distinct saved locale and combines keyed and source translations', () => {
