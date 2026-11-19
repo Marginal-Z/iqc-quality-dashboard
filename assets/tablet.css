@@ -1,0 +1,168 @@
+/* Tablet rules stay separate from the approved desktop wallboard layout. */
+.tablet-table-hint { display: none; }
+
+@media (max-width: 1320px) {
+  body { min-width: 0; }
+  .tablet-table-hint {
+    display: block;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 5px 12px;
+    color: #595959;
+    background: #fafafa;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .table-card, .table-wrap { min-width: 0; }
+  .table-wrap { overscroll-behavior-x: contain; }
+
+  /* Reserve a full row for touch controls; the floating supplier footer used
+     to cover charts and could extend past the left edge in bilingual mode. */
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: none;
+    height: 72px;
+    padding: 8px 12px;
+    border: 0;
+    border-bottom: 1px solid #d9d9d9;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: none;
+    white-space: normal;
+    transform: none;
+    backdrop-filter: none;
+  }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-brand-titles { display: block; min-width: 0; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-brand-titles strong { display: block; max-width: none; overflow: visible; font-size: 18px; line-height: 1.3; white-space: normal; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar :is(.wallboard-brand-sub, .wallboard-brand-divider, .wallboard-live-tag) { display: none; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-actions { display: flex; align-items: center; flex: 0 0 auto; gap: 8px; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-factory { display: flex; align-items: center; gap: 5px; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-factory strong { font-size: 15px; line-height: 1.25; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-clock { display: grid; min-width: 68px; text-align: right; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-clock strong { font-size: 12px; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar :is(.wallboard-fullscreen, .wallboard-exit) { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px; padding: 0; border: 1px solid #d9d9d9; border-radius: 8px; color: #595959; background: #fff; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-exit span { display: none; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar button svg { width: 16px; height: 16px; }
+
+  body.wallboard-mode, body.wallboard-mode :is(.app-shell, .main, .content) { min-height: 0; }
+  body.wallboard-mode .content { padding: 80px 8px 8px; gap: 8px; grid-template-columns: minmax(260px, 25fr) minmax(0, 75fr); grid-template-rows: minmax(0, 1.06fr) minmax(0, .94fr); }
+  body.wallboard-mode .analytics-grid { gap: 8px; }
+  body.wallboard-mode .overview-grid > .overview-card:first-child .card-head,
+  body.wallboard-mode .analytics-grid > .card .card-head,
+  body.wallboard-mode .table-toolbar { height: auto; min-height: 46px; flex: 0 0 auto; padding: 8px 10px; flex-wrap: wrap; gap: 6px; }
+  body.wallboard-mode .card-title { overflow: visible; white-space: normal; line-height: 1.3; }
+  body.wallboard-mode .overview-grid > .overview-card:first-child .card-head > div:first-child { display: grid; gap: 4px; }
+  body.wallboard-mode .flow-body { grid-template-columns: minmax(128px, .9fr) minmax(0, 1.1fr); gap: 5px; padding: 6px; }
+  body.wallboard-mode .donut { max-width: 180px; }
+  html body.wallboard-mode .donut-core span { max-width: 96%; margin: 4px auto 0; font-size: 11px; line-height: 1.2; white-space: normal; }
+  html body.wallboard-mode .wallboard-status-stats { gap: 5px; padding: 0; }
+  html body.wallboard-mode .wallboard-status-stat { gap: 4px; padding: 6px; }
+  body.wallboard-mode .wallboard-stat-label { gap: 4px; font-size: 11px; }
+  body.wallboard-mode .wallboard-stat-label span { white-space: normal; }
+  body.wallboard-mode .wallboard-status-foot { flex-wrap: wrap; gap: 3px 8px; padding: 6px 10px; }
+  body.wallboard-mode .wallboard-status-foot > span { flex-basis: 100%; }
+  body.wallboard-mode .table-toolbar > div:first-child { display: grid; gap: 3px; flex: 1 1 220px; }
+  body.wallboard-mode .table-toolbar .card-title { flex-shrink: 1; }
+  body.wallboard-mode .wallboard-table-subtitle { white-space: normal; overflow: visible; }
+  body.wallboard-mode .wallboard-table-meta { flex-wrap: wrap; margin-left: auto; }
+  body.wallboard-mode .table-wrap { overflow-x: auto; overflow-y: hidden; }
+  /* Full-width columns live inside the card instead of shrinking into clipped
+     labels. Vertical task cycling still uses the existing virtual row window. */
+  body.wallboard-mode #iqcTable { width: 1600px; min-width: 1600px; }
+  body.wallboard-mode #iqcTable th { font-size: 11px; }
+  body.wallboard-mode #iqcTable tbody td { font-size: 12px; }
+  body.wallboard-mode #iqcTable td:nth-child(5) { white-space: normal; }
+  html body.wallboard-mode #supplierRankBoard .card-head { height: auto; min-height: 46px; flex-basis: auto; align-items: flex-start; flex-wrap: wrap; }
+  html body.wallboard-mode #supplierRankBoard .supplier-rank-actions { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 5px; }
+  html body.wallboard-mode .rank-tabs button { height: auto; min-height: 36px; white-space: normal; }
+  body.wallboard-mode .chart-key { flex-wrap: wrap; }
+  body.wallboard-mode .chart-key span { white-space: normal; }
+  html body.wallboard-mode .wallboard-chart-bottom { flex-wrap: wrap; height: auto; min-height: 36px; flex-basis: auto; padding: 5px 10px; gap: 4px; }
+  body.wallboard-mode #supplierRankFoot { white-space: normal; overflow: visible; }
+
+  body.supplier-wallboard-mode .content { padding: 80px 8px 8px; }
+  body.supplier-wallboard-mode #wallboardBar .wallboard-brand { display: none; }
+  body.supplier-wallboard-mode #wallboardBar .wallboard-actions { width: 100%; }
+  body.supplier-wallboard-mode #wallboardBar .wallboard-factory { margin-right: auto; }
+  body.supplier-wallboard-mode .sb-topbar { gap: 8px; }
+  body.supplier-wallboard-mode .sb-title { white-space: normal; }
+  body.supplier-wallboard-mode .sb-kpis { gap: 8px; }
+  body.supplier-wallboard-mode .sb-kpi { padding: 8px; }
+  body.supplier-wallboard-mode .sb-row-bottom { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.supplier-wallboard-mode .sb-row-bottom > .sb-card { grid-column: auto; }
+  body.supplier-wallboard-mode .sb-card-head { gap: 6px; padding: 8px; }
+  body.supplier-wallboard-mode .sb-alerts { overflow: auto; }
+  body.supplier-wallboard-mode .display-settings-toggle { right: 12px; bottom: 12px; }
+  @media (prefers-reduced-motion: reduce) {
+    body.wallboard-mode .table-wrap { overflow-y: auto; }
+  }
+}
+
+/* Browser toolbars and display scaling can leave less height than the panel's
+   physical resolution suggests. Keep charts readable and let the page scroll. */
+@media (min-width: 901px) and (max-width: 1320px) and (max-height: 700px) {
+  body:is(.wallboard-mode, .supplier-wallboard-mode) { overflow: auto; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) :is(.app-shell, .main) { height: auto; min-height: 100dvh; overflow: visible; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) .content { height: auto; min-height: 100dvh; overflow: visible; }
+  body.wallboard-mode .content { grid-template-rows: 300px 340px; }
+  body.supplier-wallboard-mode .sb-page { height: auto; grid-template-rows: auto auto 240px 280px minmax(100px, auto); overflow: visible; }
+}
+
+/* Portrait tablets read top to bottom. Never clip a fixed-height desktop grid. */
+@media (max-width: 900px) {
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .app-shell { grid-template-columns: 190px minmax(0, 1fr); }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar { width: 190px; padding-inline: 12px; }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .app-shell.sidebar-hidden { grid-template-columns: 0 minmax(0, 1fr); }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar-hidden .sidebar { width: 0; padding-inline: 0; }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) :is(.topbar, .content) { padding-inline: 14px; }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .topbar { height: auto; min-height: 72px; padding-block: 10px; flex-wrap: wrap; gap: 10px; }
+  .top-actions { flex-wrap: wrap; gap: 8px; }
+  .top-actions .btn { min-height: 44px; height: auto; white-space: normal; }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) :is(.overview-grid, .analytics-grid, .sb-row-top, .sb-row-bottom) { grid-template-columns: minmax(0, 1fr); }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .alert-list { grid-template-columns: minmax(0, 1fr); }
+  .filters { min-width: 0; }
+  .filters :is(input, select, .search-box) { max-width: 100%; }
+  .sb-topbar, .sb-actions { flex-wrap: wrap; }
+  .sb-risk-table-wrap { overflow-x: auto; }
+
+  body:is(.wallboard-mode, .supplier-wallboard-mode) { overflow: auto; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) :is(.app-shell, .main) { display: block; height: auto; min-height: 100dvh; overflow: visible; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar { height: 112px; flex-wrap: wrap; align-content: center; gap: 5px; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-brand { flex-basis: 100%; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-brand-titles strong { font-size: 16px; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-actions { flex: 1; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-factory { margin-right: auto; }
+  body.supplier-wallboard-mode #wallboardBar { height: 64px; }
+  body.supplier-wallboard-mode .content { padding-top: 72px; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) .content { height: auto; min-height: 100dvh; padding: 120px 8px 12px; overflow: visible; }
+  body.wallboard-mode .content { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
+  body.wallboard-mode .overview-grid > .overview-card:first-child { grid-column: 1; grid-row: auto; min-height: 330px; }
+  body.wallboard-mode .flow-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 12px; }
+  body.wallboard-mode .table-card { grid-column: 1; grid-row: auto; height: 480px; }
+  body.wallboard-mode .analytics-grid { grid-column: 1; grid-row: auto; grid-template-columns: minmax(0, 1fr); }
+  body.wallboard-mode .analytics-grid > .card { height: 340px; }
+  body.supplier-wallboard-mode .sb-page { height: auto; grid-template-rows: auto; overflow: visible; }
+  body.supplier-wallboard-mode .sb-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.supplier-wallboard-mode :is(.sb-row-top, .sb-row-bottom) { grid-template-columns: minmax(0, 1fr); }
+  body.supplier-wallboard-mode .sb-row > .sb-card { grid-column: auto; height: 340px; }
+  body.supplier-wallboard-mode .sb-alerts { min-height: 100px; overflow: visible; }
+}
+
+@media (max-width: 600px) {
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .app-shell { grid-template-columns: minmax(0, 1fr); }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar { position: static; width: 100%; height: auto; gap: 12px; }
+  .sidebar :is(.sidebar-spacer, .sync-card) { display: none; }
+  .sidebar .nav-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar-hidden .sidebar { display: none; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-factory strong { font-size: 12px; }
+  body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-clock { min-width: 56px; }
+}
