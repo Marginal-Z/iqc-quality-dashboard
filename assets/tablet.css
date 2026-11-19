@@ -80,6 +80,7 @@
   body.wallboard-mode #iqcTable th { font-size: 11px; }
   body.wallboard-mode #iqcTable tbody td { font-size: 12px; }
   body.wallboard-mode #iqcTable td:nth-child(5) { white-space: normal; }
+  body.wallboard-mode #iqcTable .factory-cell { overflow: visible; text-overflow: clip; white-space: normal; }
   html body.wallboard-mode #supplierRankBoard .card-head { height: auto; min-height: 46px; flex-basis: auto; align-items: flex-start; flex-wrap: wrap; }
   html body.wallboard-mode #supplierRankBoard .supplier-rank-actions { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 5px; }
   html body.wallboard-mode .rank-tabs button { height: auto; min-height: 36px; white-space: normal; }
