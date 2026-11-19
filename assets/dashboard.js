@@ -1559,7 +1559,7 @@
       if (!wallboardMode) return;
       if (!tableRows.length) return;
       tableScroller = createLoopingTableScroller($('.table-card .table-wrap'), {
-        speed: 96, count: tableRows.length, ...position,
+        speed: 48, count: tableRows.length, ...position,
         renderWindow: (start, count) => {
           $('#iqcTableBody').innerHTML = Array.from({ length: count }, (_, i) => rowHtml(tableRows[(start + i) % tableRows.length])).join('');
         }
@@ -1568,7 +1568,7 @@
     function stopSbAutoScroll() { riskScroller?.stop(); riskScroller = null; }
     function startSbAutoScroll() {
       stopSbAutoScroll();
-      if (supplierWallboardMode) riskScroller = createTableScroller($('.sb-risk-table-wrap'), { speed: 18 });
+      if (supplierWallboardMode) riskScroller = createTableScroller($('.sb-risk-table-wrap'), { speed: 9 });
     }
     function syncWallboardClasses() {
       document.body.classList.toggle('wallboard-mode', wallboardMode);
