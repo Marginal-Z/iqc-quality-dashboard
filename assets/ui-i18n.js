@@ -1,5 +1,7 @@
 // Display translations only. QMS records, identifiers and filter values stay unchanged.
 const UI_TEXT = {
+  '左右滑动查看完整列': ['Swipe horizontally to see all columns', 'เลื่อนซ้ายหรือขวาเพื่อดูทุกคอลัมน์'],
+  '来料检验任务': ['Incoming inspection tasks', 'งานตรวจรับเข้าวัตถุดิบ'],
   '设置': ['Settings', 'ตั้งค่า'], '显示设置': ['Display settings', 'ตั้งค่าการแสดงผล'],
   '已连接 QMS 数据源 · 任务每 30 秒自动刷新，统计每 5 分钟同步': ['QMS connected · tasks refresh every 30 sec; statistics sync every 5 min.', 'เชื่อมต่อ QMS แล้ว · งานรีเฟรชทุก 30 วินาที สถิติซิงค์ทุก 5 นาที'],
   'IQC来料检验看板': ['IQC incoming inspection dashboard', 'แดชบอร์ดตรวจสอบขาเข้า IQC'],

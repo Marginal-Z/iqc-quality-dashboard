@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="assets/dashboard.css">
   <link rel="stylesheet" href="assets/settings.css">
   <link rel="stylesheet" href="assets/incoming-wallboard.css">
+  <link rel="stylesheet" href="assets/tablet.css">
   <script src="echarts.min.js"></script>
 </head>
 <body data-page="overview">
@@ -187,7 +188,8 @@
             </div>
           </div>
           <div class="table-meta"><div class="table-meta-left"><span class="live-dot"></span><span data-i18n="live_data">QMS 实时同步</span><span>·</span><span data-i18n="refresh_every">每 5 分钟刷新</span></div><div><span data-ui="共">共</span> <strong id="visibleCount">0</strong> <span data-i18n="unit_task">条任务</span><span id="pageRange" class="page-range"></span></div></div>
-          <div class="table-wrap">
+          <p class="tablet-table-hint" data-ui="左右滑动查看完整列">左右滑动查看完整列</p>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="来料检验任务" data-ui-aria-label="来料检验任务">
             <table id="iqcTable">
               <colgroup><col style="width:155px"><col style="width:92px"><col style="width:207px"><col style="width:83px"><col style="width:98px"><col style="width:141px"><col class="wallboard-only-col" style="width:90px"><col style="width:90px"><col style="width:66px"><col style="width:107px"><col style="width:78px"><col style="width:84px"><col style="width:100px"><col style="width:100px"><col style="width:58px"></colgroup>
               <thead><tr>
