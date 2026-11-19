@@ -547,7 +547,14 @@
     body.supplier-wallboard-mode .sb-topbar { flex-shrink: 0; margin-bottom: 12px; }
     body.supplier-wallboard-mode .sb-kpis { flex-shrink: 0; gap: 10px; margin-bottom: 12px; }
     body.supplier-wallboard-mode .sb-kpi { padding: 11px 14px; }
-    body.supplier-wallboard-mode .sb-kpi-value { font-size: 26px; }
+    body.supplier-wallboard-mode .sb-kpi-value { font-size: 32px; }
+    body.supplier-wallboard-mode .sb-kpi-value small { font-size: 18px; }
+    body.supplier-wallboard-mode .sb-kpi-label,
+    body.supplier-wallboard-mode .sb-kpi-sub { font-size: 14px; line-height: 1.45; }
+    body.supplier-wallboard-mode .sb-empty strong { font-size: 17px; }
+    body.supplier-wallboard-mode .sb-empty span,
+    body.supplier-wallboard-mode .sb-alert-main { font-size: 14px; }
+    body.supplier-wallboard-mode .sb-alert-sub { font-size: 13px; }
     /* 让行与图表填满屏幕，消除底部空白 */
     body.supplier-wallboard-mode .sb-row { flex: 1; min-height: 0; display: grid; margin-bottom: 12px; }
     body.supplier-wallboard-mode .sb-card { display: flex; flex-direction: column; min-height: 0; }
@@ -727,6 +734,7 @@ body.supplier-wallboard-mode .content {
   height: 100vh; height: 100dvh; min-height: 0; padding: 16px 24px 58px;
   overflow: hidden; box-sizing: border-box;
 }
+body.supplier-wallboard-mode { min-width: 0; }
 body.supplier-wallboard-mode .sb-page {
   display: grid; height: 100%; min-height: 0;
   grid-template-rows: auto auto minmax(0, 1fr) minmax(0, 1fr) minmax(60px, .32fr);
@@ -743,7 +751,7 @@ body.supplier-wallboard-mode .sb-card-risklist { grid-column: auto; }
 body.supplier-wallboard-mode .sb-row-bottom { grid-template-columns: minmax(0, .9fr) minmax(0, 1fr) minmax(0, 1.05fr); }
 body.supplier-wallboard-mode .sb-card { min-width: 0; min-height: 0; overflow: hidden; }
 body.supplier-wallboard-mode .sb-card-head { padding: 10px 12px 0; flex-wrap: wrap; gap: 6px; }
-body.supplier-wallboard-mode .sb-card-title { font-size: clamp(12px, 1.2vw, 16px); }
+body.supplier-wallboard-mode .sb-card-title { font-size: clamp(15px, 1.35vw, 20px); }
 body.supplier-wallboard-mode .sb-chart { flex: 1 1 0; min-height: 0; overflow: hidden; }
 body.supplier-wallboard-mode .sb-empty { min-height: 0; height: 100%; padding: 12px; box-sizing: border-box; }
 body.supplier-wallboard-mode .sb-risk-table-wrap { flex: 1 1 0; height: 0; min-height: 0; overflow: auto; }
@@ -759,8 +767,8 @@ body.supplier-wallboard-mode .sb-risk-table-wrap { overflow-y: auto; }
 
 .sb-kpi-value small { margin-inline-start: 4px; }
 .sb-risk-table { min-width: 0; }
-body.supplier-wallboard-mode .sb-risk-table th { white-space: normal; overflow-wrap: anywhere; font-size: 10px; padding: 6px 4px; }
-body.supplier-wallboard-mode .sb-risk-table td { padding-inline: 4px; font-size: 11px; }
+body.supplier-wallboard-mode .sb-risk-table th { white-space: normal; overflow-wrap: anywhere; font-size: 12px; padding: 8px 4px; }
+body.supplier-wallboard-mode .sb-risk-table td { padding-inline: 4px; height: 52px; font-size: 13px; }
 body.supplier-wallboard-mode .sb-kpi-label, body.supplier-wallboard-mode .sb-kpi-sub { overflow-wrap: anywhere; }
 .result-content { grid-template-columns: minmax(160px, .9fr) minmax(0, 1.2fr); gap: 24px; }
 .result-donut { width: 180px; height: 180px; justify-self: center; }
