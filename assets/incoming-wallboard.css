@@ -41,7 +41,6 @@ body.wallboard-mode {
   --wallboard-divider: #f0f0f0;
   --wallboard-neutral: #f5f5f5;
   --wallboard-canvas: #f5f5f5;
-  min-width: 0;
   overflow: hidden;
   min-height: 540px;
   color: var(--wallboard-text);
@@ -61,7 +60,7 @@ body.wallboard-mode .wallboard-bar {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  height: 78px;
+  height: 68px;
   padding: 0 25px;
   border: 0;
   border-bottom: 1px solid var(--wallboard-border);
@@ -94,7 +93,7 @@ body.wallboard-mode .wallboard-brand-titles { display: flex; align-items: center
 body.wallboard-mode .wallboard-brand-titles strong {
   overflow: hidden;
   color: var(--wallboard-text);
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 760;
   line-height: 1;
   letter-spacing: -.045em;
@@ -102,7 +101,7 @@ body.wallboard-mode .wallboard-brand-titles strong {
 }
 body.wallboard-mode .wallboard-brand-titles strong b { color: var(--wallboard-blue); font-weight: 760; }
 body.wallboard-mode .wallboard-brand-divider { display: block; width: 1px; height: 27px; background: var(--wallboard-border); }
-body.wallboard-mode .wallboard-brand-sub { display: block; color: var(--wallboard-secondary); font-size: 12px; font-weight: 730; letter-spacing: .16em; }
+body.wallboard-mode .wallboard-brand-sub { display: block; color: var(--wallboard-secondary); font-size: 11px; font-weight: 730; letter-spacing: .16em; }
 body.wallboard-mode .wallboard-actions { display: flex; align-items: center; gap: 18px; }
 body.wallboard-mode .wallboard-live-tag {
   display: inline-flex;
@@ -113,16 +112,16 @@ body.wallboard-mode .wallboard-live-tag {
   border-radius: 6px;
   color: var(--wallboard-green-strong);
   background: var(--wallboard-green-bg);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 740;
 }
 body.wallboard-mode .wallboard-live-tag i,
 body.wallboard-mode .wallboard-factory-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--wallboard-green); }
 body.wallboard-mode .wallboard-factory { display: flex; align-items: center; gap: 9px; }
-body.wallboard-mode .wallboard-factory strong { color: var(--wallboard-green-strong); font-size: 24px; font-weight: 740; }
+body.wallboard-mode .wallboard-factory strong { color: var(--wallboard-green-strong); font-size: 22px; font-weight: 740; }
 body.wallboard-mode .wallboard-clock { display: grid; min-width: 120px; color: var(--wallboard-secondary); font-family: ui-monospace, Consolas, monospace; text-align: right; }
-body.wallboard-mode .wallboard-clock strong { font-size: 15px; font-weight: 500; }
-body.wallboard-mode .wallboard-clock small { font-size: 12px; letter-spacing: .12em; }
+body.wallboard-mode .wallboard-clock strong { font-size: 13px; font-weight: 500; }
+body.wallboard-mode .wallboard-clock small { font-size: 10px; letter-spacing: .12em; }
 body.wallboard-mode .wallboard-fullscreen,
 body.wallboard-mode .wallboard-exit {
   width: 40px;
@@ -153,7 +152,7 @@ body.wallboard-mode .content {
   max-width: none;
   min-height: 540px;
   margin: 0;
-  padding: 92px 17px 16px;
+  padding: 82px 17px 16px;
   overflow: hidden;
   box-sizing: border-box;
   background: var(--wallboard-canvas);
@@ -189,8 +188,8 @@ body.wallboard-mode .overview-grid > .overview-card:first-child {
 body.wallboard-mode .overview-grid > .overview-card:not(:first-child) { display: none; }
 body.wallboard-mode .overview-grid > .overview-card:first-child .card-head,
 body.wallboard-mode .analytics-grid > .card .card-head {
-  height: 64px;
-  flex: 0 0 64px;
+  height: 54px;
+  flex: 0 0 54px;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
@@ -205,22 +204,22 @@ body.wallboard-mode .card-title {
   margin: 0;
   overflow: hidden;
   color: var(--wallboard-text);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 760;
   line-height: 1.25;
   letter-spacing: -.01em;
   text-overflow: ellipsis;
-  white-space: normal;
+  white-space: nowrap;
 }
 body.wallboard-mode .card-title::before { content: ""; width: 4px; height: 19px; flex: 0 0 auto; border-radius: 3px; background: var(--wallboard-blue); }
 body.wallboard-mode .wallboard-flow-title,
 body.wallboard-mode .wallboard-result-title { display: inline; }
 body.wallboard-mode .standard-flow-title,
 body.wallboard-mode .standard-result-title { display: none; }
-body.wallboard-mode .card-subtitle { margin: 3px 0 0 2px; color: var(--wallboard-secondary); font-size: 13px; font-weight: 550; line-height: 1.3; }
-body.wallboard-mode .overview-grid > .overview-card:first-child .card-head > div:first-child { display: grid; align-items: center; gap: 4px; min-width: 0; }
+body.wallboard-mode .card-subtitle { margin: 3px 0 0 2px; color: var(--wallboard-secondary); font-size: 11px; font-weight: 550; line-height: 1.3; }
+body.wallboard-mode .overview-grid > .overview-card:first-child .card-head > div:first-child { display: flex; align-items: center; gap: 9px; min-width: 0; }
 body.wallboard-mode .overview-grid > .overview-card:first-child .card-subtitle { display: none; }
-body.wallboard-mode .overview-grid > .overview-card:first-child .wallboard-flow-subtitle { display: block; margin: 0; color: var(--wallboard-secondary); font-size: 13px; font-weight: 550; }
+body.wallboard-mode .overview-grid > .overview-card:first-child .wallboard-flow-subtitle { display: block; margin: 0; color: var(--wallboard-secondary); font-size: 11px; font-weight: 550; }
 body.wallboard-mode .overview-grid > .overview-card:first-child .segmented { display: none; }
 body.wallboard-mode .flow-body {
   display: grid;
@@ -243,8 +242,8 @@ body.wallboard-mode .donut {
 }
 body.wallboard-mode .donut::before { width: 74%; height: 74%; background: #fff; }
 body.wallboard-mode .donut-core { transform: none; }
-body.wallboard-mode .donut-core strong { color: var(--wallboard-text); font-size: 44px; font-weight: 780; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
-body.wallboard-mode .donut-core span { margin-top: 8px; color: var(--wallboard-secondary); font-size: 14px; }
+body.wallboard-mode .donut-core strong { color: var(--wallboard-text); font-size: 36px; font-weight: 780; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+body.wallboard-mode .donut-core span { margin-top: 8px; color: var(--wallboard-secondary); font-size: 12px; }
 body.wallboard-mode .donut-caption { display: none; }
 body.wallboard-mode .wallboard-status-stats { display: grid; gap: 9px; padding-right: 4px; }
 body.wallboard-mode .wallboard-status-stat {
@@ -261,11 +260,11 @@ body.wallboard-mode .wallboard-status-stat {
 body.wallboard-mode .wallboard-status-stat.processing { border-color: var(--wallboard-blue-border); background: var(--wallboard-blue-bg); }
 body.wallboard-mode .wallboard-status-stat.overdue { border-color: var(--wallboard-red-border); background: var(--wallboard-red-bg); }
 body.wallboard-mode .wallboard-status-stat.completed { border-color: var(--wallboard-green-border); background: var(--wallboard-green-bg); }
-body.wallboard-mode .wallboard-stat-label { display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--wallboard-secondary); font-size: 14px; }
+body.wallboard-mode .wallboard-stat-label { display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--wallboard-secondary); font-size: 12px; }
 body.wallboard-mode .wallboard-stat-label i { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--wallboard-blue); }
 body.wallboard-mode .wallboard-status-stat.overdue .wallboard-stat-label i { background: var(--wallboard-red); }
 body.wallboard-mode .wallboard-status-stat.completed .wallboard-stat-label i { background: var(--wallboard-green); }
-body.wallboard-mode .wallboard-status-stat > strong { color: var(--wallboard-text); font-size: 28px; font-weight: 740; line-height: 1; font-variant-numeric: tabular-nums; }
+body.wallboard-mode .wallboard-status-stat > strong { color: var(--wallboard-text); font-size: 23px; font-weight: 740; line-height: 1; font-variant-numeric: tabular-nums; }
 body.wallboard-mode .wallboard-status-foot {
   display: flex;
   align-items: center;
@@ -274,21 +273,21 @@ body.wallboard-mode .wallboard-status-foot {
   padding: 9px 15px;
   border-top: 1px solid var(--wallboard-divider);
   color: var(--wallboard-secondary);
-  font-size: 13px;
+  font-size: 11px;
 }
 body.wallboard-mode .wallboard-status-foot strong { color: var(--wallboard-text); font-weight: 720; }
 body.wallboard-mode .wallboard-chart-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex: 0 0 40px;
+  flex: 0 0 32px;
   min-width: 0;
   padding: 0 14px;
   border-top: 1px solid var(--wallboard-divider);
   color: var(--wallboard-secondary);
-  font-size: 13px;
+  font-size: 10px;
 }
-body.wallboard-mode .wallboard-chart-bottom strong { color: var(--wallboard-text); font-size: 14px; font-weight: 700; }
+body.wallboard-mode .wallboard-chart-bottom strong { color: var(--wallboard-text); font-size: 11px; font-weight: 700; }
 body.wallboard-mode #supplierRankFoot { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 body.wallboard-mode .status-stack { display: none; }
 
@@ -301,8 +300,8 @@ body.wallboard-mode .table-card {
   padding: 0;
 }
 body.wallboard-mode .table-toolbar {
-  height: 64px;
-  flex: 0 0 64px;
+  height: 54px;
+  flex: 0 0 54px;
   align-items: center;
   padding: 0 17px;
   border-bottom: 1px solid var(--wallboard-divider);
@@ -311,10 +310,10 @@ body.wallboard-mode .table-toolbar > div:first-child { display: flex; align-item
 body.wallboard-mode .table-toolbar .card-title { flex: 0 0 auto; }
 body.wallboard-mode .table-toolbar .card-title::before { background: var(--wallboard-blue); }
 body.wallboard-mode .table-toolbar .card-subtitle { display: none; }
-body.wallboard-mode .wallboard-table-subtitle { display: block; margin: 0; overflow: hidden; color: var(--wallboard-secondary); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+body.wallboard-mode .wallboard-table-subtitle { display: block; margin: 0; overflow: hidden; color: var(--wallboard-secondary); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 body.wallboard-mode .table-toolbar .filters { display: none; }
 body.wallboard-mode .wallboard-table-meta { display: flex; align-items: center; gap: 8px; }
-body.wallboard-mode .rows-badge { padding: 5px 8px; border-radius: 6px; color: var(--wallboard-blue-strong); background: var(--wallboard-blue-bg); font-size: 12px; font-weight: 740; white-space: nowrap; }
+body.wallboard-mode .rows-badge { padding: 5px 8px; border-radius: 6px; color: var(--wallboard-blue-strong); background: var(--wallboard-blue-bg); font-size: 10px; font-weight: 740; white-space: nowrap; }
 body.wallboard-mode .rows-badge strong { font-weight: 760; }
 body.wallboard-mode .table-meta,
 body.wallboard-mode .table-pagination { display: none; }
@@ -339,24 +338,24 @@ body.wallboard-mode #iqcTable th:last-child,
 body.wallboard-mode #iqcTable td:last-child { display: none; }
 body.wallboard-mode #iqcTable col.wallboard-only-col { display: table-column; }
 body.wallboard-mode #iqcTable :is(th, td) { padding: 0 6px; border: 0; }
-body.wallboard-mode #iqcTable thead tr { height: 52px; }
+body.wallboard-mode #iqcTable thead tr { height: 40px; }
 body.wallboard-mode #iqcTable th {
-  height: 52px;
+  height: 40px;
   color: var(--wallboard-secondary);
   background: var(--wallboard-neutral);
-  font-size: clamp(11px, .9vw, 13px);
+  font-size: clamp(9px, .78vw, 11px);
   font-weight: 750;
   line-height: 1.25;
   white-space: normal;
   overflow-wrap: anywhere;
   box-shadow: inset 0 -1px 0 var(--wallboard-border);
 }
-body.wallboard-mode #iqcTable tbody tr { height: 64px; border: 0; }
+body.wallboard-mode #iqcTable tbody tr { height: 40px; border: 0; }
 body.wallboard-mode #iqcTable tbody tr:hover { background: var(--wallboard-blue-bg); }
 body.wallboard-mode #iqcTable tbody td {
-  height: 64px;
+  height: 40px;
   color: var(--wallboard-secondary);
-  font-size: clamp(12px, 1vw, 14px);
+  font-size: clamp(10px, .8vw, 12px);
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
@@ -372,8 +371,7 @@ body.wallboard-mode #iqcTable .supplier-cell small { display: none; }
 body.wallboard-mode .wallboard-only-col { display: table-cell; }
 body.wallboard-mode .wallboard-supplier-label { display: inline; }
 body.wallboard-mode .standard-supplier-label { display: none; }
-body.wallboard-mode .status-pill { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; box-sizing: border-box; padding: 5px 6px; border: 0; border-radius: 6px; color: var(--wallboard-blue-strong); background: var(--wallboard-blue-bg); font-size: inherit; font-weight: 740; white-space: normal; line-height: 1.25; }
-body.wallboard-mode #iqcTable .tag { height: auto; min-height: 24px; max-width: 100%; box-sizing: border-box; padding: 4px 6px; font-size: inherit; white-space: normal; line-height: 1.25; }
+body.wallboard-mode .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border: 0; border-radius: 6px; color: var(--wallboard-blue-strong); background: var(--wallboard-blue-bg); font-size: inherit; font-weight: 740; }
 body.wallboard-mode .status-pill::before { display: none; }
 body.wallboard-mode #iqcTable .status-pill.overdue { color: var(--wallboard-red-strong); background: var(--wallboard-red-bg); }
 body.wallboard-mode #iqcTable .status-pill.done,
@@ -401,7 +399,7 @@ body.wallboard-mode .result-content,
 body.wallboard-mode .result-foot { display: none; }
 body.wallboard-mode .wallboard-inspector-bars { display: flex; flex: 1; min-height: 0; padding: 6px 12px 4px; }
 body.wallboard-mode .wallboard-inspector-empty,
-body.wallboard-mode .wallboard-rank-empty { display: grid; flex: 1; place-items: center; min-height: 0; color: var(--wallboard-muted); font-size: 15px; }
+body.wallboard-mode .wallboard-rank-empty { display: grid; flex: 1; place-items: center; min-height: 0; color: var(--wallboard-muted); font-size: 13px; }
 body.wallboard-mode .wallboard-inspector-chart,
 body.wallboard-mode .wallboard-result-chart { display: block; width: 100%; height: 100%; overflow: visible; }
 body.wallboard-mode .wallboard-inspector-grid,
@@ -409,25 +407,25 @@ body.wallboard-mode .wallboard-result-grid { stroke: var(--wallboard-divider); s
 body.wallboard-mode .wallboard-inspector-axis,
 body.wallboard-mode .wallboard-result-axis,
 body.wallboard-mode .wallboard-inspector-name,
-body.wallboard-mode .wallboard-result-name { fill: var(--wallboard-secondary); font: 16px Inter, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; }
+body.wallboard-mode .wallboard-result-name { fill: var(--wallboard-secondary); font: 12px Inter, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; }
 body.wallboard-mode .wallboard-inspector-value,
-body.wallboard-mode .wallboard-result-value { fill: var(--wallboard-secondary); font: 17px Inter, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; font-weight: 720; }
+body.wallboard-mode .wallboard-result-value { fill: var(--wallboard-secondary); font: 13px Inter, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; font-weight: 720; }
 body.wallboard-mode .wallboard-inspector-bar { fill: var(--wallboard-orange); }
 body.wallboard-mode .wallboard-result-bars { display: block; flex: 1; min-height: 0; padding: 6px 12px 5px; }
 body.wallboard-mode .wallboard-result-bar-pass { fill: var(--wallboard-green); }
 body.wallboard-mode .wallboard-result-bar-special { fill: var(--wallboard-gold); }
 body.wallboard-mode .wallboard-result-bar-fail { fill: var(--wallboard-red); }
-body.wallboard-mode .wallboard-result-pass-label { fill: #fff; font: 18px Inter, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; font-weight: 720; }
+body.wallboard-mode .wallboard-result-pass-label { fill: #fff; font: 13px Inter, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; font-weight: 720; }
 body.wallboard-mode .wallboard-result-key-dot.pass { fill: var(--wallboard-green); }
 body.wallboard-mode .wallboard-result-key-dot.special { fill: var(--wallboard-gold); }
 body.wallboard-mode .wallboard-result-key-dot.fail { fill: var(--wallboard-red); }
 body.wallboard-mode .supplier-rank-actions { display: flex; align-items: center; gap: 10px; min-width: 0; }
 body.wallboard-mode #supplierRankBoard .card-head > div:first-child { min-width: 0; }
-body.wallboard-mode #supplierRankBoard .card-subtitle { display: block; color: var(--wallboard-secondary); font-size: 13px; line-height: 1.3; }
+body.wallboard-mode #supplierRankBoard .card-subtitle { display: block; color: var(--wallboard-secondary); font-size: 11px; line-height: 1.3; }
 body.wallboard-mode .rank-tabs { flex: 0 0 auto; padding: 2px; border: 1px solid var(--wallboard-divider); border-radius: 6px; background: var(--wallboard-neutral); }
-body.wallboard-mode .rank-tabs button { height: 30px; min-height: 30px; padding: 0 7px; border-radius: 5px; font-size: 12px; }
+body.wallboard-mode .rank-tabs button { height: 24px; min-height: 24px; padding: 0 7px; border-radius: 5px; font-size: 10px; }
 body.wallboard-mode .rank-tabs button.active { color: var(--wallboard-blue-strong); background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-body.wallboard-mode .chart-key { display: flex; align-items: center; gap: 8px; color: var(--wallboard-secondary); font-size: 12px; }
+body.wallboard-mode .chart-key { display: flex; align-items: center; gap: 8px; color: var(--wallboard-secondary); font-size: 10px; }
 body.wallboard-mode .chart-key span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 body.wallboard-mode .key-box { width: 10px; height: 8px; border-radius: 2px; background: var(--wallboard-red); }
 body.wallboard-mode .key-line { width: 14px; height: 3px; border-radius: 2px; background: var(--wallboard-orange); }
@@ -435,28 +433,21 @@ body.wallboard-mode #supplierRankBoard[data-rank-mode="top"] .key-box { backgrou
 body.wallboard-mode .supplier-rank-chart { flex: 1 1 0; min-height: 0; margin: 0; }
 
 @media (max-width: 1320px) and (min-width: 901px) {
-  body.wallboard-mode .wallboard-bar { height: 70px; padding-inline: 16px; }
+  body.wallboard-mode .wallboard-bar { height: 58px; padding-inline: 16px; }
   body.wallboard-mode .wallboard-brand-titles strong { font-size: 23px; }
   body.wallboard-mode .wallboard-brand-sub { display: none; }
   body.wallboard-mode .wallboard-brand-divider { display: none; }
   body.wallboard-mode .wallboard-actions { gap: 10px; }
-  body.wallboard-mode .content { padding: 80px 9px 9px; gap: 9px; grid-template-columns: minmax(290px, 24fr) minmax(0, 76fr); grid-template-rows: minmax(280px, 1.06fr) minmax(245px, .94fr); }
+  body.wallboard-mode .content { padding: 67px 9px 9px; gap: 9px; grid-template-columns: minmax(290px, 24fr) minmax(0, 76fr); grid-template-rows: minmax(280px, 1.06fr) minmax(245px, .94fr); }
   body.wallboard-mode .analytics-grid { gap: 9px; }
   body.wallboard-mode .overview-grid > .overview-card:first-child .card-head,
   body.wallboard-mode .analytics-grid > .card .card-head,
-  body.wallboard-mode .table-toolbar { height: 64px; flex-basis: 64px; padding-inline: 11px; }
-  body.wallboard-mode .card-title { font-size: 16px; }
-  body.wallboard-mode .table-wrap { overflow-x: auto; }
-  body.wallboard-mode #iqcTable { min-width: 1440px; }
-  body.wallboard-mode #iqcTable th { font-size: 11px; }
-  body.wallboard-mode #iqcTable tbody td { font-size: 12px; }
-  body.wallboard-mode .flow-body { grid-template-columns: minmax(110px, .9fr) minmax(0, 1.1fr); padding: 8px; }
-  body.wallboard-mode .wallboard-status-stat { gap: 4px; padding: 6px; }
-  body.wallboard-mode .wallboard-stat-label { font-size: 12px; line-height: 1.25; }
-  body.wallboard-mode .wallboard-status-stat > strong { font-size: 24px; }
-  body.wallboard-mode .wallboard-status-foot { gap: 6px; padding: 8px; font-size: 11px; }
+  body.wallboard-mode .table-toolbar { height: 46px; flex-basis: 46px; padding-inline: 11px; }
+  body.wallboard-mode .card-title { font-size: 14px; }
+  body.wallboard-mode #iqcTable th { font-size: 9px; }
+  body.wallboard-mode #iqcTable tbody td { font-size: 10px; }
   body.wallboard-mode .supplier-rank-actions { gap: 5px; }
-  body.wallboard-mode .chart-key { gap: 5px; font-size: 11px; }
+  body.wallboard-mode .chart-key { gap: 5px; font-size: 9px; }
   body.wallboard-mode .wallboard-live-tag { display: none; }
 }
 @media (max-height: 620px) and (min-width: 901px) {
@@ -515,45 +506,35 @@ body.wallboard-mode .supplier-rank-chart { flex: 1 1 0; min-height: 0; margin: 0
 
 /* The English + Thai option uses the same board, with room for both labels. */
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles { flex-direction: column; align-items: flex-start; gap: 4px; }
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles strong { font-size: 24px; line-height: 1.25; white-space: normal; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles strong { font-size: 22px; line-height: 1.25; white-space: normal; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-divider { display: none; }
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-sub { font-size: 11px; letter-spacing: .03em; white-space: normal; }
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-sub { font-size: 9px; letter-spacing: .03em; white-space: normal; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-actions { gap: 12px; flex-shrink: 0; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-live-tag { max-width: 160px; white-space: normal; }
-html[data-ui-locale="en-th"] body.wallboard-mode .card-title { white-space: normal; font-size: 18px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .card-title { white-space: normal; }
 html[data-ui-locale="en-th"] body.wallboard-mode .overview-grid > .overview-card:first-child .card-head,
-html[data-ui-locale="en-th"] body.wallboard-mode .analytics-grid > .card .card-head { height: 96px; flex-basis: 96px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .analytics-grid > .card .card-head { height: 82px; flex-basis: 82px; }
 html[data-ui-locale="en-th"] body.wallboard-mode .overview-grid > .overview-card:first-child .card-head > div:first-child { display: grid; gap: 4px; }
 html[data-ui-locale="en-th"] body.wallboard-mode .donut-core span { max-width: 75%; margin-inline: auto; line-height: 1.4; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-status-stat { gap: 5px; padding: 8px; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-stat-label { line-height: 1.4; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-stat-label span { white-space: normal; }
 html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar > div:first-child { display: grid; gap: 3px; }
-html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar { height: 78px; flex-basis: 78px; gap: 10px; }
-html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar .card-title { flex-shrink: 1; font-size: 18px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar { height: 68px; flex-basis: 68px; gap: 10px; }
+html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar .card-title { flex-shrink: 1; font-size: 15px; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-table-meta { flex-shrink: 0; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-table-meta .status-pill { max-width: 130px; white-space: normal; }
-html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(thead tr, th) { height: 90px; }
-html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(tbody tr, tbody td) { height: 76px; }
-html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(td:nth-child(9), td:nth-child(12), td:nth-child(13), td:nth-child(14)) { white-space: normal; font-size: 12.5px; }
-html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(.status-pill, .tag) { display: block; box-sizing: border-box; width: 100%; max-width: 100%; padding: 4px 3px; white-space: normal; line-height: 1.2; font-size: 12.5px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(thead tr, th) { height: 70px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(tbody tr, tbody td) { height: 64px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(td:nth-child(9), td:nth-child(12), td:nth-child(13), td:nth-child(14)) { white-space: normal; font-size: 10.5px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(.status-pill, .tag) { display: block; box-sizing: border-box; width: 100%; max-width: 100%; padding: 4px 3px; white-space: normal; line-height: 1.2; font-size: 10.5px; }
 html[data-ui-locale="en-th"] body.wallboard-mode .analytics-grid > .card .card-head { align-items: flex-start; padding-block: 9px; }
-html[data-ui-locale="en-th"] body.wallboard-mode #supplierRankBoard .card-head { height: auto; flex-basis: auto; min-height: 96px; flex-wrap: wrap; gap: 5px; }
+html[data-ui-locale="en-th"] body.wallboard-mode #supplierRankBoard .card-head { height: auto; flex-basis: auto; min-height: 82px; flex-wrap: wrap; gap: 5px; }
 html[data-ui-locale="en-th"] body.wallboard-mode #supplierRankBoard .supplier-rank-actions { width: 100%; justify-content: space-between; gap: 5px; }
-html[data-ui-locale="en-th"] body.wallboard-mode .rank-tabs button { height: auto; min-height: 32px; max-width: 160px; white-space: normal; line-height: 1.3; }
+html[data-ui-locale="en-th"] body.wallboard-mode .rank-tabs button { height: auto; min-height: 26px; max-width: 135px; white-space: normal; line-height: 1.3; }
 html[data-ui-locale="en-th"] body.wallboard-mode .chart-key { flex-wrap: wrap; gap: 4px; }
 html[data-ui-locale="en-th"] body.wallboard-mode .chart-key span { white-space: normal; }
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-chart-bottom { gap: 6px; min-height: 44px; line-height: 1.4; }
-@media (max-width: 1320px) and (min-width: 901px) {
-  html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar { height: auto; min-height: 104px; flex-basis: auto; flex-wrap: wrap; padding-block: 8px; gap: 6px; }
-  html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar > div:first-child { width: 100%; }
-  html[data-ui-locale="en-th"] body.wallboard-mode .overview-grid > .overview-card:first-child .card-head,
-  html[data-ui-locale="en-th"] body.wallboard-mode .analytics-grid > .card .card-head { height: 108px; flex-basis: 108px; }
-  html[data-ui-locale="en-th"] body.wallboard-mode .card-title { font-size: 16px; }
-  html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-status-stat { padding: 6px; }
-  html[data-ui-locale="en-th"] body.wallboard-mode .donut-core strong { font-size: 38px; }
-  html[data-ui-locale="en-th"] body.wallboard-mode .donut-core span { max-width: 95%; margin-top: 4px; font-size: 12px; line-height: 1.2; }
-}
+html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-chart-bottom { gap: 6px; min-height: 36px; line-height: 1.4; }
 @media (max-width: 900px) {
   html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles strong { font-size: 16px; }
   html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-sub { display: none; }

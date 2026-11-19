@@ -636,7 +636,7 @@
         }).join('');
         const svgLabel = (label, x, y, className, anchor = '') => {
           const lines = locale === 'en-th' ? label.split(' · ') : [label];
-          return `<text class="${className}" x="${x}" y="${y}"${anchor ? ` text-anchor="${anchor}"` : ''}>${lines.map((line, index) => `<tspan x="${x}" dy="${index ? 18 : 0}">${escHtml(line)}</tspan>`).join('')}</text>`;
+          return `<text class="${className}" x="${x}" y="${y}"${anchor ? ` text-anchor="${anchor}"` : ''}>${lines.map((line, index) => `<tspan x="${x}" dy="${index ? 14 : 0}">${escHtml(line)}</tspan>`).join('')}</text>`;
         };
         const bars = entries.map((entry) => {
           const height = axisMax ? entry.count / axisMax * plotHeight : 0;
@@ -645,15 +645,15 @@
           const label = entry.color === 'pass' && height > 40
             ? `<text class="wallboard-result-pass-label" x="171" y="${labelY}" text-anchor="middle">${nf.format(entry.count)}</text>`
             : `<text class="wallboard-result-value" x="${entry.x + 46}" y="${labelY}" text-anchor="middle">${nf.format(entry.count)}</text>`;
-          return `<rect class="wallboard-result-bar-${entry.color}" x="${entry.x}" y="${top}" width="92" height="${Math.max(entry.count ? 6 : 0, height)}" rx="${height > 9 ? 4 : 3}"/>${label}${svgLabel(entry.label, entry.x + 46, 273, 'wallboard-result-name', 'middle')}`;
+          return `<rect class="wallboard-result-bar-${entry.color}" x="${entry.x}" y="${top}" width="92" height="${Math.max(entry.count ? 6 : 0, height)}" rx="${height > 9 ? 4 : 3}"/>${label}${svgLabel(entry.label, entry.x + 46, 277, 'wallboard-result-name', 'middle')}`;
         }).join('');
         const key = [
           { y: 82, name: t('result_pass'), color: 'pass' },
           { y: 102, name: t('result_special'), color: 'special' },
           { y: 122, name: ui('退货'), color: 'fail' }
         ].map((entry, index) => {
-          const x = [90, 265, 450][index], y = 24;
-          return `<circle class="wallboard-result-key-dot ${entry.color}" cx="${x - 12}" cy="${y - 5}" r="4"/>${svgLabel(entry.name, x, y, 'wallboard-result-axis')}`;
+          const y = entry.y + (locale === 'en-th' ? index * 12 : 0);
+          return `<circle class="wallboard-result-key-dot ${entry.color}" cx="500" cy="${y - 3}" r="4"/>${svgLabel(entry.name, 510, y, 'wallboard-result-axis')}`;
         }).join('');
         wallboardBars.innerHTML = `<svg class="wallboard-result-chart" viewBox="0 0 620 300" preserveAspectRatio="none" role="img" aria-label="${escHtml(ui('检验结果统计图'))}">${grids}${bars}${key}</svg>`;
       }
@@ -713,25 +713,9 @@
     let sbPrevMap = new Map();
     let sbCategories = [];
     const sbCharts = {};
-    const chartOptions = new WeakMap();
-
-    function enlargeChartText(value) {
-      if (Array.isArray(value)) return value.map(enlargeChartText);
-      if (!value || typeof value !== 'object') return value;
-      return Object.fromEntries(Object.entries(value).map(([key, child]) =>
-        [key, ['fontSize', 'lineHeight'].includes(key) && typeof child === 'number' ? child + 2 : enlargeChartText(child)]));
-    }
 
     function setChartOption(chart, option) {
-      chartOptions.set(chart, option);
-      const board = wallboardMode || supplierWallboardMode;
-      const presentation = board ? enlargeChartText(option) : option;
-      if (board && presentation.grid) {
-        for (const side of ['left', 'right', 'top', 'bottom']) {
-          if (typeof presentation.grid[side] === 'number') presentation.grid[side] += 8;
-        }
-      }
-      chart.setOption({ ...presentation, animation: !board, animationDuration: 200 }, { notMerge: true, lazyUpdate: true });
+      chart.setOption({ ...option, animation: !(wallboardMode || supplierWallboardMode), animationDuration: 200 }, { notMerge: true, lazyUpdate: true });
     }
 
     function ensureSbChart(key, el) {
@@ -1575,7 +1559,7 @@
       if (!wallboardMode) return;
       if (!tableRows.length) return;
       tableScroller = createLoopingTableScroller($('.table-card .table-wrap'), {
-        speed: 128, count: tableRows.length, ...position,
+        speed: 96, count: tableRows.length, ...position,
         renderWindow: (start, count) => {
           $('#iqcTableBody').innerHTML = Array.from({ length: count }, (_, i) => rowHtml(tableRows[(start + i) % tableRows.length])).join('');
         }
@@ -1584,7 +1568,7 @@
     function stopSbAutoScroll() { riskScroller?.stop(); riskScroller = null; }
     function startSbAutoScroll() {
       stopSbAutoScroll();
-      if (supplierWallboardMode) riskScroller = createTableScroller($('.sb-risk-table-wrap'), { speed: 22 });
+      if (supplierWallboardMode) riskScroller = createTableScroller($('.sb-risk-table-wrap'), { speed: 18 });
     }
     function syncWallboardClasses() {
       document.body.classList.toggle('wallboard-mode', wallboardMode);
@@ -1597,10 +1581,6 @@
       if (!wallboardMode) stopTableAutoScroll();
       if (supplierWallboardMode) startSbAutoScroll();
       else stopSbAutoScroll();
-      Object.values(sbCharts).forEach(chart => {
-        const option = chartOptions.get(chart);
-        if (option && !chart.isDisposed()) setChartOption(chart, option);
-      });
       scheduleChartResize();
     }
     function setWallboardMode(enabled, useFullscreen = true) {
