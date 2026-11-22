@@ -2,6 +2,21 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const vm = require('node:vm');
 const fs = require('node:fs');
+test('chart resizing skips hidden and disposed instances, then restores the visible chart', () => {
+  const frames = new Map(), element = { clientWidth: 0, clientHeight: 0 }; let next = 0, resized = 0;
+  const ctx = vm.createContext({
+    sbCharts: {
+      live: { isDisposed: () => false, getDom: () => element, resize() { resized++; } },
+      dead: { isDisposed: () => true, getDom() { throw new Error('Disposed instance must not be accessed'); } }
+    },
+    requestAnimationFrame(fn) { frames.set(++next, fn); return next; }
+  });
+  vm.runInContext(fs.readFileSync('assets/wallboard.js', 'utf8'), ctx);
+  const flush = () => { const [id, callback] = frames.entries().next().value; frames.delete(id); callback(); };
+  vm.runInContext('scheduleChartResize(); scheduleChartResize()', ctx); assert.equal(frames.size, 1); flush(); assert.equal(resized, 0);
+  element.clientWidth = 500; element.clientHeight = 260;
+  vm.runInContext('scheduleChartResize()', ctx); flush(); assert.equal(resized, 1); assert.equal(frames.size, 0);
+});
 function setup({ speed = 36, onEnd, reduced = false, height = 800 } = {}) {
   let layoutReads = 0, next = 0, disconnected = false;
   const frames = new Map(), listeners = new Map(), pointerListeners = new Map();

@@ -398,8 +398,8 @@ body.wallboard-mode .capacity-line,
 body.wallboard-mode .result-content,
 body.wallboard-mode .result-foot { display: none; }
 body.wallboard-mode .wallboard-inspector-bars { display: flex; flex: 1; min-height: 0; padding: 6px 12px 4px; }
-body.wallboard-mode .wallboard-inspector-empty,
-body.wallboard-mode .wallboard-rank-empty { display: grid; flex: 1; place-items: center; min-height: 0; color: var(--wallboard-muted); font-size: 13px; }
+body.wallboard-mode .wallboard-inspector-empty { display: grid; flex: 1; place-items: center; min-height: 0; color: var(--wallboard-muted); font-size: 13px; }
+body.wallboard-mode #supplierRankChart .sb-empty { min-height: 0; height: 100%; padding: 12px; text-align: center; color: var(--wallboard-muted); }
 body.wallboard-mode .wallboard-inspector-chart,
 body.wallboard-mode .wallboard-result-chart { display: block; width: 100%; height: 100%; overflow: visible; }
 body.wallboard-mode .wallboard-inspector-grid,
