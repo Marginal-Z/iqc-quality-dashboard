@@ -32,10 +32,10 @@
 
     const I18N = {
       zh: {
-        current_plant: '当前工厂', navigation: '导航菜单', menu_overview: '质量总览', menu_tasks: '检验任务', menu_supplier: '供应商质量', menu_reports: '报表中心', menu_settings: '系统设置', sync_copy: '已连接 QMS 数据源 · 每 5 分钟自动同步。', role_label: '质量管理员', breadcrumb_parent: '质量运营', breadcrumb_current: 'IQC 来料检验', hero_kicker: '来料质量运营', hero_title: 'SHARETRONIC.IQC 来料检验看板', hero_subtitle: '连接 QMS 的实时质量看板，快速识别待检、超时与供应商风险。', date_today: '—', refresh: '刷新数据', export: '导出看板', kpi_incoming: '今日送检批次', kpi_pending: '待检总批次', kpi_overdue: '超时未完成', kpi_passrate: '本月一次合格率', kpi_urgent: '加急批次', unit_lot: '批', unit_urgent: '加急', vs_yesterday: '较昨日', need_assignment: '需及时分配', vs_last_week: '较上周', vs_last_month: '较上月', of_today_incoming: '占今日送检', flow_title: '检验流转总览', flow_subtitle: '按检验状态实时分布', range_today_short: '今日', range_week_short: '本周', range_month_short: '本月', unit_lot_full: '检验批次', flow_caption: '今日累计送检', status_pending: '待检', status_processing: '检验中', status_done: '已完成', status_overdue: '超时未完成', trend_title: '一次合格率趋势', trend_subtitle: '近 7 日来料质量变化', legend_passrate: '一次合格率', legend_lots: '送检批次', trend_note: '根据近 7 日检验数据动态计算', alert_title: '异常与预警', alert_subtitle: '需要质量团队及时关注', alert_count: '3 条需关注', alert_overdue: '时效已超 SLA', alert_urgent: '加急任务待分配', alert_fail: '供应商批次不合格', view_all_alerts: '查看全部预警', table_title: '来料检验任务', table_subtitle: '接入 QMS 的最新检验任务 · 支持按状态、加急与关键字快速定位', search_placeholder: '搜索单号 / 料号 / 供应商', range_today: '今日', range_week: '本周', range_month: '本月', all_status: '全部状态', urgent_only: '仅看加急', live_data: 'QMS 实时同步', refresh_every: '每 5 分钟刷新', unit_task: '条任务', col_id: '单号', col_part: '料号', col_name: '物料名称', col_category: '物料类别', col_factory: '收料工厂', col_supplier: '供应商 / 编码', col_qty: '来料数量', col_urgent: '加急', col_date: '送检日期', col_inspector: '检验员', col_node: '流程节点', col_sla: '时效状态', col_result: '检验结果', col_action: '操作', yes: '是', no: '否', result_processing: '进行中', result_pending: '未开始', result_pass: '合格', empty_state: '没有符合当前筛选条件的任务', inspector_title: '检验员待检统计', inspector_subtitle: '当前待检任务 · 按数量排序', unit_waiting_lot: '个待检批次', capacity_label: '团队产能使用率', result_title: '检验结果统计', result_subtitle: '本月累计', total_inspections: '总检验批次', result_special: '特采', result_fail: '不合格', result_note: '一次合格率', supplier_title: '供应商质量排名', supplier_subtitle: '按本月一次合格率', top_rank: '正向排名', bottom_rank: '倒数排名', bottom_risk: '倒数第一供应商', supplier_batches: '批', close: '关闭', detail_kicker: 'QMS 检验记录', detail_part: '料号', detail_material: '物料名称', detail_category: '物料类别', detail_supplier: '供应商', detail_quantity: '来料数量', detail_inspector: '检验员', detail_date: '送检日期', detail_status: '当前状态', detail_sla: 'SLA 时限', detail_timeline: '流程轨迹', timeline_received: '收料登记', timeline_submitted: '送检申请', timeline_inspecting: 'IQC 检验', timeline_closed: '结果关闭', open_qms: '打开 QMS 检验单', last_refresh: '上次更新', refresh_done: '数据已刷新', export_done: '已导出当前筛选任务', alert_done: '暂无更多预警', qms_demo: '演示模式：请在 QMS_CONFIG 中开启真实接口。'
+        current_plant: '当前工厂', navigation: '导航菜单', menu_overview: '质量总览', menu_tasks: '检验任务', menu_supplier: '供应商质量', menu_reports: '报表中心', menu_settings: '系统设置', sync_copy: '已连接 QMS 数据源 · 任务每 10 秒刷新，统计每 30 秒同步。', role_label: '质量管理员', breadcrumb_parent: '质量运营', breadcrumb_current: 'IQC 来料检验', hero_kicker: '来料质量运营', hero_title: 'SHARETRONIC.IQC 来料检验看板', hero_subtitle: '连接 QMS 的实时质量看板，快速识别待检、超时与供应商风险。', date_today: '—', refresh: '刷新数据', export: '导出看板', kpi_incoming: '今日送检批次', kpi_pending: '待检总批次', kpi_overdue: '超时未完成', kpi_passrate: '本月一次合格率', kpi_urgent: '加急批次', unit_lot: '批', unit_urgent: '加急', vs_yesterday: '较昨日', need_assignment: '需及时分配', vs_last_week: '较上周', vs_last_month: '较上月', of_today_incoming: '占今日送检', flow_title: '检验流转总览', flow_subtitle: '按检验状态实时分布', range_today_short: '今日', range_week_short: '本周', range_month_short: '本月', unit_lot_full: '检验批次', flow_caption: '今日累计送检', status_pending: '待检', status_processing: '检验中', status_done: '已完成', status_overdue: '超时未完成', trend_title: '一次合格率趋势', trend_subtitle: '近 7 日来料质量变化', legend_passrate: '一次合格率', legend_lots: '送检批次', trend_note: '根据近 7 日检验数据动态计算', alert_title: '异常与预警', alert_subtitle: '需要质量团队及时关注', alert_count: '3 条需关注', alert_overdue: '时效已超 SLA', alert_urgent: '加急任务待分配', alert_fail: '供应商批次不合格', view_all_alerts: '查看全部预警', table_title: '来料检验任务', table_subtitle: '接入 QMS 的最新检验任务 · 支持按状态、加急与关键字快速定位', search_placeholder: '搜索单号 / 料号 / 供应商', range_today: '今日', range_week: '本周', range_month: '本月', all_status: '全部状态', urgent_only: '仅看加急', live_data: 'QMS 实时同步', refresh_every: '任务 10 秒 · 统计 30 秒', unit_task: '条任务', col_id: '单号', col_part: '料号', col_name: '物料名称', col_category: '物料类别', col_factory: '收料工厂', col_supplier: '供应商 / 编码', col_qty: '来料数量', col_urgent: '加急', col_date: '送检日期', col_inspector: '检验员', col_node: '流程节点', col_sla: '时效状态', col_result: '检验结果', col_action: '操作', yes: '是', no: '否', result_processing: '进行中', result_pending: '未开始', result_pass: '合格', empty_state: '没有符合当前筛选条件的任务', inspector_title: '检验员待检统计', inspector_subtitle: '当前待检任务 · 按数量排序', unit_waiting_lot: '个待检批次', capacity_label: '团队产能使用率', result_title: '检验结果统计', result_subtitle: '本月累计', total_inspections: '总检验批次', result_special: '特采', result_fail: '不合格', result_note: '一次合格率', supplier_title: '供应商质量排名', supplier_subtitle: '按本月一次合格率', top_rank: '正向排名', bottom_rank: '倒数排名', bottom_risk: '倒数第一供应商', supplier_batches: '批', close: '关闭', detail_kicker: 'QMS 检验记录', detail_part: '料号', detail_material: '物料名称', detail_category: '物料类别', detail_supplier: '供应商', detail_quantity: '来料数量', detail_inspector: '检验员', detail_date: '送检日期', detail_status: '当前状态', detail_sla: 'SLA 时限', detail_timeline: '流程轨迹', timeline_received: '收料登记', timeline_submitted: '送检申请', timeline_inspecting: 'IQC 检验', timeline_closed: '结果关闭', open_qms: '打开 QMS 检验单', last_refresh: '上次更新', refresh_done: '数据已刷新', export_done: '已导出当前筛选任务', alert_done: '暂无更多预警', qms_demo: '演示模式：请在 QMS_CONFIG 中开启真实接口。'
       },
       th: {
-        current_plant: 'โรงงานปัจจุบัน', navigation: 'เมนูนำทาง', menu_overview: 'ภาพรวมคุณภาพ', menu_tasks: 'งานตรวจรับเข้า', menu_supplier: 'คุณภาพซัพพลายเออร์', menu_reports: 'ศูนย์รายงาน', menu_settings: 'ตั้งค่าระบบ', sync_copy: 'เชื่อมต่อ QMS แล้ว · ซิงค์อัตโนมัติทุก 5 นาที', role_label: 'ผู้ดูแลคุณภาพ', breadcrumb_parent: 'การดำเนินงานคุณภาพ', breadcrumb_current: 'ตรวจรับเข้า IQC', hero_kicker: 'การดำเนินงานคุณภาพขาเข้า', hero_title: 'SHARETRONIC.IQC แดชบอร์ดตรวจรับเข้า IQC', hero_subtitle: 'แดชบอร์ดคุณภาพแบบเรียลไทม์จาก QMS เพื่อค้นหางานรอตรวจ งานเกินเวลา และความเสี่ยงซัพพลายเออร์', date_today: '—', refresh: 'รีเฟรชข้อมูล', export: 'ส่งออกแดชบอร์ด', kpi_incoming: 'ล็อตส่งตรวจวันนี้', kpi_pending: 'ล็อตรอตรวจ', kpi_overdue: 'เกินกำหนด', kpi_passrate: 'อัตราผ่านครั้งแรกเดือนนี้', kpi_urgent: 'ล็อตเร่งด่วน', unit_lot: 'ล็อต', unit_urgent: 'เร่งด่วน', vs_yesterday: 'เทียบเมื่อวาน', need_assignment: 'ต้องจัดสรรทันที', vs_last_week: 'เทียบสัปดาห์ก่อน', vs_last_month: 'เทียบเดือนก่อน', of_today_incoming: 'ของงานส่งตรวจวันนี้', flow_title: 'ภาพรวมการไหลของการตรวจสอบ', flow_subtitle: 'กระจายตามสถานะการตรวจแบบเรียลไทม์', range_today_short: 'วันนี้', range_week_short: 'สัปดาห์นี้', range_month_short: 'เดือนนี้', unit_lot_full: 'ล็อตตรวจสอบ', flow_caption: 'ส่งตรวจสะสมวันนี้', status_pending: 'รอตรวจ', status_processing: 'กำลังตรวจ', status_done: 'เสร็จสิ้น', status_overdue: 'เกินกำหนด', trend_title: 'แนวโน้มอัตราผ่านครั้งแรก', trend_subtitle: 'การเปลี่ยนแปลงคุณภาพขาเข้า 7 วันล่าสุด', legend_passrate: 'อัตราผ่านครั้งแรก', legend_lots: 'ล็อตส่งตรวจ', trend_note: 'คำนวณจากข้อมูลตรวจ 7 วันล่าสุด', alert_title: 'ความผิดปกติและการแจ้งเตือน', alert_subtitle: 'ประเด็นที่ทีมคุณภาพควรติดตาม', alert_count: '3 รายการต้องติดตาม', alert_overdue: 'เกิน SLA แล้ว', alert_urgent: 'งานเร่งด่วนรอจัดสรร', alert_fail: 'ล็อตซัพพลายเออร์ไม่ผ่าน', view_all_alerts: 'ดูการแจ้งเตือนทั้งหมด', table_title: 'งานตรวจรับเข้าวัตถุดิบ', table_subtitle: 'งานตรวจล่าสุดจาก QMS · ค้นหาตามสถานะ งานเร่งด่วน และคำสำคัญได้', search_placeholder: 'ค้นหาเลขที่ / รหัสวัสดุ / ซัพพลายเออร์', range_today: 'วันนี้', range_week: 'สัปดาห์นี้', range_month: 'เดือนนี้', all_status: 'ทุกสถานะ', urgent_only: 'เฉพาะเร่งด่วน', live_data: 'ซิงค์ QMS แบบเรียลไทม์', refresh_every: 'รีเฟรชทุก 5 นาที', unit_task: 'งาน', col_id: 'เลขที่', col_part: 'รหัสวัสดุ', col_name: 'ชื่อวัสดุ', col_category: 'ประเภทวัสดุ', col_factory: 'โรงงานรับของ', col_supplier: 'ซัพพลายเออร์ / รหัส', col_qty: 'จำนวนรับเข้า', col_urgent: 'เร่งด่วน', col_date: 'วันที่ส่งตรวจ', col_inspector: 'ผู้ตรวจสอบ', col_node: 'ขั้นตอน', col_sla: 'สถานะเวลา', col_result: 'ผลตรวจ', col_action: 'ดำเนินการ', yes: 'ใช่', no: 'ไม่ใช่', result_processing: 'กำลังดำเนินการ', result_pending: 'ยังไม่เริ่ม', result_pass: 'ผ่าน', empty_state: 'ไม่พบงานตามเงื่อนไขที่เลือก', inspector_title: 'สถิติงานรอตรวจตามผู้ตรวจ', inspector_subtitle: 'งานรอตรวจปัจจุบัน · เรียงตามจำนวน', unit_waiting_lot: 'ล็อตรอตรวจ', capacity_label: 'อัตราใช้กำลังการตรวจของทีม', result_title: 'สถิติผลการตรวจ', result_subtitle: 'สะสมเดือนนี้', total_inspections: 'ล็อตตรวจทั้งหมด', result_special: 'ยอมรับพิเศษ', result_fail: 'ไม่ผ่าน', result_note: 'อัตราผ่านครั้งแรก', supplier_title: 'อันดับคุณภาพซัพพลายเออร์', supplier_subtitle: 'ตามอัตราผ่านครั้งแรกเดือนนี้', top_rank: 'อันดับสูงสุด', bottom_rank: 'อันดับท้าย', bottom_risk: 'ซัพพลายเออร์อันดับสุดท้าย', supplier_batches: 'ล็อต', close: 'ปิด', detail_kicker: 'บันทึกการตรวจ QMS', detail_part: 'รหัสวัสดุ', detail_material: 'ชื่อวัสดุ', detail_category: 'ประเภทวัสดุ', detail_supplier: 'ซัพพลายเออร์', detail_quantity: 'จำนวนรับเข้า', detail_inspector: 'ผู้ตรวจสอบ', detail_date: 'วันที่ส่งตรวจ', detail_status: 'สถานะปัจจุบัน', detail_sla: 'เวลา SLA', detail_timeline: 'เส้นทางกระบวนการ', timeline_received: 'ลงทะเบียนรับของ', timeline_submitted: 'ยื่นคำขอตรวจ', timeline_inspecting: 'ตรวจ IQC', timeline_closed: 'ปิดผลตรวจ', open_qms: 'เปิดใบตรวจใน QMS', last_refresh: 'อัปเดตล่าสุด', refresh_done: 'รีเฟรชข้อมูลแล้ว', export_done: 'ส่งออกงานตามตัวกรองแล้ว', alert_done: 'ไม่มีการแจ้งเตือนเพิ่มเติม', qms_demo: 'โหมดสาธิต: เปิดใช้อินเทอร์เฟซจริงได้ใน QMS_CONFIG'
+        current_plant: 'โรงงานปัจจุบัน', navigation: 'เมนูนำทาง', menu_overview: 'ภาพรวมคุณภาพ', menu_tasks: 'งานตรวจรับเข้า', menu_supplier: 'คุณภาพซัพพลายเออร์', menu_reports: 'ศูนย์รายงาน', menu_settings: 'ตั้งค่าระบบ', sync_copy: 'เชื่อมต่อ QMS แล้ว · งานรีเฟรชทุก 10 วินาที สถิติซิงค์ทุก 30 วินาที', role_label: 'ผู้ดูแลคุณภาพ', breadcrumb_parent: 'การดำเนินงานคุณภาพ', breadcrumb_current: 'ตรวจรับเข้า IQC', hero_kicker: 'การดำเนินงานคุณภาพขาเข้า', hero_title: 'SHARETRONIC.IQC แดชบอร์ดตรวจรับเข้า IQC', hero_subtitle: 'แดชบอร์ดคุณภาพแบบเรียลไทม์จาก QMS เพื่อค้นหางานรอตรวจ งานเกินเวลา และความเสี่ยงซัพพลายเออร์', date_today: '—', refresh: 'รีเฟรชข้อมูล', export: 'ส่งออกแดชบอร์ด', kpi_incoming: 'ล็อตส่งตรวจวันนี้', kpi_pending: 'ล็อตรอตรวจ', kpi_overdue: 'เกินกำหนด', kpi_passrate: 'อัตราผ่านครั้งแรกเดือนนี้', kpi_urgent: 'ล็อตเร่งด่วน', unit_lot: 'ล็อต', unit_urgent: 'เร่งด่วน', vs_yesterday: 'เทียบเมื่อวาน', need_assignment: 'ต้องจัดสรรทันที', vs_last_week: 'เทียบสัปดาห์ก่อน', vs_last_month: 'เทียบเดือนก่อน', of_today_incoming: 'ของงานส่งตรวจวันนี้', flow_title: 'ภาพรวมการไหลของการตรวจสอบ', flow_subtitle: 'กระจายตามสถานะการตรวจแบบเรียลไทม์', range_today_short: 'วันนี้', range_week_short: 'สัปดาห์นี้', range_month_short: 'เดือนนี้', unit_lot_full: 'ล็อตตรวจสอบ', flow_caption: 'ส่งตรวจสะสมวันนี้', status_pending: 'รอตรวจ', status_processing: 'กำลังตรวจ', status_done: 'เสร็จสิ้น', status_overdue: 'เกินกำหนด', trend_title: 'แนวโน้มอัตราผ่านครั้งแรก', trend_subtitle: 'การเปลี่ยนแปลงคุณภาพขาเข้า 7 วันล่าสุด', legend_passrate: 'อัตราผ่านครั้งแรก', legend_lots: 'ล็อตส่งตรวจ', trend_note: 'คำนวณจากข้อมูลตรวจ 7 วันล่าสุด', alert_title: 'ความผิดปกติและการแจ้งเตือน', alert_subtitle: 'ประเด็นที่ทีมคุณภาพควรติดตาม', alert_count: '3 รายการต้องติดตาม', alert_overdue: 'เกิน SLA แล้ว', alert_urgent: 'งานเร่งด่วนรอจัดสรร', alert_fail: 'ล็อตซัพพลายเออร์ไม่ผ่าน', view_all_alerts: 'ดูการแจ้งเตือนทั้งหมด', table_title: 'งานตรวจรับเข้าวัตถุดิบ', table_subtitle: 'งานตรวจล่าสุดจาก QMS · ค้นหาตามสถานะ งานเร่งด่วน และคำสำคัญได้', search_placeholder: 'ค้นหาเลขที่ / รหัสวัสดุ / ซัพพลายเออร์', range_today: 'วันนี้', range_week: 'สัปดาห์นี้', range_month: 'เดือนนี้', all_status: 'ทุกสถานะ', urgent_only: 'เฉพาะเร่งด่วน', live_data: 'ซิงค์ QMS แบบเรียลไทม์', refresh_every: 'งาน 10 วินาที · สถิติ 30 วินาที', unit_task: 'งาน', col_id: 'เลขที่', col_part: 'รหัสวัสดุ', col_name: 'ชื่อวัสดุ', col_category: 'ประเภทวัสดุ', col_factory: 'โรงงานรับของ', col_supplier: 'ซัพพลายเออร์ / รหัส', col_qty: 'จำนวนรับเข้า', col_urgent: 'เร่งด่วน', col_date: 'วันที่ส่งตรวจ', col_inspector: 'ผู้ตรวจสอบ', col_node: 'ขั้นตอน', col_sla: 'สถานะเวลา', col_result: 'ผลตรวจ', col_action: 'ดำเนินการ', yes: 'ใช่', no: 'ไม่ใช่', result_processing: 'กำลังดำเนินการ', result_pending: 'ยังไม่เริ่ม', result_pass: 'ผ่าน', empty_state: 'ไม่พบงานตามเงื่อนไขที่เลือก', inspector_title: 'สถิติงานรอตรวจตามผู้ตรวจ', inspector_subtitle: 'งานรอตรวจปัจจุบัน · เรียงตามจำนวน', unit_waiting_lot: 'ล็อตรอตรวจ', capacity_label: 'อัตราใช้กำลังการตรวจของทีม', result_title: 'สถิติผลการตรวจ', result_subtitle: 'สะสมเดือนนี้', total_inspections: 'ล็อตตรวจทั้งหมด', result_special: 'ยอมรับพิเศษ', result_fail: 'ไม่ผ่าน', result_note: 'อัตราผ่านครั้งแรก', supplier_title: 'อันดับคุณภาพซัพพลายเออร์', supplier_subtitle: 'ตามอัตราผ่านครั้งแรกเดือนนี้', top_rank: 'อันดับสูงสุด', bottom_rank: 'อันดับท้าย', bottom_risk: 'ซัพพลายเออร์อันดับสุดท้าย', supplier_batches: 'ล็อต', close: 'ปิด', detail_kicker: 'บันทึกการตรวจ QMS', detail_part: 'รหัสวัสดุ', detail_material: 'ชื่อวัสดุ', detail_category: 'ประเภทวัสดุ', detail_supplier: 'ซัพพลายเออร์', detail_quantity: 'จำนวนรับเข้า', detail_inspector: 'ผู้ตรวจสอบ', detail_date: 'วันที่ส่งตรวจ', detail_status: 'สถานะปัจจุบัน', detail_sla: 'เวลา SLA', detail_timeline: 'เส้นทางกระบวนการ', timeline_received: 'ลงทะเบียนรับของ', timeline_submitted: 'ยื่นคำขอตรวจ', timeline_inspecting: 'ตรวจ IQC', timeline_closed: 'ปิดผลตรวจ', open_qms: 'เปิดใบตรวจใน QMS', last_refresh: 'อัปเดตล่าสุด', refresh_done: 'รีเฟรชข้อมูลแล้ว', export_done: 'ส่งออกงานตามตัวกรองแล้ว', alert_done: 'ไม่มีการแจ้งเตือนเพิ่มเติม', qms_demo: 'โหมดสาธิต: เปิดใช้อินเทอร์เฟซจริงได้ใน QMS_CONFIG'
       }
     };
 
@@ -46,7 +46,7 @@
       factory_label: 'โรงงานปัจจุบัน', factory_sub: 'ประเทศไทย · โรงงาน 01 · IQC', supplier_board_subtitle: 'แดชบอร์ดคุณภาพซัพพลายเออร์แยกต่างหาก · เลื่อนกราฟแนวนอนและรายการแนวตั้งได้', supplier_chart_hint: 'อัตราผ่านรายล็อต · ซัพพลายเออร์ Top 10', score: 'อัตราผ่าน', enter_wallboard: 'โหมดแดชบอร์ด', exit_wallboard: 'ออกจากโหมดแดชบอร์ด', wallboard_live: 'โหมดแดชบอร์ด · เรียลไทม์', sidebar_hide: 'ซ่อนเมนูนำทาง', sidebar_show: 'แสดงเมนูนำทาง', top_risk: 'ซัพพลายเออร์อันดับหนึ่ง'
     });
     I18N.en = {
-      current_plant: 'Current plant', factory_sub: 'Thailand · Plant 01 · IQC', navigation: 'Navigation', menu_overview: 'Quality overview', menu_tasks: 'Inspection tasks', menu_supplier: 'Supplier quality', menu_reports: 'Reports center', menu_settings: 'System settings', sync_copy: 'QMS connected · auto-sync every 5 min.', role_label: 'Quality administrator', breadcrumb_parent: 'Quality operations', breadcrumb_current: 'IQC incoming inspection', hero_kicker: 'Incoming quality operations', hero_title: 'SHARETRONIC.IQC IQC Incoming Inspection', hero_subtitle: 'A real-time quality cockpit connected to QMS for quickly identifying pending, overdue, and supplier risks.', date_today: '—', refresh: 'Refresh data', export: 'Export dashboard', kpi_incoming: 'Today’s inspection lots', kpi_pending: 'Pending lots', kpi_overdue: 'Overdue / incomplete', kpi_passrate: 'Monthly first-pass yield', kpi_urgent: 'Urgent lots', unit_lot: 'lots', unit_urgent: 'urgent', vs_yesterday: 'vs yesterday', need_assignment: 'Needs assignment', vs_last_week: 'vs last week', vs_last_month: 'vs last month', of_today_incoming: 'of today’s intake', flow_title: 'Inspection flow overview', flow_subtitle: 'Real-time distribution by inspection status', range_today_short: 'Today', range_week_short: 'This week', range_month_short: 'This month', unit_lot_full: 'inspection lots', flow_caption: 'Today’s cumulative intake', status_pending: 'Pending', status_processing: 'In inspection', status_done: 'Completed', status_overdue: 'Overdue / incomplete', trend_title: 'First-pass yield trend', trend_subtitle: 'Incoming quality change over the last 7 days', legend_passrate: 'First-pass yield', legend_lots: 'Inspection lots', trend_note: 'Computed from the last 7 days of inspection data', alert_title: 'Exceptions & alerts', alert_subtitle: 'Items requiring quality team attention', alert_count: '3 need attention', alert_overdue: 'SLA exceeded', alert_urgent: 'Urgent task awaiting assignment', alert_fail: 'Supplier lot failed', view_all_alerts: 'View all alerts', table_title: 'Incoming inspection tasks', table_subtitle: 'Latest QMS inspection tasks · filter quickly by status, urgency, or keyword', search_placeholder: 'Search no. / material / supplier', range_today: 'Today', range_week: 'This week', range_month: 'This month', all_status: 'All statuses', urgent_only: 'Urgent only', live_data: 'QMS live sync', refresh_every: 'Refreshes every 5 min', unit_task: 'tasks', col_id: 'Inspection no.', col_part: 'Material no.', col_name: 'Material name', col_category: 'Category', col_factory: 'Receiving factory', col_supplier: 'Supplier / code', col_qty: 'Received qty.', col_urgent: 'Urgent', col_date: 'Submitted at', col_inspector: 'Inspector', col_node: 'Process node', col_sla: 'SLA status', col_result: 'Inspection result', col_action: 'Action', yes: 'Yes', no: 'No', result_processing: 'In progress', result_pending: 'Not started', result_pass: 'Pass', empty_state: 'No tasks match the current filters', inspector_title: 'Pending lots by inspector', inspector_subtitle: 'Current pending tasks · sorted by count', unit_waiting_lot: 'pending lots', capacity_label: 'Team capacity utilization', result_title: 'Inspection result statistics', result_subtitle: 'Month to date', total_inspections: 'Total inspected lots', result_special: 'Special acceptance', result_fail: 'Fail', result_note: 'First-pass yield', supplier_title: 'Supplier quality ranking', supplier_subtitle: 'By monthly first-pass yield', supplier_board_subtitle: 'Standalone supplier quality board · horizontal chart and vertical list scrolling', supplier_chart_hint: 'Batch pass rate · Supplier Top 10', score: 'Pass rate', top_rank: 'Top ranking', bottom_rank: 'Bottom ranking', bottom_risk: 'Lowest-ranked supplier', supplier_batches: 'lots', close: 'Close', detail_kicker: 'QMS INSPECTION RECORD', detail_part: 'Material no.', detail_material: 'Material name', detail_category: 'Category', detail_supplier: 'Supplier', detail_quantity: 'Received quantity', detail_inspector: 'Inspector', detail_date: 'Submitted at', detail_status: 'Current status', detail_sla: 'SLA limit', detail_timeline: 'Process timeline', timeline_received: 'Goods received', timeline_submitted: 'Inspection request', timeline_inspecting: 'IQC inspection', timeline_closed: 'Result closed', open_qms: 'Open QMS inspection', last_refresh: 'Last updated', refresh_done: 'Data refreshed', export_done: 'Current filtered tasks exported', alert_done: 'No more alerts', qms_demo: 'Demo mode: enable the real API in QMS_CONFIG.', flow_week_caption: 'Week-to-date intake', flow_month_caption: 'Month-to-date intake', factory_label: 'Current factory', enter_wallboard: 'Wallboard mode', exit_wallboard: 'Exit wallboard', wallboard_live: 'Wallboard live', sidebar_hide: 'Hide navigation', sidebar_show: 'Show navigation', top_risk: 'Top-ranked supplier'
+      current_plant: 'Current plant', factory_sub: 'Thailand · Plant 01 · IQC', navigation: 'Navigation', menu_overview: 'Quality overview', menu_tasks: 'Inspection tasks', menu_supplier: 'Supplier quality', menu_reports: 'Reports center', menu_settings: 'System settings', sync_copy: 'QMS connected · tasks refresh every 10 sec; statistics sync every 30 sec.', role_label: 'Quality administrator', breadcrumb_parent: 'Quality operations', breadcrumb_current: 'IQC incoming inspection', hero_kicker: 'Incoming quality operations', hero_title: 'SHARETRONIC.IQC IQC Incoming Inspection', hero_subtitle: 'A real-time quality cockpit connected to QMS for quickly identifying pending, overdue, and supplier risks.', date_today: '—', refresh: 'Refresh data', export: 'Export dashboard', kpi_incoming: 'Today’s inspection lots', kpi_pending: 'Pending lots', kpi_overdue: 'Overdue / incomplete', kpi_passrate: 'Monthly first-pass yield', kpi_urgent: 'Urgent lots', unit_lot: 'lots', unit_urgent: 'urgent', vs_yesterday: 'vs yesterday', need_assignment: 'Needs assignment', vs_last_week: 'vs last week', vs_last_month: 'vs last month', of_today_incoming: 'of today’s intake', flow_title: 'Inspection flow overview', flow_subtitle: 'Real-time distribution by inspection status', range_today_short: 'Today', range_week_short: 'This week', range_month_short: 'This month', unit_lot_full: 'inspection lots', flow_caption: 'Today’s cumulative intake', status_pending: 'Pending', status_processing: 'In inspection', status_done: 'Completed', status_overdue: 'Overdue / incomplete', trend_title: 'First-pass yield trend', trend_subtitle: 'Incoming quality change over the last 7 days', legend_passrate: 'First-pass yield', legend_lots: 'Inspection lots', trend_note: 'Computed from the last 7 days of inspection data', alert_title: 'Exceptions & alerts', alert_subtitle: 'Items requiring quality team attention', alert_count: '3 need attention', alert_overdue: 'SLA exceeded', alert_urgent: 'Urgent task awaiting assignment', alert_fail: 'Supplier lot failed', view_all_alerts: 'View all alerts', table_title: 'Incoming inspection tasks', table_subtitle: 'Latest QMS inspection tasks · filter quickly by status, urgency, or keyword', search_placeholder: 'Search no. / material / supplier', range_today: 'Today', range_week: 'This week', range_month: 'This month', all_status: 'All statuses', urgent_only: 'Urgent only', live_data: 'QMS live sync', refresh_every: 'Tasks 10 sec · Stats 30 sec', unit_task: 'tasks', col_id: 'Inspection no.', col_part: 'Material no.', col_name: 'Material name', col_category: 'Category', col_factory: 'Receiving factory', col_supplier: 'Supplier / code', col_qty: 'Received qty.', col_urgent: 'Urgent', col_date: 'Submitted at', col_inspector: 'Inspector', col_node: 'Process node', col_sla: 'SLA status', col_result: 'Inspection result', col_action: 'Action', yes: 'Yes', no: 'No', result_processing: 'In progress', result_pending: 'Not started', result_pass: 'Pass', empty_state: 'No tasks match the current filters', inspector_title: 'Pending lots by inspector', inspector_subtitle: 'Current pending tasks · sorted by count', unit_waiting_lot: 'pending lots', capacity_label: 'Team capacity utilization', result_title: 'Inspection result statistics', result_subtitle: 'Month to date', total_inspections: 'Total inspected lots', result_special: 'Special acceptance', result_fail: 'Fail', result_note: 'First-pass yield', supplier_title: 'Supplier quality ranking', supplier_subtitle: 'By monthly first-pass yield', supplier_board_subtitle: 'Standalone supplier quality board · horizontal chart and vertical list scrolling', supplier_chart_hint: 'Batch pass rate · Supplier Top 10', score: 'Pass rate', top_rank: 'Top ranking', bottom_rank: 'Bottom ranking', bottom_risk: 'Lowest-ranked supplier', supplier_batches: 'lots', close: 'Close', detail_kicker: 'QMS INSPECTION RECORD', detail_part: 'Material no.', detail_material: 'Material name', detail_category: 'Category', detail_supplier: 'Supplier', detail_quantity: 'Received quantity', detail_inspector: 'Inspector', detail_date: 'Submitted at', detail_status: 'Current status', detail_sla: 'SLA limit', detail_timeline: 'Process timeline', timeline_received: 'Goods received', timeline_submitted: 'Inspection request', timeline_inspecting: 'IQC inspection', timeline_closed: 'Result closed', open_qms: 'Open QMS inspection', last_refresh: 'Last updated', refresh_done: 'Data refreshed', export_done: 'Current filtered tasks exported', alert_done: 'No more alerts', qms_demo: 'Demo mode: enable the real API in QMS_CONFIG.', flow_week_caption: 'Week-to-date intake', flow_month_caption: 'Month-to-date intake', factory_label: 'Current factory', enter_wallboard: 'Wallboard mode', exit_wallboard: 'Exit wallboard', wallboard_live: 'Wallboard live', sidebar_hide: 'Hide navigation', sidebar_show: 'Show navigation', top_risk: 'Top-ranked supplier'
     };
     Object.assign(I18N.zh, { supplier_wallboard_entry: '供应商看板', supplier_wallboard_live: '供应商质量看板 · 实时', exit_supplier_wallboard: '退出供应商看板' });
     Object.assign(I18N.th, { supplier_wallboard_entry: 'แดชบอร์ดซัพพลายเออร์', supplier_wallboard_live: 'แดชบอร์ดคุณภาพซัพพลายเออร์ · เรียลไทม์', exit_supplier_wallboard: 'ออกจากแดชบอร์ดซัพพลายเออร์' });
@@ -54,9 +54,9 @@
     Object.assign(I18N.zh, { range_todo: '待办任务' });
     Object.assign(I18N.th, { range_todo: 'งานที่ต้องทำ' });
     Object.assign(I18N.en, { range_todo: 'To-do tasks' });
-    Object.assign(I18N.zh, { sync_copy: '已连接 QMS 数据源 · 任务每 30 秒刷新，统计每 5 分钟同步。', refresh_every: '任务 30 秒 · 统计 5 分钟' });
-    Object.assign(I18N.th, { sync_copy: 'เชื่อมต่อ QMS แล้ว · งานรีเฟรชทุก 30 วินาที สถิติซิงค์ทุก 5 นาที', refresh_every: 'งาน 30 วินาที · สถิติ 5 นาที' });
-    Object.assign(I18N.en, { sync_copy: 'QMS connected · tasks refresh every 30 sec; statistics sync every 5 min.', refresh_every: 'Tasks 30 sec · Stats 5 min' });
+    Object.assign(I18N.zh, { sync_copy: '已连接 QMS 数据源 · 任务每 10 秒刷新，统计每 30 秒同步。', refresh_every: '任务 10 秒 · 统计 30 秒' });
+    Object.assign(I18N.th, { sync_copy: 'เชื่อมต่อ QMS แล้ว · งานรีเฟรชทุก 10 วินาที สถิติซิงค์ทุก 30 วินาที', refresh_every: 'งาน 10 วินาที · สถิติ 30 วินาที' });
+    Object.assign(I18N.en, { sync_copy: 'QMS connected · tasks refresh every 10 sec; statistics sync every 30 sec.', refresh_every: 'Tasks 10 sec · Stats 30 sec' });
     Object.assign(I18N.zh, {
       breadcrumb_overview: 'IQC 来料检验', breadcrumb_tasks: '检验任务', breadcrumb_suppliers: '供应商质量', supplier_page_kicker: '供应商质量运营', supplier_page_title: '供应商质量分析', supplier_page_subtitle: '按工厂、月份与 QMS 检验结果全面追踪供应商质量表现。', supplier_kpi_total: '供应商总数', supplier_unit_company: '家', supplier_kpi_total_note: '已纳入本月质量评价', supplier_kpi_average: '平均批次合格率', supplier_kpi_average_note: '按供应商加权计算 · 较上月提升', supplier_kpi_risk: '风险供应商', supplier_kpi_risk_note: '需要重点跟进与改善', supplier_kpi_lots: '本月检验批次', supplier_kpi_lots_note: 'QMS 已完成及在检批次', supplier_detail_title: '供应商质量明细', supplier_detail_subtitle: '按供应商汇总本月来料质量、缺陷率、批次与改进状态', supplier_col_name: '供应商', supplier_col_code: '供应商编码', supplier_col_lots: '检验批次', supplier_col_passrate: '批次合格率', supplier_col_defect: '缺陷率', supplier_col_trend: '月度趋势', supplier_col_status: '质量状态', supplier_status_stable: '稳定', supplier_status_watch: '关注', supplier_status_risk: '高风险', supplier_board_subtitle: '供应商质量排名 · 柱状图可横向滚动，排名列表可纵向滚动'
     });
@@ -713,19 +713,38 @@
     let sbPrevMap = new Map();
     let sbCategories = [];
     const sbCharts = {};
+    const sbChartRoots = new WeakMap();
+    const sbChartSizeTargets = new WeakSet();
+    let sbChartSizeObserver = null;
 
     function setChartOption(chart, option) {
       chart.setOption({ ...option, animation: !(wallboardMode || supplierWallboardMode), animationDuration: 200 }, { notMerge: true, lazyUpdate: true });
     }
 
+    function releaseSbChart(key) {
+      const chart = sbCharts[key];
+      delete sbCharts[key];
+      if (chart && !chart.isDisposed?.()) chart.dispose();
+    }
+    function setSbChartMessage(key, el, title, subtitle = '') {
+      // Dispose before replacing the renderer's DOM, including the wallboard ranking.
+      releaseSbChart(key);
+      el.innerHTML = sbEmptyHtml(title, subtitle);
+    }
     function ensureSbChart(key, el) {
-      // 空态/加载提示替换了 canvas DOM 后，旧实例不能继续使用。
-      if (el.querySelector('.sb-empty')) {
-        if (sbCharts[key]) sbCharts[key].dispose();
-        delete sbCharts[key];
-        el.replaceChildren();
+      const chart = sbCharts[key], root = chart && sbChartRoots.get(chart);
+      const hasMessage = el.querySelector('.sb-empty, .wallboard-rank-empty');
+      if (chart && (chart.isDisposed?.() || (chart.getDom && chart.getDom() !== el) || (root && !el.contains(root)) || hasMessage)) releaseSbChart(key);
+      if (hasMessage) el.replaceChildren();
+      if (!sbCharts[key]) {
+        sbCharts[key] = echarts.init(el);
+        sbChartRoots.set(sbCharts[key], el.firstElementChild || null);
       }
-      if (!sbCharts[key]) sbCharts[key] = echarts.init(el);
+      if (typeof ResizeObserver !== 'undefined' && !sbChartSizeTargets.has(el)) {
+        if (!sbChartSizeObserver) sbChartSizeObserver = new ResizeObserver(scheduleChartResize);
+        sbChartSizeObserver.observe(el);
+        sbChartSizeTargets.add(el);
+      }
       return sbCharts[key];
     }
 
@@ -793,12 +812,25 @@
     // 12 个月趋势：按月查 total，分批并发（每批 3 个月=12 请求），防 QMS 限流 + 防工厂切换竞态
     let sbTrendLoading = false;
     let sbTrendSeq = 0;
+    let sbTrendFetchedAt = 0;
+    let sbTrendSnapshotKey = '';
     let sbRequestSeq = 0;
     let detailTrendSeq = 0;
+    function syncRecentSbTrend() {
+      // 当前及上月数据随统计刷新；更早月份沿用低频查询的历史快照。
+      for (const [offset, records, stats] of [[0, DASH.month, DASH.resultStats], [-1, DASH.prevMonth, DASH.prevResultStats]]) {
+        const row = sbTrend12.find((item) => item.month === monthPrefix(offset));
+        if (!row || !stats) continue;
+        Object.assign(row, { batches: (records || []).length, pass: stats.pass, fail: stats.fail,
+          special: stats.special, passRate: stats.total ? stats.passRate : null, nonconforming: stats.fail + stats.special });
+      }
+    }
     async function fetchSbTrend() {
+      const fc = QMS_CONFIG.factoryCode;
+      const snapshotKey = `${fc}:${monthPrefix(0)}`;
+      if (sbTrend12.length && sbTrendSnapshotKey === snapshotKey && Date.now() - sbTrendFetchedAt < 5 * 60 * 1000) return true;
       const seq = ++sbTrendSeq;
       sbTrendLoading = true;
-      const fc = QMS_CONFIG.factoryCode;
       try {
         const months = [];
         for (let i = 11; i >= 0; i--) months.push(monthRange(-i));
@@ -825,6 +857,8 @@
           const decided = (d.pass || 0) + (d.fail || 0) + (d.special || 0);
           return { month: m.start.slice(0, 7), batches: d.total || 0, pass: d.pass || 0, fail: d.fail || 0, special: d.special || 0, passRate: decided > 0 ? ((d.pass || 0) / decided * 100) : null, nonconforming: (d.fail || 0) + (d.special || 0) };
         });
+        sbTrendFetchedAt = Date.now();
+        sbTrendSnapshotKey = snapshotKey;
         renderSbTrendChart();
         return true;
       } catch (e) { console.error('fetchSbTrend', e); return false; }
@@ -875,7 +909,7 @@
 
     function renderSbTrendChart() {
       const el = $('#sbTrendChart'); if (!el) return;
-      if (!window.echarts) { el.innerHTML = sbEmptyHtml(ui('图表库未加载'), ui('请检查网络后重试')); return; }
+      if (!window.echarts) { setSbChartMessage('trend', el, ui('图表库未加载'), ui('请检查网络后重试')); return; }
       ensureSbChart('trend', el);
       const c = sbCharts.trend;
       const months = sbTrend12.map((d) => d.month);
@@ -899,9 +933,9 @@
 
     function renderSbMatrixChart() {
       const el = $('#sbMatrixChart'); if (!el) return;
-      if (!window.echarts) { el.innerHTML = sbEmptyHtml(ui('图表库未加载'), ui('请检查网络后重试')); return; }
+      if (!window.echarts) { setSbChartMessage('matrix', el, ui('图表库未加载'), ui('请检查网络后重试')); return; }
       const list = sbSuppliersData.filter((s) => s.batches > 0);
-      if (!list.length) { el.innerHTML = sbEmptyHtml(ui('暂无供应商质量数据'), ui('请调整时间范围或筛选条件')); if (sbCharts.matrix) { sbCharts.matrix.clear(); } return; }
+      if (!list.length) { setSbChartMessage('matrix', el, ui('暂无供应商质量数据'), ui('请调整时间范围或筛选条件')); return; }
       ensureSbChart('matrix', el);
       const c = sbCharts.matrix;
       // 4 象限：X=检验批次，Y=合格率，气泡大小=不合格批次；颜色按风险等级
@@ -927,13 +961,12 @@
 
     function renderSbTop10Chart() {
       const el = $('#sbTop10Chart'); if (!el) return;
-      if (!window.echarts) { el.innerHTML = sbEmptyHtml(ui('图表库未加载'), ui('请检查网络后重试')); return; }
-      ensureSbChart('top10', el);
-      const c = sbCharts.top10;
+      if (!window.echarts) { setSbChartMessage('top10', el, ui('图表库未加载'), ui('请检查网络后重试')); return; }
       // 与来料检验看板右下角 supplierRankBoard 同口径：不合格批次(退货+特采)降序 + 合格率=(总批次-不合格)/总批次
       const refRate = (s) => (s.batches > 0 ? (s.batches - s.nonconforming) / s.batches * 100 : 0);
       const list = [...sbSuppliersData].filter((s) => s.nonconforming > 0).sort((a, b) => (b.nonconforming - a.nonconforming) || (refRate(a) - refRate(b))).slice(0, 10);
-      if (!list.length) { el.innerHTML = sbEmptyHtml(sbSuppliersData.length ? ui('暂无不合格批次') : ui('暂无供应商质量数据'), sbSuppliersData.length ? ui('当前范围内没有退货或特采批次') : ui('请调整时间范围或筛选条件')); c.clear(); return; }
+      if (!list.length) { setSbChartMessage('top10', el, ui(sbSuppliersData.length ? '暂无不合格批次' : '暂无供应商质量数据'), ui(sbSuppliersData.length ? '当前范围内没有退货或特采批次' : '请调整时间范围或筛选条件')); return; }
+      const c = ensureSbChart('top10', el);
       const names = list.map((s) => s.name);
       const barData = list.map((s) => s.nonconforming);
       const rateData = list.map((s) => (Math.floor(refRate(s)) / 100));
@@ -962,8 +995,7 @@
 
     function renderSbPareto() {
       const el = $('#sbParetoChart'); if (!el) return;
-      if (sbCharts.pareto) { sbCharts.pareto.dispose(); delete sbCharts.pareto; }
-      el.innerHTML = sbEmptyHtml(ui('暂无不良项目数据'), ui('QMS 接口未提供不良类型字段'));
+      setSbChartMessage('pareto', el, ui('暂无不良项目数据'), ui('QMS 接口未提供不良类型字段'));
     }
 
     function renderSbRiskList() {
@@ -1068,6 +1100,7 @@
         const b = $('#sbRefreshBtn');
         if (b.classList.contains('is-loading')) return;
         b.classList.add('is-loading');
+        sbTrendFetchedAt = 0;
         showToast(ui('正在刷新数据…'));
         const done = () => { b.classList.remove('is-loading'); };
         loadDashboardData().then((ok) => {
@@ -1265,7 +1298,7 @@
         copy.textContent = ui('显示上次缓存数据 · 实时接口暂不可用');
       } else {
         dot.style.background = '#46d7ad'; live.textContent = 'LIVE'; live.style.color = '#238e70'; live.style.background = '#e8f7f1';
-        copy.textContent = ui('已连接 QMS 数据源 · 任务每 30 秒自动刷新，统计每 5 分钟同步');
+        copy.textContent = ui('已连接 QMS 数据源 · 任务每 10 秒自动刷新，统计每 30 秒同步');
       }
     }
 
@@ -1300,8 +1333,12 @@
       $('#supplierRankCount').textContent = ui('前 {count} 家', { count: list.length });
       const barLegend = $('#supplierBarLegend');
       if (barLegend) barLegend.textContent = barName;
-      if (!window.echarts) { el.innerHTML = `<div class="wallboard-rank-empty">${ui('图表库未加载')}</div>`; return; }
-      if (!list.length) { el.innerHTML = `<div class="wallboard-rank-empty">${ui('暂无供应商质量数据')}</div>`; if (sbCharts.supplierRank) { try { sbCharts.supplierRank.clear(); } catch (e) {} } return; }
+      if (!window.echarts) { setSbChartMessage('supplierRank', el, ui('图表库未加载'), ui('请检查网络后重试')); return; }
+      if (!list.length) {
+        const hasSuppliers = DASH.suppliers.length > 0;
+        setSbChartMessage('supplierRank', el, ui(isBottom && hasSuppliers ? '暂无不合格批次' : '暂无供应商质量数据'), ui(isBottom && hasSuppliers ? '当前范围内没有退货或特采批次' : '请调整时间范围或筛选条件'));
+        return;
+      }
       ensureSbChart('supplierRank', el);
       const c = sbCharts.supplierRank;
       const names = list.map((s) => s.name);
@@ -1410,7 +1447,20 @@
       } catch (e) {}
     }
     let liveTaskLoading = false;
-    let lastFullRefreshAt = 0;
+    let nextStatisticsRefreshAt = 0;
+    let lastLiveTaskRefreshAt = 0;
+    let nextAutoRefreshAt = 0;
+    const DASHBOARD_REFRESH_MS = { tasks: 10 * 1000, statistics: 30 * 1000, retry: 10 * 1000 };
+    function refreshVisibleDashboard() {
+      const now = Date.now();
+      if (document.visibilityState === 'hidden' || qmsLoading || liveTaskLoading || now < nextAutoRefreshAt) return;
+      const statisticsDue = now >= nextStatisticsRefreshAt;
+      if (!statisticsDue && now - lastLiveTaskRefreshAt < DASHBOARD_REFRESH_MS.tasks) return;
+      // A single scheduler gives the complete snapshot priority and prevents
+      // overlapping live/monthly requests or one-second retries after failure.
+      nextAutoRefreshAt = now + DASHBOARD_REFRESH_MS.retry;
+      return statisticsDue ? loadDashboardData(true) : refreshLiveTaskData();
+    }
     async function refreshLiveTaskData() {
       if (liveTaskLoading || qmsLoading || document.visibilityState === 'hidden') return false;
       const factoryCode = QMS_CONFIG.factoryCode;
@@ -1448,6 +1498,7 @@
         renderAlerts();
         renderTableRows();
         $('#lastRefresh').textContent = currentTimeString();
+        lastLiveTaskRefreshAt = Date.now();
         return true;
       } catch (error) {
         console.error('Live task refresh failed', error);
@@ -1492,10 +1543,11 @@
         sbPrevMap = new Map();
         computeSuppliers(prevMonth).forEach((s) => sbPrevMap.set(s.code, s.raw));
         if (sbPeriod === 'month' && supplierMonthOffset === 0) sbSuppliersData = computeSbSuppliers(DASH.month);
+        syncRecentSbTrend();
         renderAll();
         saveDashCache(active, prevMonth);
         setSyncState(false);
-        lastFullRefreshAt = Date.now();
+        lastLiveTaskRefreshAt = Date.now();
         if (!sbTrendLoading) fetchSbTrend();
         return true;
       } catch (err) {
@@ -1504,7 +1556,12 @@
         if (fromCache) { setSyncState(false, null, 'cached'); }
         else { setSyncState(false, err); if (!silent) showToast(ui('数据加载失败')); }
         return false;
-      } finally { if (mySeq === loadSeq) qmsLoading = false; }
+      } finally {
+        if (mySeq === loadSeq) {
+          qmsLoading = false;
+          nextStatisticsRefreshAt = Date.now() + DASHBOARD_REFRESH_MS.statistics;
+        }
+      }
     }
 
     /* ===================== 原有 UI 逻辑 ===================== */
@@ -1749,6 +1806,7 @@
       urgentFilter.addEventListener('click', () => { urgentOnly = !urgentOnly; urgentFilter.classList.toggle('active', urgentOnly); applyFilters(); });
       $('#refreshBtn').addEventListener('click', () => {
         const button = $('#refreshBtn'); button.classList.add('is-loading');
+        sbTrendFetchedAt = 0;
         loadDashboardData().then(() => { button.classList.remove('is-loading'); });
       });
       $('#exportBtn').addEventListener('click', downloadCsv);
@@ -1810,15 +1868,10 @@
     uiReady = true;
     applyFilters();
     loadDashboardData();
-    const FULL_REFRESH_MS = 5 * 60 * 1000;
-    const LIVE_TASK_REFRESH_MS = 30 * 1000;
-    setInterval(() => {
-      if (document.visibilityState !== 'hidden' && !qmsLoading) loadDashboardData(true);
-    }, FULL_REFRESH_MS);
-    setInterval(() => { refreshLiveTaskData(); }, LIVE_TASK_REFRESH_MS);
+    setInterval(refreshVisibleDashboard, 1000);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState !== 'hidden') {
-        if (Date.now() - lastFullRefreshAt >= FULL_REFRESH_MS) loadDashboardData(true);
-        else refreshLiveTaskData();
+        scheduleChartResize();
+        refreshVisibleDashboard();
       }
     });

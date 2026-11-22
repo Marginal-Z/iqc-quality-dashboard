@@ -119,8 +119,9 @@ function scheduleChartResize() {
   chartResizeFrame = requestAnimationFrame(() => {
     chartResizeFrame = null;
     Object.values(sbCharts).forEach(chart => {
+      if (chart.isDisposed()) return;
       const element = chart.getDom();
-      if (!chart.isDisposed() && element.clientWidth && element.clientHeight) chart.resize({ animation: { duration: 0 } });
+      if (element?.clientWidth && element.clientHeight) chart.resize({ animation: { duration: 0 } });
     });
   });
 }

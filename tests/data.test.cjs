@@ -17,6 +17,19 @@ function app(savedLocale) {
   vm.runInContext('renderAll = () => {}; renderSbBoard = () => {}; renderSbTrendChart = () => {}; showToast = () => {}; sleep = async () => {};', ctx);
   return { ctx, store, elements, run: (s) => vm.runInContext(s, ctx) };
 }
+
+function appClock(a) {
+  let now = Date.now();
+  a.ctx.Date = class extends Date {
+    constructor(...args) { super(...(args.length ? args : [now])); }
+    static now() { return now; }
+  };
+  return { start: now, set(value) { now = value; } };
+}
+
+function mockLiveRendering(a) {
+  for (const name of ['renderKpis', 'renderInspectors', 'renderAlerts', 'renderTableRows']) a.ctx[name] = () => {};
+}
 test('solid donut segments retain proportions, omit zero categories and show neutral empty states', () => {
   const a = app();
   const markup = a.run("donutSegments([3, 0, 1], ['green', 'amber', 'red'])");
@@ -120,6 +133,45 @@ test('switching factory while old trend is pending still loads new factory', asy
   assert.equal(a.run('sbTrendLoading'), false);
   finishOld(0);
 });
+
+test('historical trend reuses its snapshot but expires on time, factory and calendar month', async () => {
+  const a = app(); const clock = appClock(a); let requests = 0;
+  a.ctx.qmsCount = async () => { requests++; return 0; };
+  assert.equal(await a.run('fetchSbTrend()'), true);
+  assert.equal(requests, 48);
+  clock.set(clock.start + 30000);
+  assert.equal(await a.run('fetchSbTrend()'), true);
+  assert.equal(requests, 48);
+  clock.set(clock.start + 300001);
+  await a.run('fetchSbTrend()');
+  assert.equal(requests, 96);
+  a.run("QMS_CONFIG.factoryCode = 'OTHER'");
+  await a.run('fetchSbTrend()');
+  assert.equal(requests, 144);
+  const date = new Date(clock.start + 300001);
+  clock.set(new Date(date.getFullYear(), date.getMonth() + 1, 1).getTime());
+  await a.run('fetchSbTrend()');
+  assert.equal(requests, 192);
+});
+
+test('fresh statistics update recent trend points while retaining old history and pending batches', async () => {
+  const a = app(); const today = a.run('todayStr()'); const previous = a.run("monthPrefix(-1) + '-01'");
+  a.ctx.fetchSbTrend = async () => true;
+  a.run("sbTrend12 = [{month:'2000-01',batches:99}, {month:monthPrefix(-1)}, {month:monthPrefix(0)}]");
+  a.ctx.qmsSelectAll = async (query) => {
+    if (query.inspectionStatus) return [];
+    return query.createDateStart === previous
+      ? [{ orderNumber: 'prev', createDate: previous, syncInspectionResultName: '退货' }]
+      : [{ orderNumber: 'pass', createDate: today, syncInspectionResultName: '合格' },
+        { orderNumber: 'pending', createDate: today, inspectionStatus: '0' }];
+  };
+  assert.equal(await a.run('loadDashboardData(true)'), true);
+  assert.deepEqual(JSON.parse(a.run('JSON.stringify(sbTrend12)')), [
+    { month: '2000-01', batches: 99 },
+    { month: previous.slice(0, 7), batches: 1, pass: 0, fail: 1, special: 0, passRate: 0, nonconforming: 1 },
+    { month: today.slice(0, 7), batches: 2, pass: 1, fail: 0, special: 0, passRate: 100, nonconforming: 0 }
+  ]);
+});
 test('complete refresh populates previous-month statistics and cache', async () => {
   const a = app();
   a.ctx.fetchSbTrend = async () => true;
@@ -163,6 +215,71 @@ test('fast live refresh skips QMS requests while the page is hidden', async () =
   assert.equal(await a.run('refreshLiveTaskData()'), false);
   assert.equal(requests, 0);
 });
+
+test('visible scheduler refreshes tasks at ten seconds and statistics at thirty without duplicate requests', async () => {
+  const a = app(); const clock = appClock(a); const queries = [];
+  mockLiveRendering(a);
+  a.ctx.fetchSbTrend = async () => true;
+  a.ctx.qmsSelectAll = async (query) => { queries.push(query); return []; };
+  a.run(`lastLiveTaskRefreshAt = ${clock.start}; nextStatisticsRefreshAt = ${clock.start + 30000}`);
+  clock.set(clock.start + 9999); await a.run('refreshVisibleDashboard()');
+  assert.equal(queries.length, 0);
+  clock.set(clock.start + 10000); await a.run('refreshVisibleDashboard()');
+  assert.equal(queries.length, 2);
+  clock.set(clock.start + 20000); await a.run('refreshVisibleDashboard()');
+  assert.equal(queries.length, 4);
+  clock.set(clock.start + 30000); await a.run('refreshVisibleDashboard()');
+  assert.equal(queries.length, 8);
+  assert.deepEqual(queries.slice(4).map(q => !!q.createDateStart), [false, false, true, true]);
+});
+
+test('scheduler skips hidden pages and coalesces an overdue refresh while its requests are pending', async () => {
+  const a = app(); const pending = [];
+  a.ctx.fetchSbTrend = async () => true;
+  a.ctx.qmsSelectAll = () => new Promise(resolve => pending.push(resolve));
+  a.ctx.document.visibilityState = 'hidden';
+  await a.run('refreshVisibleDashboard()');
+  assert.equal(pending.length, 0);
+  a.ctx.document.visibilityState = 'visible';
+  const loading = a.run('refreshVisibleDashboard()');
+  a.run('refreshVisibleDashboard(); refreshVisibleDashboard()');
+  assert.equal(pending.length, 4);
+  pending.forEach(resolve => resolve([]));
+  assert.equal(await loading, true);
+  a.run('refreshVisibleDashboard()');
+  assert.equal(pending.length, 4);
+});
+
+test('monthly failure leaves a retry gap and lets live tasks refresh before statistics retry', async () => {
+  const a = app(); const clock = appClock(a); const queries = [];
+  mockLiveRendering(a);
+  a.ctx.qmsSelectAll = async (query) => {
+    queries.push(query);
+    if (query.createDateStart) throw new Error('monthly offline');
+    return [];
+  };
+  assert.equal(await a.run('refreshVisibleDashboard()'), false);
+  assert.equal(queries.length, 4);
+  clock.set(clock.start + 1000); await a.run('refreshVisibleDashboard()');
+  assert.equal(queries.length, 4);
+  clock.set(clock.start + 10000); assert.equal(await a.run('refreshVisibleDashboard()'), true);
+  assert.equal(queries.length, 6);
+  assert.ok(queries.slice(4).every(q => !q.createDateStart));
+  clock.set(clock.start + 30000); assert.equal(await a.run('refreshVisibleDashboard()'), false);
+  assert.equal(queries.length, 10);
+});
+
+test('failed task polling cannot retry on every scheduler tick', async () => {
+  const a = app(); const clock = appClock(a); let requests = 0;
+  a.run(`nextStatisticsRefreshAt = ${clock.start + 60000}`);
+  a.ctx.qmsSelectAll = async () => { requests++; throw new Error('offline'); };
+  assert.equal(await a.run('refreshVisibleDashboard()'), false);
+  assert.equal(requests, 2);
+  clock.set(clock.start + 1000); await a.run('refreshVisibleDashboard()');
+  assert.equal(requests, 2);
+  clock.set(clock.start + 10000); await a.run('refreshVisibleDashboard()');
+  assert.equal(requests, 4);
+});
 test('chart recovers after empty-state markup replaced its canvas', () => {
   const a = app(); let disposed = false, cleared = false, created = 0;
   a.ctx.oldChart = { dispose() { disposed = true; } };
@@ -170,6 +287,69 @@ test('chart recovers after empty-state markup replaced its canvas', () => {
   a.ctx.echarts = { init() { created++; return { current: true }; } };
   a.run("sbCharts.top10 = oldChart; ensureSbChart('top10', chartElement); ensureSbChart('top10', chartElement)");
   assert.equal(disposed, true); assert.equal(cleared, true); assert.equal(created, 1);
+});
+
+function rankingCharts(a, selector) {
+  let markup = '', root = null;
+  const charts = [], host = {
+    clientWidth: 500, clientHeight: 260,
+    get firstElementChild() { return root; },
+    get innerHTML() { return markup; },
+    set innerHTML(value) { markup = value; root = null; },
+    replaceChildren() { markup = ''; root = null; },
+    contains(node) { return node === root; },
+    querySelector(query) { return ['sb-empty', 'wallboard-rank-empty'].some(name => query.includes('.' + name) && markup.includes(name)) ? {} : null; }
+  };
+  const library = { init(element) {
+    root = {}; markup = ''; const canvas = root;
+    const chart = { disposed: false, painted: false, option: null,
+      isDisposed() { return this.disposed; }, getDom() { return element; },
+      setOption(value) { this.option = value; this.painted = element.contains(canvas); },
+      clear() { this.painted = false; }, dispose() { this.disposed = true; this.painted = false; if (element.contains(canvas)) element.replaceChildren(); },
+      on() {}, off() {}
+    }; charts.push(chart); return chart;
+  } };
+  a.elements.set(selector, host); a.ctx.echarts = library; a.ctx.window.echarts = library; a.ctx.scheduleChartResize = () => {};
+  return { host, charts, library };
+}
+test('wallboard ranking renders again after top to empty bottom to top switching', () => {
+  const a = app(), h = rankingCharts(a, '#supplierRankChart');
+  a.run("DASH.suppliers = computeSuppliers([{supplierName:'Example',syncInspectionResultName:'合格'}]); supplierMode='top'; renderSupplierRankings()");
+  assert.equal(h.charts.at(-1).painted, true);
+  a.run("supplierMode='bottom'; renderSupplierRankings()");
+  assert.match(h.host.innerHTML, /暂无不合格批次/);
+  assert.equal(h.charts[0].disposed, true);
+  a.run("supplierMode='top'; renderSupplierRankings()");
+  assert.equal(h.charts.length, 2); assert.equal(h.charts.at(-1).painted, true); assert.equal(h.host.innerHTML, '');
+  a.run('renderSupplierRankings()'); assert.equal(h.charts.length, 2, 'ordinary data updates reuse the live canvas');
+});
+test('both ranking views recover after populated, empty and populated refreshes', () => {
+  for (const [selector, populate, empty, render] of [
+    ['#supplierRankChart', "DASH.suppliers=computeSuppliers([{supplierName:'Example',syncInspectionResultName:'退货'}])", 'DASH.suppliers=[]', 'renderSupplierRankings()'],
+    ['#sbTop10Chart', "sbSuppliersData=computeSbSuppliers([{supplierName:'Example',syncInspectionResultName:'退货'}])", 'sbSuppliersData=[]', 'renderSbTop10Chart()']
+  ]) {
+    const a = app(), h = rankingCharts(a, selector);
+    a.run(populate + ';' + render); assert.equal(h.charts.at(-1).painted, true);
+    a.run(empty + ';' + render); assert.match(h.host.innerHTML, /暂无供应商质量数据/); assert.equal(h.charts[0].disposed, true);
+    a.run(populate + ';' + render); assert.equal(h.charts.at(-1).painted, true); assert.equal(h.charts.length, 2);
+  }
+});
+test('a detached or disposed chart is recreated without retaining a dead canvas', () => {
+  const a = app(), h = rankingCharts(a, '#supplierRankChart');
+  a.run("DASH.suppliers=computeSuppliers([{supplierName:'Example',syncInspectionResultName:'退货'}]); renderSupplierRankings()");
+  h.host.replaceChildren(); a.run('renderSupplierRankings()'); assert.equal(h.charts.length, 2); assert.equal(h.charts.at(-1).painted, true);
+  h.charts.at(-1).dispose(); a.run('renderSupplierRankings()'); assert.equal(h.charts.length, 3); assert.equal(h.charts.at(-1).painted, true);
+});
+test('chart containers are observed once so showing or resizing a hidden board schedules recovery', () => {
+  const a = app(), h = rankingCharts(a, '#supplierRankChart'), observed = [];
+  let callback, scheduled = 0;
+  a.ctx.scheduleChartResize = () => { scheduled++; };
+  a.ctx.ResizeObserver = class { constructor(fn) { callback = fn; } observe(element) { observed.push(element); } };
+  a.run("DASH.suppliers=computeSuppliers([{supplierName:'Example',syncInspectionResultName:'退货'}]); renderSupplierRankings(); renderSupplierRankings()");
+  assert.equal(observed.length, 1); assert.equal(observed[0], h.host);
+  h.host.clientWidth = 0; callback(); h.host.clientWidth = 500; callback();
+  assert.equal(scheduled, 4); // Two renders and two native size notifications.
+  assert.equal(h.charts.length, 1);
 });
 test('all added interface messages provide English and Thai with matching placeholders', () => {
   const a = app();

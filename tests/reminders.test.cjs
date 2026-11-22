@@ -30,6 +30,7 @@ async function fixture(t) {
       return Response.json({ status: 200, data: { resultData: rows, total: rows.length } });
     } } };
   const worker = createReminderWorker({ clock: state.clock, fetchImpl });
+  state.scheduled = () => worker.scheduled({ cron: '* * * * *', scheduledTime: state.clock() }, env);
   const request = (path, body, headers = {}) => worker.fetch(new Request('https://reminders.internal' + path, { method: body === undefined ? 'GET' : 'POST',
     headers: { Authorization: 'Bearer ' + env.REMINDER_GATEWAY_SECRET, 'X-IQC-Actor': state.actor, 'Content-Type': 'application/json', ...headers }, body: body === undefined ? undefined : JSON.stringify(body) }), env);
   state.env = env; state.request = request;
@@ -40,6 +41,15 @@ async function fixture(t) {
   return state;
 }
 const row = (id, inspector = '甲', extra = {}) => ({ orderNumber: id, inspectionStatus: '0', inspectorName: inspector, materialNumber: 'TEST-' + id, materialName: 'Synthetic material ' + id, qty: 10, createDate: '2026-11-11', ...extra });
+
+test('the cloud scheduled entrypoint detects midnight tasks without any website request', async t => {
+  const f = await fixture(t); f.body.dailyStart = '00:00'; await f.enable();
+  f.setTime('2026-11-11T17:05:00Z'); f.records.STTH = [row('NIGHT-A')];
+  await f.scheduled(); assert.equal(f.messages.length, 1); assert.ok(f.messages[0].content.includes('TEST-NIGHT-A'));
+  f.advance(60); f.records.STTH.push(row('NIGHT-B')); await f.scheduled();
+  assert.equal(f.messages.length, 2); assert.ok(f.messages[1].content.includes('TEST-NIGHT-B')); assert.ok(!f.messages[1].content.includes('TEST-NIGHT-A'));
+  f.advance(60); await f.scheduled(); assert.equal(f.messages.length, 2);
+});
 
 test('reminder service requires a gateway credential and actor even if a public route is enabled', async t => {
   const f = await fixture(t);
