@@ -39,3 +39,5 @@
 #recipientRows:empty::after { content: '—'; color: var(--muted); }
 @media (max-width: 800px) { .reminder-fields { grid-template-columns: 1fr; gap: 0; } .recipient-row { grid-template-columns: 1fr 1fr; } .recipient-row .recipient-id { grid-column: 1 / -1; } .recipient-row button { justify-self: start; } }
 @media (max-width: 480px) { .reminder-panel { padding: 18px; } .recipient-row { grid-template-columns: 1fr; } .accounts-header nav .button { padding-inline: 12px; } .reminder-card-header { padding: 14px; } .reminder-card-body { padding-inline: 14px; } .reminder-card-metrics { gap: 4px; } .reminder-card-metric span { font-size: 13px; } }
+
+.reminder-diagnostics { white-space: pre-line; color: #ad4e00; }

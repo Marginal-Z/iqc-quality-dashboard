@@ -27,13 +27,14 @@ export async function readSettings(env) {
   if (!row) throw new ReminderError('DATABASE_NOT_INITIALIZED', 503);
   const recipients = (await env.REMINDER_DB.prepare('SELECT factory_code, inspector_name, open_id FROM reminder_recipients ORDER BY factory_code, inspector_name').all()).results;
   const appSecret = row.app_secret ? decrypt(env, row.app_secret) : '';
-  return { ...row, enabled: Boolean(row.enabled), appSecret, factories: JSON.parse(row.factories), recipients };
+  const runtime = await env.REMINDER_DB.prepare('SELECT diagnostics FROM reminder_runtime WHERE id=1').first();
+  return { ...row, enabled: Boolean(row.enabled), appSecret, factories: JSON.parse(row.factories), recipients, diagnostics: JSON.parse(runtime?.diagnostics || '{}') };
 }
 export function publicSettings(settings) {
   return { enabled: settings.enabled, appId: settings.app_id, configured: Boolean(settings.app_id && settings.appSecret),
     verified: Boolean(settings.appSecret && settings.verified_key === credentialKey(settings.app_id, settings.appSecret)),
     factories: settings.factories, dailyStart: settings.daily_start, recipients: settings.recipients,
-    lastCheckedAt: settings.last_checked_at, lastError: settings.last_error, revision: settings.revision, timeZone: 'Asia/Bangkok' };
+    lastCheckedAt: settings.last_checked_at, lastError: settings.last_error, revision: settings.revision, timeZone: 'Asia/Bangkok', mode: 'new_tasks', diagnostics: settings.diagnostics };
 }
 export async function saveSettings(env, body, actor, availableFactories, now) {
   const old = await readSettings(env), appId = String(body.appId || '').trim();

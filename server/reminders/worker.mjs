@@ -3,6 +3,7 @@ import { listReminderFactories } from '../pending-inspections.mjs';
 import { readSettings, publicSettings, saveSettings, credentialKey, ReminderError } from './store.mjs';
 import { createFeishuClient } from './feishu.mjs';
 import { previewReminders, runReminderCycle } from './delivery.mjs';
+import { previewUrgent, sendUrgent } from './urgent.mjs';
 function authorized(request, env) {
   const supplied = Buffer.from(request.headers.get('Authorization') || ''), expected = Buffer.from('Bearer ' + (env.REMINDER_GATEWAY_SECRET || ''));
   return Boolean(env.REMINDER_GATEWAY_SECRET?.length >= 32 && supplied.length === expected.length && timingSafeEqual(supplied, expected) && /^[a-f0-9-]{36}$/.test(request.headers.get('X-IQC-Actor') || ''));
@@ -33,14 +34,17 @@ export function createReminderWorker({ clock = () => Date.now(), fetchImpl = fet
           if (!result.meta?.changes) throw new ReminderError('SETTINGS_CHANGED', 409);
           data = { verified: true };
         } else if (path === '/preview' && request.method === 'GET') data = await previewReminders(env, new Date(clock()));
-        else if (path === '/history' && request.method === 'GET') data = { deliveries: (await env.REMINDER_DB.prepare('SELECT id,thai_day,inspector_names,total,urgent,overdue,status,attempts,sent_at,error_code FROM reminder_deliveries ORDER BY created_at DESC,id LIMIT 50').all()).results };
+        else if (path === '/urgent/preview' && request.method === 'POST') data = await previewUrgent(env, await readBody(request), request.headers.get('X-IQC-Actor'), { clock });
+        else if (path === '/urgent/send' && request.method === 'POST') data = await sendUrgent(env, await readBody(request), request.headers.get('X-IQC-Actor'), { clock, fetchImpl });
+        else if (path === '/history' && request.method === 'GET') data = { deliveries: (await env.REMINDER_DB.prepare('SELECT d.id,d.thai_day,d.inspector_names,d.total,d.urgent,d.overdue,d.status,d.attempts,d.sent_at,d.error_code,j.kind FROM reminder_deliveries d LEFT JOIN reminder_jobs j ON j.id=d.id ORDER BY d.created_at DESC,d.id LIMIT 50').all()).results };
         else return new Response('Not found', { status: 404 });
         return new Response(JSON.stringify(data), { headers });
       } catch (error) { return new Response(JSON.stringify({ error: error.code || 'REMINDER_SERVICE_ERROR' }), { status: error.status || 503, headers }); }
     },
     async scheduled(_controller, env) {
       const result = await runReminderCycle(env, { clock, fetchImpl });
-      console.log('IQC reminder cycle', JSON.stringify(result));
+      const { sent, skipped, failed, error, disabled, beforeStart, busy, pendingTotal, mappedPendingTotal } = result;
+      console.log('IQC reminder cycle', JSON.stringify({ sent, skipped, failed, error, disabled, beforeStart, busy, pendingTotal, mappedPendingTotal, unmapped: result.unmappedInspectors?.length }));
       if (result.error) throw new Error(result.error);
     }
   };

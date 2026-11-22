@@ -36,6 +36,11 @@ function renderMetadata() {
   if (!settings) return;
   $('connectionBadge').textContent = text(settings.verified ? 'connected' : settings.configured ? 'configured' : 'notConfigured');
   $('lastCheck').textContent = text('lastChecked') + '：' + (settings.lastCheckedAt ? time(settings.lastCheckedAt) : text('notChecked')) + (settings.lastError ? ' · ' + text('lastError') + '：' + errorText(settings.lastError) : '');
+  const diagnostics = settings.diagnostics || {}, parts = [];
+  if (Number.isInteger(diagnostics.pendingTotal)) parts.push(`${text('detectedPending')} ${diagnostics.pendingTotal} · ${text('mappedPending')} ${diagnostics.mappedPendingTotal}`);
+  if (diagnostics.unmappedInspectors?.length) parts.push(text('unmapped') + ' ' + diagnostics.unmappedInspectors.map(row => `${row.factoryCode} · ${row.name} (${row.total})`).join('、'));
+  if (settings.lastCheckedAt && Date.now() / 1000 - settings.lastCheckedAt > 300) parts.push(text('schedulerDelayed'));
+  $('reminderDiagnostics').textContent = parts.join('\n');
 }
 function time(value) { return value ? new Intl.DateTimeFormat(document.documentElement.lang, { timeZone: 'Asia/Bangkok', dateStyle: 'short', timeStyle: 'medium', hourCycle: 'h23' }).format(new Date(value * 1000)) : '—'; }
 function applySettings(value) {
@@ -53,7 +58,7 @@ function renderHistory() {
   if (!history.length) { const cell = tbody.insertRow().insertCell(); cell.colSpan = 5; cell.className = 'empty'; cell.textContent = text('noHistory'); return; }
   for (const entry of history) {
     const row = tbody.insertRow();
-    for (const value of [entry.thai_day, JSON.parse(entry.inspector_names).join('、'), entry.total, text(entry.status) + (entry.error_code ? ' · ' + errorText(entry.error_code) : ''), time(entry.sent_at)]) row.insertCell().textContent = value;
+    for (const value of [entry.thai_day, JSON.parse(entry.inspector_names).join('、'), entry.total, (entry.kind ? text(entry.kind === 'urgent' ? 'urgentNotice' : 'newTasks') + ' · ' : '') + text(entry.status) + (entry.error_code ? ' · ' + errorText(entry.error_code) : ''), time(entry.sent_at)]) row.insertCell().textContent = value;
   }
 }
 async function loadHistory() { history = (await request('/history')).deliveries; renderHistory(); }

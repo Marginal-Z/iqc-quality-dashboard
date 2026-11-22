@@ -555,7 +555,6 @@
     body.supplier-wallboard-mode .sb-chart { flex: 1; height: auto; min-height: 0; }
     body.supplier-wallboard-mode .sb-risk-table-wrap { flex: 1; max-height: none; min-height: 0; overflow: hidden; }
     body.supplier-wallboard-mode .sb-alerts { flex-shrink: 0; }
-    body.supplier-wallboard-mode .wallboard-bar { display: flex; top: auto; bottom: 24px; left: auto; right: 28px; transform: none; }
 
 
     body[data-page="suppliers"]:not(.wallboard-mode):not(.supplier-wallboard-mode) .hero,
@@ -724,7 +723,7 @@
 /* Viewport tracks, rather than content height, control both supplier chart rows. */
 body.supplier-wallboard-mode { overflow: hidden; }
 body.supplier-wallboard-mode .content {
-  height: 100vh; height: 100dvh; min-height: 0; padding: 16px 24px 58px;
+  height: 100vh; height: 100dvh; min-height: 0; padding: 82px 17px 16px;
   overflow: hidden; box-sizing: border-box;
 }
 body.supplier-wallboard-mode .sb-page {
@@ -750,7 +749,6 @@ body.supplier-wallboard-mode .sb-risk-table-wrap { flex: 1 1 0; height: 0; min-h
 body.supplier-wallboard-mode .sb-alerts { padding-bottom: 0; }
 body.supplier-wallboard-mode .sb-alert-cards { overflow: auto; min-height: 0; padding: 6px 12px; }
 body.supplier-wallboard-mode .sb-alert-card { padding: 7px 10px; }
-body.supplier-wallboard-mode .wallboard-bar { bottom: 10px; right: 24px; }
 body.supplier-wallboard-mode .sb-card { box-shadow: none; }
 @media (prefers-reduced-motion: reduce) {
 body.supplier-wallboard-mode .sb-risk-table-wrap { overflow-y: auto; }
