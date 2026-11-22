@@ -1,27 +1,9 @@
 <!doctype html>
 <html lang="zh" translate="no" class="notranslate"><head><meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1"><title>登录 · IQC</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/auth/auth.css"><script type="module" src="/auth/login.js"></script></head>
 <body class="login-page">
-<svg class="login-background" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-  <defs><pattern id="loginBackgroundDots" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#315477"/></pattern></defs>
-  <rect width="1600" height="1000" fill="#142c48"/>
-  <rect width="1600" height="1000" fill="url(#loginBackgroundDots)"/>
-  <g fill="none" stroke="#28547d" stroke-width="2">
-    <circle cx="-25" cy="840" r="400"/><circle cx="-25" cy="840" r="320"/><circle cx="-25" cy="840" r="240"/>
-    <path d="M-40 190h220l90 90v140M25 230h125l65 65v105M1100-20v110l90 90h275l115 115h60M1200-20v80l90 90h235l90 90M1100 1000V875l105-105h210l90-90h120M1180 1000V910l90-90h190l100-100h65"/>
-    <path d="M-30 65h290l70 70h160M70 100h155l70 70h145M-20 560h155l65-65V340M-20 600h190l70-70V385"/>
-  </g>
-  <g fill="none" stroke="#69b1ff" stroke-width="2">
-    <path d="M55 150h115l60 60v105M1320 70v50l75 75h120M1325 950v-55l75-75h110"/>
-    <circle cx="55" cy="150" r="6"/><circle cx="230" cy="315" r="6"/><circle cx="1515" cy="195" r="6"/><circle cx="1325" cy="950" r="6"/>
-  </g>
-  <g fill="#fa8c16"><circle cx="170" cy="150" r="4"/><circle cx="1395" cy="195" r="4"/><circle cx="1400" cy="820" r="4"/></g>
-  <g fill="none" stroke="#315477" stroke-width="2"><path d="m125 70 34-20 34 20v40l-34 20-34-20Zm1320 450 48-28 48 28v56l-48 28-48-28Z"/><path d="m125 70 34 20 34-20m-34 20v40m1286 390 48 28 48-28m-48 28v56"/></g>
-</svg>
+
 <main class="login-shell"><section class="login-art" aria-hidden="true"><div class="login-art-caption"><span>SHARETRONIC</span><h2 data-auth-text="dashboardName">IQC 来料检验看板</h2></div>
 <svg class="inspection-art" viewBox="0 0 640 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-<defs><pattern id="inspectionGrid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" stroke="#b7d7f5" stroke-width="1"/></pattern></defs>
-<rect x="12" y="12" width="616" height="476" rx="24" fill="url(#inspectionGrid)"/>
-<g stroke="#69b1ff" stroke-width="2"><path d="M60 100h120v70h54M580 370h-95v-65h-45M565 95h-65v55M80 410h90v-45"/><circle cx="60" cy="100" r="5" fill="#e6f4ff"/><circle cx="565" cy="95" r="5" fill="#e6f4ff"/><circle cx="580" cy="370" r="5" fill="#e6f4ff"/></g>
 <path d="M100 324 300 215l242 128-198 116Z" fill="#d6eaff" stroke="#91caff" stroke-width="2"/>
 <path d="m100 324 244 135v25L100 349Z" fill="#b4d6f8"/><path d="m344 459 198-116v25L344 484Z" fill="#91caff"/>
 <g stroke="#0958d9" stroke-width="3" stroke-linejoin="round"><path d="m170 285 70-39 69 39-70 40Z" fill="#fff"/><path d="m170 285 69 40v74l-69-40Z" fill="#e6f4ff"/><path d="m239 325 70-40v74l-70 40Z" fill="#bae0ff"/><path d="m204 267 70 40M204 305v35"/>
@@ -31,7 +13,7 @@
 <path d="m364 213-74 57m103-45-66 65" stroke="#52c41a" stroke-width="2" stroke-dasharray="5 7"/>
 <rect x="60" y="151" width="131" height="105" rx="14" fill="#fff" stroke="#91caff" stroke-width="2"/><circle cx="94" cy="185" r="16" fill="#f6ffed" stroke="#52c41a" stroke-width="2"/><path d="m87 185 5 5 10-11" stroke="#389e0d" stroke-width="3" stroke-linecap="round"/><path d="M122 181h48M122 193h32M80 222h12m10 0h20m10 0h38" stroke="#1677ff" stroke-width="4" stroke-linecap="round"/>
 <g transform="translate(472 211)"><rect width="106" height="83" rx="12" fill="#fff" stroke="#91caff" stroke-width="2"/><path d="M19 60V38m22 22V26m22 34V15m22 45V33" stroke="#1677ff" stroke-width="9" stroke-linecap="round"/></g>
-<g fill="#fa8c16"><circle cx="144" cy="111" r="7"/><circle cx="551" cy="424" r="7"/></g></svg></section>
+</svg></section>
 <section class="login-card" aria-labelledby="title"><div class="brand"><img src="/assets/favicon.svg" alt=""><div>SHARETRONIC<small data-auth-text="dashboardName">IQC 来料检验看板</small></div></div><h1 id="title" data-auth-text="title">账号登录</h1><p class="intro" data-auth-text="intro"></p>
 <form id="loginForm"><div class="field"><label for="username" data-auth-text="username">账号</label><input id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" minlength="3" maxlength="64" required></div><div class="field"><label for="password" data-auth-text="password">密码</label><div class="password-input"><input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required><button type="button" data-password-toggle="password" aria-controls="password" aria-pressed="false" data-auth-text="show">显示</button></div></div><p class="message" role="alert" hidden></p><button class="primary" type="submit" data-auth-text="submit">登录看板</button></form>
 <div class="login-foot"><span data-auth-text="footer"></span><div class="language"><label for="language" data-auth-text="language">语言</label><select id="language" data-auth-language><option value="zh">中文</option><option value="en">English</option><option value="th">ไทย</option><option value="en-th">English + ไทย</option></select></div></div></section></main></body></html>
