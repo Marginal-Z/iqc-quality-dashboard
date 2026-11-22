@@ -1,5 +1,6 @@
 // Display translations only. QMS records, identifiers and filter values stay unchanged.
 const UI_TEXT = {
+  '急料通知': ['Urgent inspection notice', 'แจ้งตรวจวัสดุเร่งด่วน'],
   '左右滑动查看完整列': ['Swipe horizontally to see all columns', 'เลื่อนซ้ายหรือขวาเพื่อดูทุกคอลัมน์'],
   '来料检验任务': ['Incoming inspection tasks', 'งานตรวจรับเข้าวัตถุดิบ'],
   '设置': ['Settings', 'ตั้งค่า'], '显示设置': ['Display settings', 'ตั้งค่าการแสดงผล'],
@@ -72,7 +73,6 @@ const UI_TEXT = {
   '排序依据：合格率从高到低': ['Sorted by pass rate, high to low', 'เรียงตามอัตราผ่านจากมากไปน้อย'],
   '前 {count} 家': ['Top {count}', '{count} อันดับ'],
   '总任务循环滚动': ['All tasks cycling', 'เลื่อนวนงานทั้งหมด'],
-  '自动轮播': ['Auto-cycling', 'เลื่อนอัตโนมัติ'],
   'QMS实时数据': ['QMS live data', 'ข้อมูลสด QMS'],
   '{count} 位检验员': ['{count} inspectors', '{count} ผู้ตรวจ'],
   '检验员待检批次排行': ['Pending lots by inspector', 'ล็อตรอตรวจแยกตามผู้ตรวจ'],

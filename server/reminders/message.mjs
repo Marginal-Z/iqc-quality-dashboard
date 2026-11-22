@@ -8,7 +8,7 @@ const labels = {
   order: '单号 / เลขที่เอกสาร', material: '料号 / รหัสวัสดุ', name: '物料名称 / ชื่อวัสดุ',
   quantity: '数量 / จำนวน', date: '送检日期 / วันที่ส่งตรวจ', supplier: '供应商 / ผู้จำหน่าย',
   action: '查看待检看板 / เปิดแดชบอร์ดงานรอตรวจ',
-  rule: '每日每人首次发现待检物料时提醒一次。\nแจ้งเตือนผู้ตรวจสอบแต่ละคนวันละครั้ง เมื่อพบวัสดุรอตรวจครั้งแรกของวัน',
+  rule: '仅提醒本次新增待检任务，同一任务不重复通知。\nแจ้งเฉพาะงานรอตรวจใหม่ในรอบนี้ โดยไม่แจ้งงานเดิมซ้ำ',
   test: '模拟测试 / ทดสอบจำลอง',
   testNote: '虚构测试数据，无需进行真实检验。\nข้อมูลทดสอบจำลอง ไม่ต้องตรวจสอบจริง'
 };
@@ -22,12 +22,13 @@ const batches = total => `${total} 批 / ล็อต`;
 const remaining = total => `另有 ${total} 批，请登录看板查看全部待检物料。\nยังมีอีก ${total} ล็อต กรุณาเข้าสู่ระบบแดชบอร์ดเพื่อดูรายการทั้งหมด`;
 const byteLength = value => new TextEncoder().encode(JSON.stringify(value)).length;
 
-export function reminderMessage(groups, date, { test = false } = {}) {
+export function reminderMessage(groups, date, { test = false, kind = 'new_tasks' } = {}) {
   const total = groups.reduce((n, group) => n + count(group.total), 0);
   const urgent = groups.reduce((n, group) => n + count(group.urgent), 0);
   const overdue = groups.reduce((n, group) => n + count(group.overdue), 0);
   const inspectors = clean([...new Set(groups.map(group => clean(group.name, 80)))].join('、'), 160);
-  const title = (test ? labels.test + ' · ' : '') + labels.title;
+  const title = (test ? labels.test + ' · ' : '') + (kind === 'urgent' ? 'IQC 急料检验通知 / แจ้งตรวจวัสดุเร่งด่วน' : labels.title);
+  const rule = kind === 'urgent' ? '请优先安排以上急料检验。此消息由质量管理员手动发起。\nกรุณาจัดลำดับตรวจวัสดุเร่งด่วนข้างต้นก่อน ข้อความนี้ส่งโดยผู้ดูแลคุณภาพ' : labels.rule;
   const subtitle = clean(date, 10) + ' · 泰国时间 / เวลาไทย UTC+7';
   const metrics = [[total, '待检', 'รอตรวจ'], [urgent, '加急', 'เร่งด่วน'], [overdue, '超时', 'เกินกำหนด']];
   const selected = groups.flatMap((group, groupIndex) => (group.items || []).map(item => ({ group, groupIndex, item }))).slice(0, 15);
@@ -59,12 +60,12 @@ export function reminderMessage(groups, date, { test = false } = {}) {
         { tag: 'column_set', flex_mode: 'trisect', columns: metrics.map(([value, zh, th]) => ({ tag: 'column', width: 'weighted', weight: 1, elements: [{ tag: 'markdown', content: `### ${value}\n${zh}\n${th}`, text_align: 'center' }] })) },
         { tag: 'hr' }, ...detail.elements,
         { tag: 'button', text: { tag: 'plain_text', content: labels.action }, type: 'primary', behaviors: [{ type: 'open_url', default_url: DASHBOARD_URL }] },
-        plain(labels.rule)
+        plain(rule)
       ] }
     };
     const text = [title, subtitle, ...(test ? [labels.testNote] : []), `${labels.inspector}：${inspectors}`,
       `${labels.pending} ${batches(total)} · ${labels.urgent} ${batches(urgent)} · ${labels.overdue} ${batches(overdue)}`,
-      ...detail.text, labels.action + '：' + DASHBOARD_URL, labels.rule].join('\n');
+      ...detail.text, labels.action + '：' + DASHBOARD_URL, rule].join('\n');
     return { card, text };
   }
   let result = build();

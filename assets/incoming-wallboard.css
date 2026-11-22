@@ -17,7 +17,7 @@
 .wallboard-only-col,
 .wallboard-supplier-label { display: none; }
 
-body.wallboard-mode {
+body:is(.wallboard-mode, .supplier-wallboard-mode) {
   /* Ant Design standard palette: semantic colors plus neutral surface tokens. */
   --wallboard-blue: #1677ff;
   --wallboard-blue-strong: #0958d9;
@@ -49,10 +49,10 @@ body.wallboard-mode {
 }
 body.wallboard-mode .app-shell { display: block; height: 100dvh; min-height: 540px; }
 body.wallboard-mode .main { width: 100%; height: 100dvh; min-height: 540px; overflow: hidden; }
-body.wallboard-mode :is(.sidebar, .topbar, .hero, .kpi-grid, .page-footer, .sb-page, .display-settings-toggle) { display: none; }
+body.wallboard-mode :is(.sidebar, .topbar, .hero, .kpi-grid, .page-footer, .sb-page) { display: none; }
 body.wallboard-mode .display-settings[popover] { display: none; }
 
-body.wallboard-mode .wallboard-bar {
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-bar {
   position: fixed;
   inset: 0 0 auto;
   z-index: 20;
@@ -73,8 +73,8 @@ body.wallboard-mode .wallboard-bar {
   transform: none;
   backdrop-filter: none;
 }
-body.wallboard-mode .wallboard-brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
-body.wallboard-mode .wallboard-logo {
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-logo {
   display: flex;
   flex: 0 0 35px;
   align-items: center;
@@ -85,12 +85,12 @@ body.wallboard-mode .wallboard-logo {
   border-radius: 6px;
   background: var(--wallboard-blue-bg);
 }
-body.wallboard-mode .wallboard-logo i { display: block; width: 5px; border-radius: 2px; background: var(--wallboard-blue); }
-body.wallboard-mode .wallboard-logo i:nth-child(1) { height: 16px; }
-body.wallboard-mode .wallboard-logo i:nth-child(2) { height: 24px; background: var(--wallboard-blue-light); }
-body.wallboard-mode .wallboard-logo i:nth-child(3) { height: 19px; background: var(--wallboard-blue-border); }
-body.wallboard-mode .wallboard-brand-titles { display: flex; align-items: center; gap: 10px; min-width: 0; }
-body.wallboard-mode .wallboard-brand-titles strong {
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-logo i { display: block; width: 5px; border-radius: 2px; background: var(--wallboard-blue); }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-logo i:nth-child(1) { height: 16px; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-logo i:nth-child(2) { height: 24px; background: var(--wallboard-blue-light); }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-logo i:nth-child(3) { height: 19px; background: var(--wallboard-blue-border); }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-titles { display: flex; align-items: center; gap: 10px; min-width: 0; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-titles strong {
   overflow: hidden;
   color: var(--wallboard-text);
   font-size: 28px;
@@ -99,11 +99,11 @@ body.wallboard-mode .wallboard-brand-titles strong {
   letter-spacing: -.045em;
   text-overflow: ellipsis;
 }
-body.wallboard-mode .wallboard-brand-titles strong b { color: var(--wallboard-blue); font-weight: 760; }
-body.wallboard-mode .wallboard-brand-divider { display: block; width: 1px; height: 27px; background: var(--wallboard-border); }
-body.wallboard-mode .wallboard-brand-sub { display: block; color: var(--wallboard-secondary); font-size: 11px; font-weight: 730; letter-spacing: .16em; }
-body.wallboard-mode .wallboard-actions { display: flex; align-items: center; gap: 18px; }
-body.wallboard-mode .wallboard-live-tag {
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-titles strong b { color: var(--wallboard-blue); font-weight: 760; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-divider { display: block; width: 1px; height: 27px; background: var(--wallboard-border); }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-sub { display: block; color: var(--wallboard-secondary); font-size: 11px; font-weight: 730; letter-spacing: .16em; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-actions { display: flex; align-items: center; gap: 18px; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-live-tag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -115,15 +115,15 @@ body.wallboard-mode .wallboard-live-tag {
   font-size: 11px;
   font-weight: 740;
 }
-body.wallboard-mode .wallboard-live-tag i,
-body.wallboard-mode .wallboard-factory-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--wallboard-green); }
-body.wallboard-mode .wallboard-factory { display: flex; align-items: center; gap: 9px; }
-body.wallboard-mode .wallboard-factory strong { color: var(--wallboard-green-strong); font-size: 22px; font-weight: 740; }
-body.wallboard-mode .wallboard-clock { display: grid; min-width: 120px; color: var(--wallboard-secondary); font-family: ui-monospace, Consolas, monospace; text-align: right; }
-body.wallboard-mode .wallboard-clock strong { font-size: 13px; font-weight: 500; }
-body.wallboard-mode .wallboard-clock small { font-size: 10px; letter-spacing: .12em; }
-body.wallboard-mode .wallboard-fullscreen,
-body.wallboard-mode .wallboard-exit {
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-live-tag i,
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-factory-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--wallboard-green); }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-factory { display: flex; align-items: center; gap: 9px; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-factory strong { color: var(--wallboard-green-strong); font-size: 22px; font-weight: 740; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-clock { display: grid; min-width: 120px; color: var(--wallboard-secondary); font-family: ui-monospace, Consolas, monospace; text-align: right; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-clock strong { font-size: 13px; font-weight: 500; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-clock small { font-size: 10px; letter-spacing: .12em; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-fullscreen,
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-exit {
   width: 40px;
   height: 40px;
   display: grid;
@@ -136,11 +136,11 @@ body.wallboard-mode .wallboard-exit {
   background: #fff;
   cursor: pointer;
 }
-body.wallboard-mode .wallboard-fullscreen:hover,
-body.wallboard-mode .wallboard-exit:hover { color: var(--wallboard-blue); border-color: var(--wallboard-blue-border); background: var(--wallboard-blue-bg); }
-body.wallboard-mode .wallboard-fullscreen svg,
-body.wallboard-mode .wallboard-exit svg { width: 16px; height: 16px; }
-body.wallboard-mode .wallboard-exit span { display: none; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-fullscreen:hover,
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-exit:hover { color: var(--wallboard-blue); border-color: var(--wallboard-blue-border); background: var(--wallboard-blue-bg); }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-fullscreen svg,
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-exit svg { width: 16px; height: 16px; }
+body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-exit span { display: none; }
 
 body.wallboard-mode .content {
   display: grid;
@@ -491,7 +491,6 @@ body.wallboard-mode .supplier-rank-chart { flex: 1 1 0; min-height: 0; margin: 0
   body.wallboard-mode .table-toolbar { padding-inline: 10px; }
   body.wallboard-mode .wallboard-table-meta { gap: 4px; }
   body.wallboard-mode .wallboard-table-meta .rows-badge { font-size: 9px; }
-  body.wallboard-mode .wallboard-table-meta .status-pill { font-size: 9px; }
   body.wallboard-mode .flow-body { grid-template-columns: minmax(120px, .9fr) minmax(0, 1.1fr); padding-inline: 8px; }
   body.wallboard-mode .wallboard-status-stat { padding: 8px; }
   body.wallboard-mode .wallboard-status-stat > strong { font-size: 18px; }
@@ -505,12 +504,12 @@ body.wallboard-mode .supplier-rank-chart { flex: 1 1 0; min-height: 0; margin: 0
 }
 
 /* The English + Thai option uses the same board, with room for both labels. */
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles { flex-direction: column; align-items: flex-start; gap: 4px; }
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles strong { font-size: 22px; line-height: 1.25; white-space: normal; }
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-divider { display: none; }
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-sub { font-size: 9px; letter-spacing: .03em; white-space: normal; }
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-actions { gap: 12px; flex-shrink: 0; }
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-live-tag { max-width: 160px; white-space: normal; }
+html[data-ui-locale="en-th"] body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-titles { flex-direction: column; align-items: flex-start; gap: 4px; }
+html[data-ui-locale="en-th"] body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-titles strong { font-size: 22px; line-height: 1.25; white-space: normal; }
+html[data-ui-locale="en-th"] body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-divider { display: none; }
+html[data-ui-locale="en-th"] body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-sub { font-size: 9px; letter-spacing: .03em; white-space: normal; }
+html[data-ui-locale="en-th"] body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-actions { gap: 12px; flex-shrink: 0; }
+html[data-ui-locale="en-th"] body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-live-tag { max-width: 160px; white-space: normal; }
 html[data-ui-locale="en-th"] body.wallboard-mode .card-title { white-space: normal; }
 html[data-ui-locale="en-th"] body.wallboard-mode .overview-grid > .overview-card:first-child .card-head,
 html[data-ui-locale="en-th"] body.wallboard-mode .analytics-grid > .card .card-head { height: 82px; flex-basis: 82px; }
@@ -523,7 +522,6 @@ html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar > div:first-chil
 html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar { height: 68px; flex-basis: 68px; gap: 10px; }
 html[data-ui-locale="en-th"] body.wallboard-mode .table-toolbar .card-title { flex-shrink: 1; font-size: 15px; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-table-meta { flex-shrink: 0; }
-html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-table-meta .status-pill { max-width: 130px; white-space: normal; }
 html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(thead tr, th) { height: 70px; }
 html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(tbody tr, tbody td) { height: 64px; }
 html[data-ui-locale="en-th"] body.wallboard-mode #iqcTable :is(td:nth-child(9), td:nth-child(12), td:nth-child(13), td:nth-child(14)) { white-space: normal; font-size: 10.5px; }
@@ -536,7 +534,7 @@ html[data-ui-locale="en-th"] body.wallboard-mode .chart-key { flex-wrap: wrap; g
 html[data-ui-locale="en-th"] body.wallboard-mode .chart-key span { white-space: normal; }
 html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-chart-bottom { gap: 6px; min-height: 36px; line-height: 1.4; }
 @media (max-width: 900px) {
-  html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-titles strong { font-size: 16px; }
-  html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-brand-sub { display: none; }
-  html[data-ui-locale="en-th"] body.wallboard-mode .wallboard-live-tag { display: none; }
+  html[data-ui-locale="en-th"] body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-titles strong { font-size: 16px; }
+  html[data-ui-locale="en-th"] body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-brand-sub { display: none; }
+  html[data-ui-locale="en-th"] body:is(.wallboard-mode, .supplier-wallboard-mode) .wallboard-live-tag { display: none; }
 }

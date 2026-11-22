@@ -241,7 +241,7 @@ async function serveAsset(request, env, path) {
 async function reminderApi(request, env, session, body, path) {
   if (session.role !== 'admin') return error(403, 'FORBIDDEN', '需要管理员权限');
   const target = path === '/api/admin/reminders' ? '/settings' : path.slice('/api/admin/reminders'.length);
-  const allowed = request.method === 'GET' ? ['/settings', '/preview', '/history'] : ['/settings', '/connection'];
+  const allowed = request.method === 'GET' ? ['/settings', '/preview', '/history'] : ['/settings', '/connection', '/urgent/preview', '/urgent/send'];
   if (!allowed.includes(target)) return error(404, 'NOT_FOUND', '未找到此操作');
   if (!env.REMINDERS?.fetch || !env.REMINDER_GATEWAY_SECRET || env.REMINDER_GATEWAY_SECRET.length < 32) return error(503, 'REMINDERS_UNAVAILABLE', '提醒服务尚未配置');
   const upstream = await env.REMINDERS.fetch(new Request('https://iqc-reminders.internal' + target, {

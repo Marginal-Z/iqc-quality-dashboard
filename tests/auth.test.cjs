@@ -117,6 +117,16 @@ test('reminder administration is role and CSRF protected, with no browser creden
   assert.equal(calls[0].headers.get('X-IQC-Actor'), f.admin.user.id);
   assert.equal((await f.request('/reminders', undefined, f.admin)).status, 200);
   assert.equal((await f.request('/api/admin/reminders/run', {}, f.admin)).status, 404);
+  for (const operation of ['preview', 'send']) {
+    const path = '/api/admin/reminders/urgent/' + operation, count = calls.length;
+    assert.equal((await f.request(path, {}, viewer.session)).status, 403);
+    assert.equal((await f.request(path, {}, f.admin, { 'X-CSRF-Token': '' })).status, 403);
+    assert.equal(calls.length, count);
+    assert.equal((await f.request(path, {}, f.admin)).status, 200);
+    assert.equal(calls.at(-1).headers.get('Cookie'), null);
+    assert.equal(calls.at(-1).headers.get('X-CSRF-Token'), null);
+    assert.equal(new URL(calls.at(-1).url).pathname, '/urgent/' + operation);
+  }
 });
 test('disabling an account revokes sessions and admin cannot disable self', async t => {
   const f = await start(t); const viewer = await createViewer(f);

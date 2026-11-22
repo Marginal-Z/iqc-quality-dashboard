@@ -1550,6 +1550,8 @@
       supplierButton.title = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'supplier_wallboard_entry');
       $('#supplierWallboardToggleText').textContent = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'supplier_wallboard_entry');
       $('#wallboardExitText').textContent = t(supplierWallboardMode ? 'exit_supplier_wallboard' : 'exit_wallboard');
+      const brand = $('#wallboardBrandTitle');
+      if (brand) { brand.dataset.ui = supplierWallboardMode ? '供应商质量看板' : '来料检验看板'; brand.textContent = ui(brand.dataset.ui); }
       applyFactory();
     }
     let tableScroller = null, riskScroller = null;
@@ -1626,6 +1628,7 @@
       $$('[data-i18n]').forEach((node) => { node.textContent = t(node.dataset.i18n); });
       $$('[data-i18n-placeholder]').forEach((node) => { node.placeholder = t(node.dataset.i18nPlaceholder); });
       $$('[data-locale]').forEach((button) => { button.classList.toggle('active', button.dataset.locale === locale); button.setAttribute('aria-pressed', button.dataset.locale === locale ? 'true' : 'false'); });
+      if ($('#currentLanguageLabel')) $('#currentLanguageLabel').textContent = ({ zh: '中文', th: 'ไทย', en: 'English', mix: ui('中泰'), 'en-th': 'English + ไทย' })[locale];
       setFlowRange(currentFlowRange);
       updateSidebarUi(); updatePageUi(); updateWallboardUi();
       if (uiReady) {
@@ -1701,6 +1704,7 @@
       });
       $$('[data-locale]').forEach((button) => button.addEventListener('click', () => {
         locale = button.dataset.locale; applyLocale();
+        $('#languageSettings').open = false;
       }));
       $$('.nav-item[data-page]').forEach((item) => item.addEventListener('click', (event) => { event.preventDefault(); setPage(item.dataset.page); }));
       window.addEventListener('hashchange', () => setPage(window.location.hash.slice(1), false));
@@ -1708,6 +1712,7 @@
       $('#sidebarToggle').addEventListener('click', () => { sidebarHidden = !sidebarHidden; updateSidebarUi(); });
       $('#wallboardToggle').addEventListener('click', () => setWallboardMode(!wallboardMode));
       $('#supplierWallboardToggle').addEventListener('click', () => setSupplierWallboardMode(!supplierWallboardMode));
+      $('#urgentNotifyButton').addEventListener('click', () => window.IQCUrgent?.open(QMS_CONFIG.factoryCode));
       $('#wallboardExit').addEventListener('click', () => supplierWallboardMode ? setSupplierWallboardMode(false) : setWallboardMode(false));
       $('#wallboardFullscreen').addEventListener('click', async () => {
         try {

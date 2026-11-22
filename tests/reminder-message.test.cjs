@@ -15,7 +15,7 @@ test('native card shows Chinese and Thai together, correct metrics and status, a
   const columns = card.body.elements.find(el => el.tag === 'column_set').columns;
   assert.deepEqual(columns.map(col => col.elements[0].content), ['### 2\n待检\nรอตรวจ', '### 1\n加急\nเร่งด่วน', '### 1\n超时\nเกินกำหนด']);
   for (const label of ['检验员 / ผู้ตรวจสอบ', '工厂 / โรงงาน', '单号 / เลขที่เอกสาร', '料号 / รหัสวัสดุ', '物料名称 / ชื่อวัสดุ', '数量 / จำนวน', '送检日期 / วันที่ส่งตรวจ', '供应商 / ผู้จำหน่าย', '加急 / เร่งด่วน', '超时 / เกินกำหนด']) assert.ok(result.text.includes(label), label);
-  assert.ok(result.text.includes('测试材料 วัสดุทดสอบ')); assert.ok(result.text.includes('每日每人首次')); assert.ok(result.text.includes('วันละครั้ง'));
+  assert.ok(result.text.includes('测试材料 วัสดุทดสอบ')); assert.ok(result.text.includes('仅提醒本次新增待检任务')); assert.ok(result.text.includes('โดยไม่แจ้งงานเดิมซ้ำ'));
   const action = card.body.elements.find(el => el.tag === 'button');
   assert.equal(action.text.content, '查看待检看板 / เปิดแดชบอร์ดงานรอตรวจ');
   assert.deepEqual(action.behaviors, [{ type: 'open_url', default_url: 'https://iqc.namecheap.xin/' }]);

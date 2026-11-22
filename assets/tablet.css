@@ -90,9 +90,6 @@
   body.wallboard-mode #supplierRankFoot { white-space: normal; overflow: visible; }
 
   body.supplier-wallboard-mode .content { padding: 80px 8px 8px; }
-  body.supplier-wallboard-mode #wallboardBar .wallboard-brand { display: none; }
-  body.supplier-wallboard-mode #wallboardBar .wallboard-actions { width: 100%; }
-  body.supplier-wallboard-mode #wallboardBar .wallboard-factory { margin-right: auto; }
   body.supplier-wallboard-mode .sb-topbar { gap: 8px; }
   body.supplier-wallboard-mode .sb-title { white-space: normal; }
   body.supplier-wallboard-mode .sb-kpis { gap: 8px; }
@@ -101,7 +98,6 @@
   body.supplier-wallboard-mode .sb-row-bottom > .sb-card { grid-column: auto; }
   body.supplier-wallboard-mode .sb-card-head { gap: 6px; padding: 8px; }
   body.supplier-wallboard-mode .sb-alerts { overflow: auto; }
-  body.supplier-wallboard-mode .display-settings-toggle { right: 12px; bottom: 12px; }
   @media (prefers-reduced-motion: reduce) {
     body.wallboard-mode .table-wrap { overflow-y: auto; }
   }
@@ -142,8 +138,6 @@
   body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-brand-titles strong { font-size: 16px; }
   body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-actions { flex: 1; }
   body:is(.wallboard-mode, .supplier-wallboard-mode) #wallboardBar .wallboard-factory { margin-right: auto; }
-  body.supplier-wallboard-mode #wallboardBar { height: 64px; }
-  body.supplier-wallboard-mode .content { padding-top: 72px; }
   body:is(.wallboard-mode, .supplier-wallboard-mode) .content { height: auto; min-height: 100dvh; padding: 120px 8px 12px; overflow: visible; }
   body.wallboard-mode .content { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
   body.wallboard-mode .overview-grid > .overview-card:first-child { grid-column: 1; grid-row: auto; min-height: 330px; }
