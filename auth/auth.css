@@ -24,8 +24,9 @@ label { display: block; font-size: 15px; font-weight: 600; margin-bottom: 6px; }
 .login-card h1 { margin: 32px 0 6px; font-size: 28px; line-height: 1.3; letter-spacing: -.5px; }
 .intro { color: var(--muted); margin: 0 0 28px; font-size: 15px; }
 .login-card .primary { width: 100%; }
-.login-page { display: grid; place-items: center; padding: 32px; background: #edf3fa; }
-.login-page .login-shell { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); width: min(1120px, 100%); min-height: 660px; padding: 0; place-items: stretch; overflow: hidden; border: 1px solid #d4e1ef; border-radius: 22px; background: #fff; box-shadow: 0 24px 80px #142c4812; }
+.login-page { position: relative; isolation: isolate; display: grid; place-items: center; padding: 32px; background: #142c48; }
+.login-background { position: fixed; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+.login-page .login-shell { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); width: min(1120px, 100%); min-height: 660px; padding: 0; place-items: stretch; overflow: hidden; border: 1px solid #d4e1ef; border-radius: 22px; background: #fff; box-shadow: 0 24px 80px #091b3066; }
 .login-art { display: flex; flex-direction: column; justify-content: center; padding: 38px 28px 28px; background: #e6f4ff; border-right: 1px solid #cce3f8; }
 .login-art-caption { padding: 0 24px; }
 .login-art-caption > span { color: #0958d9; font-size: 18px; font-weight: 750; }
