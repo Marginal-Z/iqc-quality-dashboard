@@ -143,6 +143,8 @@ iqc-quality-dashboard/
 
 ## 配置与部署
 
+新增能力及统计边界见 [Cpk 与仓管通知](docs/QUALITY_EXTENSIONS.md)。Cpk 从侧栏进入；仓管通知在机器人提醒页独立配置，正式启用前需核实飞书接收者和应用可用范围。
+
 ### 数据接入
 
 默认数据源配置位于 `assets/dashboard.js` 的 `QMS_CONFIG` 中，包括代理地址、QMS 接口地址和默认工厂。部署到其他环境时，应同步核对前端配置与 Worker 的上游设置。

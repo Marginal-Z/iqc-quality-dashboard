@@ -2,6 +2,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { listReminderFactories } from '../pending-inspections.mjs';
 import { readSettings, publicSettings, saveSettings, credentialKey, ReminderError } from './store.mjs';
 import { createFeishuClient } from './feishu.mjs';
+import { readWarehouseSettings, publicWarehouseSettings, saveWarehouseSettings, runWarehouseCycle } from './warehouse.mjs';
 import { previewReminders, runReminderCycle } from './delivery.mjs';
 import { previewUrgent, sendUrgent } from './urgent.mjs';
 function authorized(request, env) {
@@ -36,16 +37,22 @@ export function createReminderWorker({ clock = () => Date.now(), fetchImpl = fet
         } else if (path === '/preview' && request.method === 'GET') data = await previewReminders(env, new Date(clock()));
         else if (path === '/urgent/preview' && request.method === 'POST') data = await previewUrgent(env, await readBody(request), request.headers.get('X-IQC-Actor'), { clock });
         else if (path === '/urgent/send' && request.method === 'POST') data = await sendUrgent(env, await readBody(request), request.headers.get('X-IQC-Actor'), { clock, fetchImpl });
+        else if(path==='/warehouse'&&request.method==='GET')data={settings:publicWarehouseSettings(await readWarehouseSettings(env)),deliveries:(await env.REMINDER_DB.prepare('SELECT id,total,status,attempts,sent_at,error_code FROM warehouse_deliveries ORDER BY created_at DESC,id LIMIT 30').all()).results};
+        else if(path==='/warehouse'&&request.method==='POST')data={settings:await saveWarehouseSettings(env,await readBody(request),time)};
         else if (path === '/history' && request.method === 'GET') data = { deliveries: (await env.REMINDER_DB.prepare('SELECT d.id,d.thai_day,d.inspector_names,d.total,d.urgent,d.overdue,d.status,d.attempts,d.sent_at,d.error_code,j.kind FROM reminder_deliveries d LEFT JOIN reminder_jobs j ON j.id=d.id ORDER BY d.created_at DESC,d.id LIMIT 50').all()).results };
         else return new Response('Not found', { status: 404 });
         return new Response(JSON.stringify(data), { headers });
       } catch (error) { return new Response(JSON.stringify({ error: error.code || 'REMINDER_SERVICE_ERROR' }), { status: error.status || 503, headers }); }
     },
     async scheduled(_controller, env) {
-      const result = await runReminderCycle(env, { clock, fetchImpl });
+      const warehouse=await readWarehouseSettings(env);
+      const result = await runReminderCycle(env, { clock, fetchImpl, deliveryLimit:warehouse.enabled?6:16 });
+      const warehouseResult=await runWarehouseCycle(env,{clock,fetchImpl,config:warehouse});
       const { sent, skipped, failed, error, disabled, beforeStart, busy, pendingTotal, mappedPendingTotal } = result;
       console.log('IQC reminder cycle', JSON.stringify({ sent, skipped, failed, error, disabled, beforeStart, busy, pendingTotal, mappedPendingTotal, unmapped: result.unmappedInspectors?.length }));
+      console.log('IQC warehouse cycle',JSON.stringify(warehouseResult));
       if (result.error) throw new Error(result.error);
+      if(warehouseResult.error)throw new Error(warehouseResult.error);
     }
   };
 }

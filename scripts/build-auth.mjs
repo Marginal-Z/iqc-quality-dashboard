@@ -15,14 +15,18 @@ if (process.argv.includes('--init')) {
 if (setupHash && !/^[a-f0-9]{64}$/.test(setupHash)) throw new Error('IQC_SETUP_TOKEN_HASH must be a SHA-256 hex digest');
 buildStatic(output);
 mkdirSync(`${output}/auth`, { recursive: true });
-for (const file of ['auth.css', 'client.js', 'errors.js', 'login.js', 'setup.js', 'accounts.js', 'reminders.js', 'reminder-i18n.js', 'reminder-card-preview.js', 'reminders.css']) copyFileSync(`auth/${file}`, `${output}/auth/${file}`);
-for (const page of ['login', 'setup', 'accounts', 'reminders']) {
+for (const file of ['auth.css', 'client.js', 'errors.js', 'login.js', 'setup.js', 'accounts.js', 'reminders.js', 'reminder-i18n.js', 'reminder-card-preview.js', 'reminders.css', 'cpk.js', 'cpk-i18n.js', 'cpk.css', 'warehouse-settings.js']) copyFileSync(`auth/${file}`, `${output}/auth/${file}`);
+for (const page of ['login', 'setup', 'accounts', 'reminders', 'cpk']) {
   mkdirSync(`${output}/auth/${page}`, { recursive: true });
   copyFileSync(`auth/${page}.html`, `${output}/auth/${page}/index.html`);
   rmSync(`${output}/auth/${page}.html`, { force: true });
 }
 writeFileSync(`${output}/404.html`, '<!doctype html><html lang="zh"><meta charset="utf-8"><title>404 · IQC</title><h1>页面不存在</h1><a href="/">返回看板</a></html>');
-writeFileSync(`${output}/_worker.js`, readFileSync('server/worker.mjs', 'utf8').replace('__IQC_SETUP_HASH__', setupHash || 'disabled'));
+// Pages treats this directory as Worker modules, excluding it from static assets.
+rmSync(`${output}/_worker.js`, { recursive: true, force: true });
+mkdirSync(`${output}/_worker.js`, { recursive: true });
+writeFileSync(`${output}/_worker.js/index.js`, readFileSync('server/worker.mjs', 'utf8').replace('__IQC_SETUP_HASH__', setupHash || 'disabled'));
+for (const file of ['quality.mjs', 'capability.mjs', 'pending-inspections.mjs']) copyFileSync(`server/${file}`, `${output}/_worker.js/${file}`);
 writeFileSync(`${output}/_routes.json`, JSON.stringify({ version: 1, include: ['/*'], exclude: [] }, null, 2) + '\n');
 // A misplaced static upload must not silently use the old public data endpoint.
 writeFileSync(`${output}/assets/runtime-config.js`, "window.IQC_RUNTIME={authentication:true,qmsProxyUrl:''};\n");

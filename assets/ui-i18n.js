@@ -1,5 +1,6 @@
 // Display translations only. QMS records, identifiers and filter values stay unchanged.
 const UI_TEXT = {
+  'Cpk 分析': ['Cpk analysis', 'การวิเคราะห์ Cpk'],
   '急料通知': ['Urgent inspection notice', 'แจ้งตรวจวัสดุเร่งด่วน'],
   '左右滑动查看完整列': ['Swipe horizontally to see all columns', 'เลื่อนซ้ายหรือขวาเพื่อดูทุกคอลัมน์'],
   '来料检验任务': ['Incoming inspection tasks', 'งานตรวจรับเข้าวัตถุดิบ'],

@@ -5,6 +5,7 @@ for (const path of ['assets/dashboard.js', 'assets/ui-i18n.js', 'assets/wallboar
 }
 const html = readFileSync('index.html', 'utf8');
 for (const path of ['scripts/pages-retention.mjs', 'scripts/release-pages.mjs']) execFileSync(process.execPath, ['--check', path], { stdio: 'inherit' });
+for (const path of ['server/capability.mjs', 'server/quality.mjs', 'server/reminders/warehouse.mjs', 'auth/cpk.js', 'auth/cpk-i18n.js', 'auth/warehouse-settings.js']) execFileSync(process.execPath, ['--check', path], { stdio: 'inherit' });
 execFileSync(process.execPath, ['--check', 'auth/errors.js'], { stdio: 'inherit' });
 for (const path of ['auth/reminders.js', 'auth/reminder-i18n.js', 'auth/reminder-card-preview.js', 'server/pending-inspections.mjs', 'server/reminders/worker.mjs', 'server/reminders/store.mjs', 'server/reminders/feishu.mjs', 'server/reminders/message.mjs', 'server/reminders/delivery.mjs', 'server/reminders/scheduler.mjs', 'server/reminders/urgent.mjs', 'scripts/provision-reminders.mjs']) execFileSync(process.execPath, ['--check', path], { stdio: 'inherit' });
 for (const path of ['assets/dashboard.js', 'assets/dashboard.css', 'assets/ui-i18n.js', 'assets/wallboard.js', 'assets/settings.css', 'assets/incoming-wallboard.css', 'assets/tablet.css', 'assets/favicon.svg', 'assets/runtime-config.js', 'assets/account.js', 'assets/urgent.js', 'echarts.min.js']) {
