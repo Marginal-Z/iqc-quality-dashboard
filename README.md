@@ -151,7 +151,7 @@ iqc-quality-dashboard/
 
 ### 自动发布
 
-`main` 是正式源码分支。变更通过 Pull Request 与 CI 验证后合并，随后通过已授权的官方 Wrangler CLI 发布；当前 CI 负责检查、测试和构建，不自动部署。提醒 Worker 与 Pages 分别发布，步骤见 [提醒维护指南](docs/INSPECTOR_REMINDERS.md#发布与回滚)。
+`main` 是正式源码分支。变更通过 Pull Request 与 CI 验证后合并，在 PowerShell 7 或 WSL Ubuntu 执行 `npm run release:pages`：统一入口调用官方 Wrangler 发布，验证当前生产提交和双域名后删除旧部署，仅保留最新成功生产部署。当前 CI 负责检查、测试和构建，不自动部署。清理失败或站点验证失败时停止删除，处置步骤见[维护指南](docs/MAINTENANCE.md#部署保留策略)。提醒 Worker 与 Pages 分别发布，步骤见 [提醒维护指南](docs/INSPECTOR_REMINDERS.md#发布与回滚)。
 
 正式认证站使用 Cloudflare Pages Direct Upload，配置以 `wrangler.jsonc` 为准。生产域名为 [iqc.namecheap.xin](https://iqc.namecheap.xin/)，迁移和最新验证状态见 [账号登录部署指南](docs/ACCOUNT_LOGIN.md)。不再通过 GitHub Pages 发布；预览环境默认不绑定账号数据库或 QMS。
 
