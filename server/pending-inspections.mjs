@@ -5,7 +5,7 @@ export class InspectionQueryError extends Error {
   constructor(code) { super(code); this.name = 'InspectionQueryError'; this.code = code; }
 }
 
-async function queryQms(env, path, query, options) {
+export async function queryQms(env, path, query, options) {
   if (!env.QMS_PROXY?.fetch) throw new InspectionQueryError('QMS_UNAVAILABLE');
   const { budget, timeoutMs = 30000, retries = 2 } = options;
   for (let attempt = 0; ; attempt++) {

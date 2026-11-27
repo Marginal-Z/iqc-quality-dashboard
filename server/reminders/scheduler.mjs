@@ -30,7 +30,7 @@ export function jobStatements(env, settings, { id = randomUUID(), openId, groups
   if (kind === 'new_tasks') statements.push(env.REMINDER_DB.prepare('INSERT OR IGNORE INTO reminder_task_receipts(task_key,job_id,last_seen_at) SELECT value,?,? FROM json_each(?) WHERE EXISTS(SELECT 1 FROM reminder_deliveries WHERE id=?)').bind(id, time, JSON.stringify(keys), id));
   return statements;
 }
-export async function runReminderCycle(env, { clock = () => Date.now(), fetchImpl = fetch, manualOnly = false } = {}) {
+export async function runReminderCycle(env, { clock = () => Date.now(), fetchImpl = fetch, manualOnly = false, deliveryLimit = 16 } = {}) {
   const result = { sent: 0, skipped: 0, failed: 0 }, db = env.REMINDER_DB;
   if (!db) return { ...result, error: 'DATABASE_NOT_CONFIGURED' };
   let owner;
@@ -79,7 +79,7 @@ export async function runReminderCycle(env, { clock = () => Date.now(), fetchImp
     await db.batch(inserts);
     const jobs = (await db.prepare(`SELECT d.*,j.kind,j.scope FROM reminder_deliveries d LEFT JOIN reminder_jobs j ON j.id=d.id
       WHERE d.app_id=? AND d.status IN ('pending','retry','sending') AND d.next_attempt_at<=? AND d.lease_until<=?
-      ORDER BY CASE WHEN j.kind='urgent' THEN 0 ELSE 1 END,d.created_at,d.id LIMIT ?`).bind(settings.app_id, time, time, Math.max(1, (manualOnly ? 15 : 16) - Math.ceil((receiptQueries - 1) / 2))).all()).results;
+      ORDER BY CASE WHEN j.kind='urgent' THEN 0 ELSE 1 END,d.created_at,d.id LIMIT ?`).bind(settings.app_id, time, time, Math.max(1, Math.min(manualOnly ? 15 : 16, deliveryLimit) - Math.ceil((receiptQueries - 1) / 2))).all()).results;
     const reserved = jobs.length ? (await db.prepare('SELECT task_key,job_id FROM reminder_task_receipts WHERE job_id IN(SELECT value FROM json_each(?))').bind(JSON.stringify(jobs.map(job => job.id))).all()).results : [];
     const client = createFeishuClient(settings.app_id, settings.appSecret, { fetchImpl, now: clock });
     for (const row of jobs) {

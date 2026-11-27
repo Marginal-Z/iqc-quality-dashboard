@@ -1,0 +1,25 @@
+import {api,addTranslations,text,translate,message} from './client.js';
+addTranslations({
+  zh:{warehouseTitle:'仓管检验完成通知',warehouseIntro:'泰国协创：通知全部最终检验结果。首次启用建立基线，不补发历史记录。',warehouseEnabled:'启用仓管通知',warehouseRecipient:'仓管飞书姓名',warehouseId:'仓管飞书 Open ID',warehouseSave:'保存仓管通知',warehouseRefresh:'刷新状态',warehouseBaseline:'基线已建立',warehouseWaiting:'等待云端建立基线',warehouseLast:'云端最近检查',warehouseHistory:'仓管通知记录',warehouseError:'仓管通知暂不可用，请检查配置后重试。',warehouseFactory:'工厂',warehouseCount:'完成批次',warehousePause:'仓管通知已停用',warehouseSaved:'仓管通知配置已保存',warehouseIdHint:'使用当前机器人应用的 Open ID，并将成员加入应用可用范围。',warehouseStale:'配置或表单已变化，请保存或重新载入。'},
+  en:{warehouseTitle:'Warehouse completion notifications',warehouseIntro:'SHARETRONIC Thailand: notify all final inspection results. First activation creates a baseline without sending history.',warehouseEnabled:'Enable warehouse notifications',warehouseRecipient:'Recipient name in Feishu',warehouseId:'Recipient Feishu Open ID',warehouseSave:'Save warehouse notifications',warehouseRefresh:'Refresh status',warehouseBaseline:'Baseline established',warehouseWaiting:'Waiting for cloud baseline',warehouseLast:'Last cloud check',warehouseHistory:'Warehouse notifications',warehouseError:'Warehouse notifications unavailable. Check the configuration and retry.',warehouseFactory:'Factory',warehouseCount:'Completed lots',warehousePause:'Warehouse notifications disabled',warehouseSaved:'Warehouse settings saved',warehouseIdHint:'Use the current bot application Open ID and include this member in the application scope.',warehouseStale:'Settings or form changed. Save or reload first.'},
+  th:{warehouseTitle:'แจ้งผลตรวจเสร็จให้คลัง',warehouseIntro:'SHARETRONIC Thailand: แจ้งผลตรวจขั้นสุดท้ายทั้งหมด เมื่อเปิดครั้งแรกจะสร้างข้อมูลตั้งต้นโดยไม่ส่งประวัติย้อนหลัง',warehouseEnabled:'เปิดการแจ้งคลัง',warehouseRecipient:'ชื่อผู้รับใน Feishu',warehouseId:'Feishu Open ID ของผู้รับ',warehouseSave:'บันทึกการแจ้งคลัง',warehouseRefresh:'รีเฟรชสถานะ',warehouseBaseline:'สร้างข้อมูลตั้งต้นแล้ว',warehouseWaiting:'รอคลาวด์สร้างข้อมูลตั้งต้น',warehouseLast:'คลาวด์ตรวจล่าสุด',warehouseHistory:'ประวัติการแจ้งคลัง',warehouseError:'การแจ้งคลังไม่พร้อม กรุณาตรวจสอบการตั้งค่าแล้วลองใหม่',warehouseFactory:'โรงงาน',warehouseCount:'ล็อตที่เสร็จ',warehousePause:'ปิดการแจ้งคลังแล้ว',warehouseSaved:'บันทึกการตั้งค่าคลังแล้ว',warehouseIdHint:'ใช้ Open ID ของแอปบอตปัจจุบัน และเพิ่มสมาชิกนี้ในขอบเขตผู้ใช้ของแอป',warehouseStale:'การตั้งค่าหรือแบบฟอร์มเปลี่ยน กรุณาบันทึกหรือโหลดใหม่'}
+});
+const $=id=>document.getElementById(id);let settings,deliveries=[],csrf='',dirty=false;
+const time=value=>value?new Intl.DateTimeFormat(document.documentElement.lang,{timeZone:'Asia/Bangkok',dateStyle:'short',timeStyle:'medium',hourCycle:'h23'}).format(new Date(value*1000)):'—';
+function render(){
+  if(!settings)return;
+  $('warehouseMeta').textContent=`${settings.enabled?text(settings.baselineAt?'warehouseBaseline':'warehouseWaiting'):text('warehousePause')} · ${text('warehouseLast')}: ${time(settings.lastCheckedAt)}${settings.lastError?' · '+settings.lastError:''}`;
+  $('warehouseHistory').replaceChildren();for(const entry of deliveries){const row=$('warehouseHistory').insertRow();for(const value of [entry.total,text(entry.status),time(entry.sent_at),entry.error_code||'—'])row.insertCell().textContent=value;}
+  if(!deliveries.length){const cell=$('warehouseHistory').insertRow().insertCell();cell.colSpan=4;cell.className='empty';cell.textContent=text('noHistory');}
+}
+function apply(value){settings=value;$('warehouseEnabled').checked=settings.enabled;$('warehouseRecipient').value=settings.recipientName;$('warehouseOpenId').value=settings.openId;dirty=false;render();}
+async function load(){const result=await api('/api/admin/reminders/warehouse');deliveries=result.deliveries;apply(result.settings);$('warehouseSave').disabled=false;}
+$('warehouseForm').addEventListener('input',()=>{dirty=true;});
+$('warehouseForm').addEventListener('submit',async event=>{
+  event.preventDefault();if(!settings)return;$('warehouseSave').disabled=true;message($('warehouseStatus'),'');
+  try{const result=await api('/api/admin/reminders/warehouse',{revision:settings.revision,enabled:$('warehouseEnabled').checked,factoryCode:'STTH',recipientName:$('warehouseRecipient').value.trim(),openId:$('warehouseOpenId').value.trim()},csrf);apply(result.settings);message($('warehouseStatus'),text('warehouseSaved'),true);}
+  catch(error){message($('warehouseStatus'),text(error.code==='SETTINGS_CHANGED'?'warehouseStale':'warehouseError'));}finally{$('warehouseSave').disabled=false;}
+});
+$('warehouseRefresh').addEventListener('click',async()=>{if(dirty){message($('warehouseStatus'),text('warehouseStale'));return;}try{await load();message($('warehouseStatus'),'');}catch{message($('warehouseStatus'),text('warehouseError'));}});
+document.addEventListener('auth-language',()=>{translate();render();});translate();
+export async function initWarehouseSettings(){try{const user=await api('/api/auth/me');csrf=user.csrfToken;if(user.user.role==='admin')await load();}catch{message($('warehouseStatus'),text('warehouseError'));}}

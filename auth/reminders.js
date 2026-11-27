@@ -1,7 +1,9 @@
 import { initForms, api, text, message, signedOut, submitForm, addTranslations, translate } from './client.js';
 import translations from './reminder-i18n.js';
+import {initWarehouseSettings} from './warehouse-settings.js';
 import { renderReminderCard } from './reminder-card-preview.js';
 addTranslations(translations); initForms();
+initWarehouseSettings();
 const $ = id => document.getElementById(id), form = $('reminderForm');
 let csrf = '', settings, factories = [], history = [], previewData, dirty = false;
 function errorText(code) { const key = 'error_' + code; if (text(key) !== key) return text(key); if (code?.startsWith('FEISHU_')) return text('error_FEISHU') + ` (${code})`; if (code?.startsWith('QMS_')) return text('error_QMS'); return text('reminderError'); }

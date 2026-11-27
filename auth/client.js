@@ -10,7 +10,11 @@ Object.assign(translations.th, { dashboardName: 'แดชบอร์ดตร�
 let language = 'zh';
 export function addTranslations(entries) { for (const [lang, values] of Object.entries(entries)) Object.assign(translations[lang] || (translations[lang] = {}), values); }
 try { language = localStorage.getItem('iqc_locale') || 'zh'; } catch {}
-export const text = key => language === 'en-th' && translations.en[key] && translations.th[key] ? `${translations.en[key]} · ${translations.th[key]}` : (translations[language] || translations.zh)[key] || translations.zh[key] || key;
+export const text = key => {
+  const primary=translations[language==='en-th'?'en':language==='mix'?'zh':language]||translations.zh;
+  const value=primary[key]||translations.zh[key]||key;
+  return ['mix','en-th'].includes(language)&&translations.th[key]&&value!==translations.th[key]?`${value} · ${translations.th[key]}`:value;
+};
 export function translate() {
   document.documentElement.lang = language === 'mix' ? 'zh' : language === 'en-th' ? 'en' : language;
   document.documentElement.dataset.uiLocale = language;
@@ -18,7 +22,7 @@ export function translate() {
   const heading = document.querySelector('h1[data-auth-text]');
   if (heading) document.title = text(heading.dataset.authText) + ' · IQC';
   document.querySelectorAll('[data-password-toggle]').forEach(button => { button.textContent = text(document.getElementById(button.dataset.passwordToggle).type === 'password' ? 'show' : 'hide'); });
-  document.querySelectorAll('[data-auth-language]').forEach(el => { el.value = language === 'mix' ? 'zh' : language; });
+  document.querySelectorAll('[data-auth-language]').forEach(el => { el.value = language === 'mix' && ![...el.options].some(option => option.value === 'mix') ? 'zh' : language; });
 }
 export function initForms() {
   translate();
@@ -40,7 +44,7 @@ export async function api(path, body, csrf) {
 }
 export function clearData() { try { ['qms_dash_cache', 'qms_factories_cache', 'qms_factory'].forEach(key => localStorage.removeItem(key)); } catch {} }
 export function signedOut() { clearData(); try { localStorage.setItem('iqc_logout_event', String(Date.now())); } catch {} location.replace('/login'); }
-export function safeNext(value) { return /^(?:\/|\/index\.html|\/accounts|\/reminders)(?:#[a-z]+)?$/.test(value || '') ? value : '/'; }
+export function safeNext(value) { return /^(?:\/|\/index\.html|\/accounts|\/reminders|\/cpk)(?:#[a-z]+)?$/.test(value || '') ? value : '/'; }
 export async function submitForm(form, action) {
   const button = form.querySelector('[type="submit"]'), status = form.querySelector('[role="alert"]');
   message(status, ''); button.disabled = true; const label = button.textContent; button.textContent = text('busy');
