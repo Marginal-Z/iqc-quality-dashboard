@@ -56,7 +56,28 @@
 1. 在独立分支完成变更并提交 Pull Request。
 2. 确认 CI 通过；涉及界面时完成浏览器验证。
 3. 合并到 `main`，确认 CI 成功；在 PowerShell 7 或 WSL Ubuntu 执行 `node scripts/build-auth.mjs`。
-4. 通过已授权的官方 CLI 执行 `pnpm exec wrangler pages deploy dist-auth --project-name iqc-quality-dashboard --branch main`，再检查生产域名、登录、受保护资源和 QMS 同步状态。
+4. 在 PowerShell 7 或 WSL Ubuntu 执行 `npm run release:pages`。此统一入口要求工作区干净、当前分支为 `main` 且该提交的 CI 已成功；重新构建后通过官方 Wrangler 上传，核对生产部署的提交 SHA，再检查生产域名和部署域名的登录、初始化状态、公开资源哈希及受保护入口。
+5. 新版本通过上述检查后，发布入口自动删除该项目的全部旧部署（包括旧预览和旧别名），最后复核只剩当前生产部署且站点仍通过检查。不得在检查前清理，也不要再绕过统一入口直接运行 `wrangler pages deploy`。若需要确认业务数据或界面，仍须使用正式账号验收；匿名发布检查不能替代登录后的业务验收。
+
+### 部署保留策略
+
+仅保留 `iqc-quality-dashboard` 项目当前、最新且成功的生产部署。清理脚本使用官方 CLI 当前登录在内存中获取认证，不打印或持久化令牌；只允许删除固定账户和项目下的单个 Pages 部署，不涉及 D1、账号、飞书凭据、提醒 Worker、QMS 代理或 Git 历史。
+
+库存查询遍历全部分页；出现新部署、活动构建、数据异常、站点检查失败或生产指针改变时立即停止。每次删除前重新核对生产指针，删除后复核库存和站点。删除中途失败不会重建或覆盖网站；解决问题后可重跑以下清理命令。
+
+只读预演（PowerShell 7 或 WSL Ubuntu）：
+
+```sh
+npm run cleanup:pages
+```
+
+执行已验证的清理（PowerShell 7 或 WSL Ubuntu）：
+
+```sh
+npm run cleanup:pages -- --apply
+```
+
+这些命令不会触发飞书消息。旧部署删除后，其旧地址及平台直接回滚入口不再可用；需要回退时按下节从 Git 提交重新构建发布。Git 源码和数据库保留原状。
 
 正式站使用 Cloudflare Pages Worker + D1。原 GitHub Pages 发布工作流与 CNAME 文件已移除，避免重新发布未认证入口；`gh-pages` 仅保留旧部署历史。构建产物采用文件白名单，不包含测试入口、维护文档、本地设置或初始化令牌。部署绑定、首次管理员、域名切换和账号恢复见 [账号登录指南](ACCOUNT_LOGIN.md)。
 
