@@ -12,7 +12,7 @@
 
 ## 飞书授权边界
 
-查询只使用当前应用的既有通讯录范围，不扩大成员范围、不读取手机号和邮箱、不创建新的用户授权凭据。需要应用身份的 `contact:contact.base:readonly` 获取授权标识，及 `contact:user.basic_profile:readonly` 通过姓名专用接口读取姓名。生产应用的前一项已具备，后一项需管理员批准开通并发布后才能启用姓名选择；用户身份同名权限不能替代应用身份。
+查询只使用当前应用的既有通讯录范围，不扩大成员范围、不读取手机号和邮箱、不创建新的用户授权凭据。需要应用身份的 `contact:contact.base:readonly` 获取授权标识，及 `contact:user.basic_profile:readonly` 通过姓名专用接口读取姓名。生产应用已在管理员批准后于 2026-11-28 发布 1.0.3，开通后一项应用身份权限；成员范围保持张友谊、Phanurut Deweeloh、Pornchita Chanwarakul。用户身份同名权限不能替代应用身份。
 
 服务端使用官方 `contact/v3/scopes` 及 `users/basic_batch`，姓名专用接口每次最多 10 人；部门授权使用 `departments/{id}/children` 和 `users/find_by_department` 完整分页。只返回姓名、英文姓名和当前应用 Open ID，缓存最多一分钟。每次最多 24 个通讯录请求、200 人及 20 个部门；遇到不完整分页、用户组授权或超出上限时明确报错，不提供不完整的候选列表。联系方式、头像和人事信息不存入 IQC 数据库，也不返回浏览器。
 
