@@ -5,6 +5,7 @@ import { createFeishuClient } from './feishu.mjs';
 import { readWarehouseSettings, publicWarehouseSettings, saveWarehouseSettings, runWarehouseCycle } from './warehouse.mjs';
 import { previewReminders, runReminderCycle } from './delivery.mjs';
 import { previewUrgent, sendUrgent } from './urgent.mjs';
+import { employeeDirectory, editEmployee, editReminderSection } from './employees.mjs';
 function authorized(request, env) {
   const supplied = Buffer.from(request.headers.get('Authorization') || ''), expected = Buffer.from('Bearer ' + (env.REMINDER_GATEWAY_SECRET || ''));
   return Boolean(env.REMINDER_GATEWAY_SECRET?.length >= 32 && supplied.length === expected.length && timingSafeEqual(supplied, expected) && /^[a-f0-9-]{36}$/.test(request.headers.get('X-IQC-Actor') || ''));
@@ -27,6 +28,9 @@ export function createReminderWorker({ clock = () => Date.now(), fetchImpl = fet
         const path = new URL(request.url).pathname, time = Math.floor(clock() / 1000);
         let data;
         if (path === '/settings' && request.method === 'GET') data = { settings: publicSettings(await readSettings(env)), factories: await listReminderFactories(env) };
+        else if (path === '/employees' && request.method === 'GET') data = await employeeDirectory(env, { fetchImpl, clock });
+        else if (path === '/employees' && request.method === 'POST') data = { settings: await editEmployee(env, await readBody(request), request.headers.get('X-IQC-Actor'), time, { fetchImpl, clock }) };
+        else if (['/settings/rules', '/settings/connection'].includes(path) && request.method === 'POST') data = { settings: await editReminderSection(env, await readBody(request), path.endsWith('/rules') ? 'rules' : 'connection', request.headers.get('X-IQC-Actor'), time) };
         else if (path === '/settings' && request.method === 'POST') data = { settings: await saveSettings(env, await readBody(request), request.headers.get('X-IQC-Actor'), await listReminderFactories(env), time) };
         else if (path === '/connection' && request.method === 'POST') {
           const settings = await readSettings(env); if (!settings.app_id || !settings.appSecret) throw new ReminderError('APP_NOT_CONFIGURED');
