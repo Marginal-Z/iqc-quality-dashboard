@@ -1,0 +1,36 @@
+/* Ordinary workspace palette only. Wallboard styles and geometry are isolated. */
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) {
+  --bg: #f4f7fb;
+  --card-soft: #f8fafc;
+  --ink: #18324d;
+  --navy: #102c4a;
+  --muted: #60758b;
+  --line: #dfe7f0;
+  --line-strong: #c9d7e6;
+  --blue: #1677ff;
+  --blue-soft: #e8f2ff;
+  --shadow: 0 4px 18px #102c4a08;
+  --shadow-strong: 0 12px 36px #102c4a14;
+}
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar { background: #102c4a; color: #c7d6e7; border-right-color: #183958; box-shadow: none; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .plant-switch { background: #fff; border-color: #d7e3ef; box-shadow: 0 3px 14px #061c2c20; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar .nav-label { color: #9bb4cc; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar .nav-item { color: #c7d6e7; background-color: transparent; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar .nav-item svg { color: #94b5d6; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar .nav-item:hover { color: #fff; background: #1b3f60; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar .nav-item.active { color: #fff; background: #1b4b78; box-shadow: inset 3px 0 #69b1ff; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sidebar .nav-item.active svg { color: #91caff; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sync-card { background: #173956; border-color: #31516d; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sync-title { color: #fff; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sync-copy { color: #b5c9dc; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .sync-live { color: #95de64; background: #214c3c; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .topbar { background: #fff; border-bottom-color: #d7e3ef; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) :is(.card, .sb-card, .sb-kpi) { border-color: #dce6f0; box-shadow: 0 4px 18px #102c4a08; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) :is(.card-head, .sb-card-head) { border-bottom-color: #e6edf5; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) :is(.card-title, .sb-card-title, .kpi-value) { color: #102c4a; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) :is(.btn.primary, .sb-refresh) { background-color: #1677ff; border-color: #1677ff; color: #fff; box-shadow: 0 3px 8px #1677ff24; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .btn.primary:hover { background-color: #0958d9; border-color: #0958d9; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) :is(thead, th) { background-color: #f1f6fc; color: #48637f; border-color: #dce6f0; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) tbody tr:hover { background-color: #f0f7ff; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) :is(.filter-select, .sb-select, .search-box) { border-color: #ccdbea; background-color: #fff; }
+body:not(.wallboard-mode):not(.supplier-wallboard-mode) .date-pill { background-color: #fff; border-color: #d7e3ef; }

@@ -5,7 +5,8 @@ import { createFeishuClient } from './feishu.mjs';
 import { readWarehouseSettings, publicWarehouseSettings, saveWarehouseSettings, runWarehouseCycle } from './warehouse.mjs';
 import { previewReminders, runReminderCycle } from './delivery.mjs';
 import { previewUrgent, sendUrgent } from './urgent.mjs';
-import { employeeDirectory, editEmployee, editReminderSection } from './employees.mjs';
+import { employeeDirectory, editEmployee, editWarehouseEmployee, editReminderSection } from './employees.mjs';
+import {requestDirectorySync} from './directory.mjs';
 function authorized(request, env) {
   const supplied = Buffer.from(request.headers.get('Authorization') || ''), expected = Buffer.from('Bearer ' + (env.REMINDER_GATEWAY_SECRET || ''));
   return Boolean(env.REMINDER_GATEWAY_SECRET?.length >= 32 && supplied.length === expected.length && timingSafeEqual(supplied, expected) && /^[a-f0-9-]{36}$/.test(request.headers.get('X-IQC-Actor') || ''));
@@ -28,8 +29,10 @@ export function createReminderWorker({ clock = () => Date.now(), fetchImpl = fet
         const path = new URL(request.url).pathname, time = Math.floor(clock() / 1000);
         let data;
         if (path === '/settings' && request.method === 'GET') data = { settings: publicSettings(await readSettings(env)), factories: await listReminderFactories(env) };
-        else if (path === '/employees' && request.method === 'GET') data = await employeeDirectory(env, { fetchImpl, clock });
+        else if (path === '/employees' && request.method === 'GET') data = await employeeDirectory(env, { query:new URL(request.url).searchParams.get('q')||'' });
         else if (path === '/employees' && request.method === 'POST') data = { settings: await editEmployee(env, await readBody(request), request.headers.get('X-IQC-Actor'), time, { fetchImpl, clock }) };
+        else if(path==='/employees/warehouse'&&request.method==='POST')data={settings:await editWarehouseEmployee(env,await readBody(request),time,{fetchImpl,clock})};
+        else if(path==='/employees/sync'&&request.method==='POST')data=await requestDirectorySync(env);
         else if (['/settings/rules', '/settings/connection'].includes(path) && request.method === 'POST') data = { settings: await editReminderSection(env, await readBody(request), path.endsWith('/rules') ? 'rules' : 'connection', request.headers.get('X-IQC-Actor'), time) };
         else if (path === '/settings' && request.method === 'POST') data = { settings: await saveSettings(env, await readBody(request), request.headers.get('X-IQC-Actor'), await listReminderFactories(env), time) };
         else if (path === '/connection' && request.method === 'POST') {
@@ -41,7 +44,7 @@ export function createReminderWorker({ clock = () => Date.now(), fetchImpl = fet
         } else if (path === '/preview' && request.method === 'GET') data = await previewReminders(env, new Date(clock()));
         else if (path === '/urgent/preview' && request.method === 'POST') data = await previewUrgent(env, await readBody(request), request.headers.get('X-IQC-Actor'), { clock });
         else if (path === '/urgent/send' && request.method === 'POST') data = await sendUrgent(env, await readBody(request), request.headers.get('X-IQC-Actor'), { clock, fetchImpl });
-        else if(path==='/warehouse'&&request.method==='GET')data={settings:publicWarehouseSettings(await readWarehouseSettings(env)),deliveries:(await env.REMINDER_DB.prepare('SELECT id,total,status,attempts,sent_at,error_code FROM warehouse_deliveries ORDER BY created_at DESC,id LIMIT 30').all()).results};
+        else if(path==='/warehouse'&&request.method==='GET')data={settings:publicWarehouseSettings(await readWarehouseSettings(env)),deliveries:(await env.REMINDER_DB.prepare('SELECT id,recipient_name,total,status,attempts,sent_at,error_code FROM warehouse_role_deliveries ORDER BY created_at DESC,id LIMIT 30').all()).results};
         else if(path==='/warehouse'&&request.method==='POST')data={settings:await saveWarehouseSettings(env,await readBody(request),time)};
         else if (path === '/history' && request.method === 'GET') data = { deliveries: (await env.REMINDER_DB.prepare('SELECT d.id,d.thai_day,d.inspector_names,d.total,d.urgent,d.overdue,d.status,d.attempts,d.sent_at,d.error_code,j.kind FROM reminder_deliveries d LEFT JOIN reminder_jobs j ON j.id=d.id ORDER BY d.created_at DESC,d.id LIMIT 50').all()).results };
         else return new Response('Not found', { status: 404 });

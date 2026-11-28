@@ -38,7 +38,7 @@ function secureResponse(response) {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 function safeNext(value) {
-  return typeof value === 'string' && /^(?:\/|\/index\.html|\/accounts|\/reminders|\/cpk|\/settings(?:\/(?:employees|notifications|history|connection))?)(?:#[a-z]+)?$/.test(value) ? value : '/';
+  return typeof value === 'string' && /^(?:\/|\/index\.html|\/accounts|\/reminders|\/cpk|\/settings(?:\/(?:employees|qc|warehouse|notifications|history|connection))?)(?:#[a-z]+)?$/.test(value) ? value : '/';
 }
 function usernameOf(value) {
   if (typeof value !== 'string') return null;
@@ -243,10 +243,11 @@ async function serveAsset(request, env, path) {
 async function reminderApi(request, env, session, body, path) {
   if (session.role !== 'admin') return error(403, 'FORBIDDEN', '需要管理员权限');
   const target = path === '/api/admin/reminders' ? '/settings' : path.slice('/api/admin/reminders'.length);
-  const allowed = request.method === 'GET' ? ['/settings', '/preview', '/history', '/warehouse', '/employees'] : ['/settings', '/connection', '/urgent/preview', '/urgent/send', '/warehouse', '/employees', '/settings/rules', '/settings/connection'];
+  const allowed = request.method === 'GET' ? ['/settings', '/preview', '/history', '/warehouse', '/employees'] : ['/settings', '/connection', '/urgent/preview', '/urgent/send', '/warehouse', '/employees', '/employees/warehouse', '/employees/sync', '/settings/rules', '/settings/connection'];
   if (!allowed.includes(target)) return error(404, 'NOT_FOUND', '未找到此操作');
   if (!env.REMINDERS?.fetch || !env.REMINDER_GATEWAY_SECRET || env.REMINDER_GATEWAY_SECRET.length < 32) return error(503, 'REMINDERS_UNAVAILABLE', '提醒服务尚未配置');
-  const upstream = await env.REMINDERS.fetch(new Request('https://iqc-reminders.internal' + target, {
+  const query=target==='/employees'&&request.method==='GET'?'?'+new URLSearchParams({q:new URL(request.url).searchParams.get('q')||''}):'';
+  const upstream = await env.REMINDERS.fetch(new Request('https://iqc-reminders.internal' + target+query, {
     method: request.method, signal: AbortSignal.timeout(30000),
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + env.REMINDER_GATEWAY_SECRET, 'X-IQC-Actor': session.user_id },
     body: request.method === 'POST' ? JSON.stringify(body) : undefined
@@ -270,7 +271,7 @@ async function route(request, env) {
   if (path === '/setup' && ['GET', 'HEAD'].includes(request.method)) return await initialized(env.AUTH_DB) ? redirect('/login') : serveAsset(request, env, '/auth/setup/');
   if (!session) {
     if (path.startsWith('/api/')) return json({ error: 'UNAUTHENTICATED', message: '登录已失效，请重新登录' }, 401, { 'Set-Cookie': cookie(request, env, '', 0) });
-    if ((request.headers.get('Accept') || '').includes('text/html') || ['/', '/index.html', '/accounts', '/reminders', '/cpk', '/settings', '/settings/employees', '/settings/notifications', '/settings/history', '/settings/connection'].includes(path)) return redirect('/login?next=' + encodeURIComponent(safeNext(path)));
+    if ((request.headers.get('Accept') || '').includes('text/html') || ['/', '/index.html', '/accounts', '/reminders', '/cpk', '/settings', '/settings/employees', '/settings/qc', '/settings/warehouse', '/settings/notifications', '/settings/history', '/settings/connection'].includes(path)) return redirect('/login?next=' + encodeURIComponent(safeNext(path)));
     return error(401, 'UNAUTHENTICATED', '请先登录');
   }
   if (path === '/api/auth/me' && request.method === 'GET') return json({ user: publicUser(session), csrfToken: session.csrf_token });
@@ -301,10 +302,10 @@ async function route(request, env) {
   if (path === '/accounts') return session.role === 'admin' ? serveAsset(request, env, '/auth/accounts/') : error(403, 'FORBIDDEN', '需要管理员权限');
   if (path === '/reminders') return session.role === 'admin' ? serveAsset(request, env, '/auth/reminders/') : error(403, 'FORBIDDEN', '需要管理员权限');
   if (path === '/settings') return serveAsset(request, env, '/auth/reminders/');
-  if (/^\/settings\/(?:employees|notifications|history|connection)$/.test(path)) return session.role === 'admin' ? serveAsset(request, env, '/auth/reminders/') : error(403, 'FORBIDDEN', '需要管理员权限');
+  if (/^\/settings\/(?:employees|qc|warehouse|notifications|history|connection)$/.test(path)) return session.role === 'admin' ? serveAsset(request, env, '/auth/reminders/') : error(403, 'FORBIDDEN', '需要管理员权限');
   if (path === '/cpk') return serveAsset(request, env, '/auth/cpk/');
   if (path.startsWith('/_worker.js') || path.startsWith('/server/')) return error(404, 'NOT_FOUND', '未找到此页面');
-  if (path.startsWith('/auth/') && !['/auth/accounts.js', '/auth/reminders.js', '/auth/reminder-i18n.js', '/auth/reminder-card-preview.js', '/auth/reminders.css', '/auth/cpk.js', '/auth/cpk-i18n.js', '/auth/cpk.css', '/auth/settings-nav.js', '/auth/settings-i18n.js', '/auth/settings.css'].includes(path)) return error(404, 'NOT_FOUND', '未找到此页面');
+  if (path.startsWith('/auth/') && !['/auth/accounts.js', '/auth/reminders.js', '/auth/reminder-i18n.js', '/auth/reminder-card-preview.js', '/auth/reminders.css', '/auth/cpk.js', '/auth/cpk-i18n.js', '/auth/cpk.css', '/auth/settings-nav.js', '/auth/settings-i18n.js', '/auth/settings.css', '/auth/employee-i18n.js', '/auth/employee-settings.js'].includes(path)) return error(404, 'NOT_FOUND', '未找到此页面');
   return serveAsset(request, env, path);
 }
 export default {

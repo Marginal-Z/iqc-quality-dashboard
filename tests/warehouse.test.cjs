@@ -45,11 +45,11 @@ test('parallel checks lease a single delivery and a lost acknowledgement retries
   const f=await fixture(t);await f.enable();await f.run();f.rows=[row('NEW')];f.advance(60);f.dropAck=true;
   await Promise.all([f.run(),f.run()]);assert.equal(f.messages.length,1);const first=f.messages[0];
   f.advance(60);await f.run();assert.equal(f.messages.length,2);assert.deepEqual(f.messages[1],first);assert.equal(f.accepted.size,1);
-  assert.equal((await f.db.prepare('SELECT status FROM warehouse_deliveries').first()).status,'sent');
+  assert.equal((await f.db.prepare('SELECT status FROM warehouse_role_deliveries').first()).status,'sent');
 });
 test('an uncertain send cannot retry beyond the Feishu deduplication window',async t=>{
   const f=await fixture(t);await f.enable();await f.run();f.rows=[row('UNKNOWN')];f.advance(60);f.dropAck=true;await f.run();f.advance(3600);await f.run();
-  assert.equal(f.messages.length,1);assert.equal((await f.db.prepare('SELECT status FROM warehouse_deliveries').first()).status,'uncertain');
+  assert.equal(f.messages.length,1);assert.equal((await f.db.prepare('SELECT status FROM warehouse_role_deliveries').first()).status,'uncertain');
 });
 test('disabling during QMS reading prevents the first warehouse message',async t=>{
   const f=await fixture(t);await f.enable();await f.run();f.rows=[row('STOP')];f.advance(60);let changed=false;
@@ -59,7 +59,7 @@ test('disabling during QMS reading prevents the first warehouse message',async t
 test('larger arrivals drain in bounded groups without duplicate or lost completions',async t=>{
   const f=await fixture(t);await f.enable();await f.run();f.rows=Array.from({length:45},(_,i)=>row('BULK-'+String(i).padStart(2,'0')));
   for(let i=0;i<4;i++){f.advance(60);await f.run();}assert.equal(f.messages.length,5);assert.equal(f.accepted.size,5);
-  const delivered=await f.db.prepare("SELECT SUM(total) n FROM warehouse_deliveries WHERE status='sent'").first();assert.equal(delivered.n,45);
+  const delivered=await f.db.prepare("SELECT SUM(total) n FROM warehouse_role_deliveries WHERE status='sent'").first();assert.equal(delivered.n,45);
 });
 test('warehouse cards use plain text and cannot inject mentions, markup or instructions',async()=>{
   const [,,{warehouseMessage}]=await modules;const card=warehouseMessage([row('<at id="all">x</at>','特采',{materialName:'<script>alert(1)</script>'})],{recipientName:'Warehouse',test:true});
@@ -74,4 +74,45 @@ test('the real scheduled entrypoint runs inspector and warehouse queues within a
   f.db.prepare=sql=>wrap(prepare(sql));f.db.batch=async statements=>{calls++;return batch(statements);};
   const {createReminderWorker}=await import('../server/reminders/worker.mjs');const worker=createReminderWorker({clock:f.clock,fetchImpl:f.fetchImpl});await worker.scheduled({},f.env);
   assert.equal(f.messages.length,8);assert.ok(calls<=50,'D1 calls: '+calls);assert.ok(f.queries.length<=12,'QMS calls: '+f.queries.length);
+});
+
+test('warehouse employees keep separate baselines, result choices and switches',async t=>{
+  const f=await fixture(t);f.rows=[row('HISTORY')];await f.enable();await f.run();
+  const [,,warehouse]=await modules;
+  let settings=await warehouse.saveWarehouseRecipient(f.env,{operation:'save',factoryCode:'STTH',openId:'ou_second_warehouse',enabled:true,events:['退货']},'Second warehouse',Math.floor(f.clock()/1000));
+  let second=settings.recipients.find(row=>row.openId==='ou_second_warehouse');await f.run();assert.equal(f.messages.length,0);
+  f.rows.push(row('PASS'),row('SPECIAL','特采'),row('FAIL','退货'));f.advance(60);await f.run();
+  const first=f.messages.find(message=>message.receive_id==='ou_warehouse_fixture'),other=f.messages.find(message=>message.receive_id==='ou_second_warehouse');
+  assert.ok(first.content.includes('MAT-PASS')&&first.content.includes('MAT-SPECIAL')&&first.content.includes('MAT-FAIL'));
+  assert.ok(other.content.includes('MAT-FAIL'));assert.ok(!other.content.includes('MAT-PASS'));assert.ok(!other.content.includes('MAT-HISTORY'));
+  const globalBefore=await warehouse.readWarehouseSettings(f.env);
+  settings=await warehouse.saveWarehouseRecipient(f.env,{id:second.id,revision:second.revision,operation:'save',factoryCode:'STTH',openId:second.openId,enabled:true,events:['合格']},second.name,Math.floor(f.clock()/1000));
+  assert.equal((await warehouse.readWarehouseSettings(f.env)).revision,globalBefore.revision);
+  second=settings.recipients.find(row=>row.id===second.id);f.rows.push(row('NEW-PASS'));f.advance(60);await f.run();
+  const latest=f.messages.filter(message=>message.receive_id===second.openId).at(-1);assert.ok(latest.content.includes('MAT-NEW-PASS'));assert.ok(!latest.content.includes('MAT-PASS\n'));
+  await warehouse.saveWarehouseRecipient(f.env,{id:second.id,revision:second.revision,operation:'save',factoryCode:'STTH',openId:second.openId,enabled:false,events:['合格']},second.name,Math.floor(f.clock()/1000));
+  const oldCount=f.messages.filter(message=>message.receive_id===second.openId).length;f.rows.push(row('AFTER-DISABLE'));f.advance(60);await f.run();assert.equal(f.messages.filter(message=>message.receive_id===second.openId).length,oldCount);
+});
+
+test('role migration is repeatable and retains original warehouse baseline, payload and delivery UUID',async()=>{
+  const {DatabaseSync}=require('node:sqlite'),{readFileSync}=require('node:fs'),{join}=require('node:path'),db=new DatabaseSync(':memory:');
+  try{
+    db.exec(readFileSync(join(__dirname,'../server/reminders/schema.sql'),'utf8').split('CREATE TABLE IF NOT EXISTS qc_recipient_policies')[0]);
+    db.exec(`UPDATE warehouse_settings SET enabled=1,open_id='ou_legacy_fixture',recipient_name='Warehouse',app_id='cli_fixture',revision=7,baseline_at=100,last_success_at=200;
+      INSERT INTO warehouse_observations VALUES('OLD','signature',2,200);
+      INSERT INTO warehouse_deliveries(id,config_revision,app_id,open_id,total,scope,payload,status,uncertain,attempts,created_at,first_attempt_at) VALUES('stable-uuid',7,'cli_fixture','ou_legacy_fixture',1,'[]','synthetic-cipher','retry',1,1,150,150);`);
+    const migration=readFileSync(join(__dirname,'../server/reminders/migrations/0004-role-policies.sql'),'utf8');db.exec(migration);db.exec(migration);
+    const recipient=db.prepare('SELECT * FROM warehouse_recipients').get(),delivery=db.prepare('SELECT * FROM warehouse_role_deliveries').get();
+    assert.equal(recipient.baseline_at,100);assert.equal(recipient.last_success_at,200);assert.equal(delivery.id,'stable-uuid');assert.equal(delivery.payload,'synthetic-cipher');assert.equal(delivery.uncertain,1);assert.equal(delivery.attempts,1);
+    assert.equal(db.prepare('SELECT COUNT(*) n FROM warehouse_role_observations').get().n,1);
+    db.exec('UPDATE warehouse_recipients SET enabled=0,revision=5');db.exec(migration);assert.equal(db.prepare('SELECT enabled FROM warehouse_recipients').get().enabled,0);
+  }finally{db.close();}
+});
+
+test('a stale legacy warehouse form cannot partly change the recipient before the master revision conflict',async t=>{
+  const f=await fixture(t);await f.enable();const [,,warehouse]=await modules;
+  const before=await warehouse.readWarehouseSettings(f.env),batch=f.db.batch;
+  f.db.batch=async statements=>{await f.db.prepare('UPDATE warehouse_settings SET revision=revision+1 WHERE id=1').run();return batch(statements);};
+  await assert.rejects(warehouse.saveWarehouseSettings(f.env,{revision:before.revision,enabled:true,factoryCode:'STTH',openId:'ou_changed_by_stale_form',recipientName:'Stale recipient'},Math.floor(f.clock()/1000)),{code:'SETTINGS_CHANGED'});
+  const after=await warehouse.readWarehouseSettings(f.env);assert.deepEqual(after.recipients,before.recipients);assert.equal(after.open_id,before.open_id);
 });

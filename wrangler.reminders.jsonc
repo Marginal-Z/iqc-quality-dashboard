@@ -1,7 +1,7 @@
 {
   "name": "iqc-inspector-reminders",
   "account_id": "0788b55315084e3ff5707462aa89d051",
-  "main": "server/reminders/worker.mjs",
+  "main": "server/reminders/runtime.mjs",
   "compatibility_date": "2026-10-28",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
