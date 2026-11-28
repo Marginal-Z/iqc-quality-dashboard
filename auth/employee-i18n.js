@@ -1,7 +1,7 @@
 export default {
   zh: {
     qcEmployees: 'QC 通知员工', warehouseEmployees: '仓库通知员工', qcEmployeesIntro: '按飞书姓名添加 QC，分别设置待检与急料提醒。', warehouseEmployeesIntro: '按飞书姓名添加仓管，分别选择需要接收的检验结果。',
-    qcEmployeeAdd: '添加 QC 员工', warehouseEmployeeAdd: '添加仓库员工', employeeFunctions: '接收功能', employeeEnabled: '启用此员工的通知', employeeFilter: '筛选已添加员工', employeeFilterEmpty: '没有匹配的已添加员工。',
+    employeeAlreadyAdded: '已添加到当前角色，请编辑已有员工', qcEmployeeAdd: '添加 QC 员工', warehouseEmployeeAdd: '添加仓库员工', employeeFunctions: '接收功能', employeeEnabled: '启用此员工的通知', employeeFilter: '筛选已添加员工', employeeFilterEmpty: '没有匹配的已添加员工。',
     qcNewTasks: '新待检任务', qcUrgent: '手动急料提醒', warehousePass: '合格通知', warehouseSpecial: '特采通知', warehouseReturn: '退货通知', noFunctions: '未选择功能', chooseFunction: '启用通知时请至少选择一项接收功能。',
     qcEmployeeScope: '只向已添加并启用的 QC 推送所选功能。QMS 姓名不同可在编辑时添加别名；仓库通知独立管理。', warehouseEmployeeScope: '只向已添加并启用的仓库员工推送所选结果。新增或重新启用人员不会补发历史记录。',
     qcEmployeeRemove: '只移除此员工的 QC 绑定，不影响其仓库角色及其他员工。', warehouseEmployeeRemove: '只移除此员工的仓库绑定，不影响其 QC 角色及其他员工。', warehouseRecipientCount: '已启用的仓库员工',
@@ -10,7 +10,7 @@ export default {
   },
   en: {
     qcEmployees: 'QC recipients', warehouseEmployees: 'Warehouse recipients', qcEmployeesIntro: 'Find QC employees by Feishu name and configure pending and urgent reminders separately.', warehouseEmployeesIntro: 'Find warehouse employees by Feishu name and choose which inspection results they receive.',
-    qcEmployeeAdd: 'Add QC employee', warehouseEmployeeAdd: 'Add warehouse employee', employeeFunctions: 'Notifications', employeeEnabled: 'Enable notifications for this employee', employeeFilter: 'Filter added employees', employeeFilterEmpty: 'No matching added employees.',
+    employeeAlreadyAdded: 'Already added to this role; edit the existing employee', qcEmployeeAdd: 'Add QC employee', warehouseEmployeeAdd: 'Add warehouse employee', employeeFunctions: 'Notifications', employeeEnabled: 'Enable notifications for this employee', employeeFilter: 'Filter added employees', employeeFilterEmpty: 'No matching added employees.',
     qcNewTasks: 'New pending tasks', qcUrgent: 'Manual urgent reminders', warehousePass: 'Passed results', warehouseSpecial: 'Special acceptance', warehouseReturn: 'Returned results', noFunctions: 'No notifications selected', chooseFunction: 'Select at least one notification when enabling this employee.',
     qcEmployeeScope: 'Only added, enabled QC employees receive the selected reminders. Add an alias when the QMS name differs. Warehouse recipients are managed separately.', warehouseEmployeeScope: 'Only added, enabled warehouse employees receive selected results. Adding or re-enabling a person does not send historical records.',
     qcEmployeeRemove: 'Remove this QC binding only. Warehouse roles and other employees are unaffected.', warehouseEmployeeRemove: 'Remove this warehouse binding only. QC roles and other employees are unaffected.', warehouseRecipientCount: 'Enabled warehouse employees',
@@ -19,7 +19,7 @@ export default {
   },
   th: {
     qcEmployees: 'ผู้รับแจ้ง QC', warehouseEmployees: 'ผู้รับแจ้งคลัง', qcEmployeesIntro: 'ค้นหา QC ด้วยชื่อ Feishu และตั้งค่าแจ้งงานรอตรวจกับงานเร่งด่วนแยกกัน', warehouseEmployeesIntro: 'ค้นหาพนักงานคลังด้วยชื่อ Feishu และเลือกผลตรวจที่ต้องการรับแจ้ง',
-    qcEmployeeAdd: 'เพิ่มพนักงาน QC', warehouseEmployeeAdd: 'เพิ่มพนักงานคลัง', employeeFunctions: 'การแจ้งที่รับ', employeeEnabled: 'เปิดการแจ้งเตือนให้พนักงานนี้', employeeFilter: 'กรองพนักงานที่เพิ่มแล้ว', employeeFilterEmpty: 'ไม่พบพนักงานที่เพิ่มแล้วตามคำค้น',
+    employeeAlreadyAdded: 'เพิ่มบทบาทนี้แล้ว กรุณาแก้ไขพนักงานเดิม', qcEmployeeAdd: 'เพิ่มพนักงาน QC', warehouseEmployeeAdd: 'เพิ่มพนักงานคลัง', employeeFunctions: 'การแจ้งที่รับ', employeeEnabled: 'เปิดการแจ้งเตือนให้พนักงานนี้', employeeFilter: 'กรองพนักงานที่เพิ่มแล้ว', employeeFilterEmpty: 'ไม่พบพนักงานที่เพิ่มแล้วตามคำค้น',
     qcNewTasks: 'งานรอตรวจใหม่', qcUrgent: 'แจ้งงานเร่งด่วนด้วยตนเอง', warehousePass: 'ผลผ่าน', warehouseSpecial: 'ผลยอมรับพิเศษ', warehouseReturn: 'ผลคืนสินค้า', noFunctions: 'ยังไม่เลือกการแจ้ง', chooseFunction: 'เลือกการแจ้งอย่างน้อยหนึ่งรายการเมื่อเปิดใช้งานพนักงาน',
     qcEmployeeScope: 'ส่งเฉพาะรายการที่เลือกให้ QC ที่เพิ่มและเปิดใช้งานแล้ว หากชื่อ QMS ต่างกันให้เพิ่มชื่อแทน จัดการผู้รับคลังแยกต่างหาก', warehouseEmployeeScope: 'ส่งเฉพาะผลที่เลือกให้พนักงานคลังที่เพิ่มและเปิดใช้งานแล้ว การเพิ่มหรือเปิดใหม่จะไม่ส่งประวัติย้อนหลัง',
     qcEmployeeRemove: 'ยกเลิกเฉพาะการผูก QC นี้ ไม่กระทบบทบาทคลังหรือพนักงานคนอื่น', warehouseEmployeeRemove: 'ยกเลิกเฉพาะการผูกคลังนี้ ไม่กระทบบทบาท QC หรือพนักงานคนอื่น', warehouseRecipientCount: 'พนักงานคลังที่เปิดใช้งาน',

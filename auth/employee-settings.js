@@ -75,7 +75,10 @@ export function initEmployeeSettings({ view, request, factoryName, changed }) {
       for (const person of people) {
         const button = document.createElement('button'); button.type = 'button'; button.setAttribute('aria-pressed', String(selected?.openId === person.openId));
         const duplicate = people.filter(row => row.name === person.name).length > 1;
-        button.append(summary(person.name, duplicate ? (person.englishName || '') + ' · ' + person.openId.slice(-6) : person.englishName !== person.name ? person.englishName : ''));
+        const alreadyAdded = groups().some(row => row.openId === person.openId && row.factoryCode === $('employeeFactory').value);
+        const caption = duplicate ? (person.englishName || '') + ' · ' + person.openId.slice(-6) : person.englishName !== person.name ? person.englishName : '';
+        button.disabled = alreadyAdded;
+        button.append(summary(person.name, [caption, alreadyAdded ? text('employeeAlreadyAdded') : ''].filter(Boolean).join(' · ')));
         button.addEventListener('click', () => { selected = person; $('employeeSelection').textContent = text('employeeSelected') + ': ' + person.name; $('employeeForm').querySelector('[type="submit"]').disabled = false; message($('employeeDialogStatus'), ''); renderPicker(); });
         root.append(button);
       }
@@ -124,6 +127,7 @@ export function initEmployeeSettings({ view, request, factoryName, changed }) {
     requestId++; clearTimeout(searchTimer); loading = true; renderPicker(); searchTimer = setTimeout(search, 250);
   });
   $('employeeFilter').addEventListener('input', renderRows);
+  $('employeeFactory').addEventListener('change', () => { selected = undefined; $('employeeSelection').textContent = ''; $('employeeForm').querySelector('[type="submit"]').disabled = true; renderPicker(); });
   $('addEmployee').addEventListener('click', () => openPicker());
   $('syncDirectory').addEventListener('click', async () => {
     $('syncDirectory').disabled = true;
@@ -138,7 +142,7 @@ export function initEmployeeSettings({ view, request, factoryName, changed }) {
     submitForm(event.currentTarget, async () => {
       const enabled = $('employeeEnabled').checked, chosen = [...$('employeeFeatures').querySelectorAll('input:checked')].map(input => input.value);
       if (enabled && !chosen.length) throw new Error(text('chooseFunction'));
-      const common = { operation: 'save', openId: selected.openId, factoryCode: $('employeeFactory').value, enabled };
+      const common = { operation: 'save', create: !editing, openId: selected.openId, factoryCode: $('employeeFactory').value, enabled };
       if (isWarehouse) {
         warehouse = (await request('/employees/warehouse', { ...common, ...(editing ? { id: editing.id, revision: editing.revision } : {}), events: chosen })).settings;
       } else {

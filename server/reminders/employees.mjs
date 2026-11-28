@@ -6,6 +6,8 @@ export async function employeeDirectory(env,{query=''}={}) { return searchDirect
 export async function editEmployee(env, body, actor, time, options = {}) {
   const old=await readSettings(env),policy=old.policies.find(row=>row.factory_code===body.factoryCode&&row.open_id===body.openId);
   if(body.revision!==old.revision)throw new ReminderError('SETTINGS_CHANGED',409);
+  if(body.create!==undefined&&typeof body.create!=='boolean')throw new ReminderError('INVALID_RECIPIENTS');
+  if(body.create&&old.recipients.some(row=>row.factory_code===body.factoryCode&&row.open_id===body.openId))throw new ReminderError('DUPLICATE_RECIPIENT',409);
   if(!/^ou_[A-Za-z0-9_-]{4,124}$/.test(body.openId||'')||!old.factories.includes(body.factoryCode)||!['save','remove'].includes(body.operation))throw new ReminderError('INVALID_RECIPIENTS');
   let update;
   if(body.operation==='save'){

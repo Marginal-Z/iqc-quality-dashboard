@@ -120,3 +120,10 @@ test('company directory work stays below free-plan D1 limits during department e
   f.db.prepare=sql=>wrap(prepare(sql));f.db.batch=async statements=>{calls++;return batch(statements);};
   for(let i=0;i<3;i++){calls=0;const result=await f.sync();assert.equal(result.error,undefined);assert.ok(result.requests<=8);assert.ok(calls<=50,'D1 calls: '+calls);}
 });
+
+test('adding an existing QC employee cannot overwrite QMS aliases or notification choices',async t=>{
+  const f=await fixture(t);await f.edit({operation:'save',openId:'ou_employee_a',inspectorNames:['Employee A','QMS alias'],features:['urgent'],enabled:true});
+  const before=await f.store.readSettings(f.env);
+  await assert.rejects(f.edit({operation:'save',create:true,openId:'ou_employee_a',inspectorNames:['Employee A'],features:['new_tasks','urgent'],enabled:true}),{code:'DUPLICATE_RECIPIENT'});
+  const after=await f.store.readSettings(f.env);assert.equal(after.revision,before.revision);assert.deepEqual(after.recipients,before.recipients);assert.deepEqual(after.policies,before.policies);
+});
