@@ -1,4 +1,5 @@
 import { initForms, api, text, message, signedOut, submitForm } from './client.js';
+import { initSettingsNavigation } from './settings-nav.js';
 initForms();
 let csrf = '', currentUser, users = [], targetId = '';
 const status = document.getElementById('status'), dialog = document.getElementById('userDialog'), form = document.getElementById('userForm');
@@ -40,4 +41,4 @@ document.addEventListener('auth-language', render);
 document.getElementById('logout').addEventListener('click', async () => { try { await request('/api/auth/logout', {}); signedOut(); } catch (e) { message(status, e.message); } });
 window.addEventListener('storage', event => { if (event.key === 'iqc_logout_event') location.replace('/login'); });
 window.addEventListener('pageshow', event => { if (event.persisted) location.reload(); });
-try { const me = await request('/api/auth/me'); currentUser = me.user; csrf = me.csrfToken; if (currentUser.role !== 'admin') location.replace('/'); else { await loadUsers(); document.getElementById('addUser').disabled = false; } } catch (e) { message(status, e.message); }
+try { const me = await request('/api/auth/me'); currentUser = me.user; csrf = me.csrfToken; if (currentUser.role !== 'admin') location.replace('/'); else { initSettingsNavigation(currentUser.role); await loadUsers(); document.getElementById('addUser').disabled = false; } } catch (e) { message(status, e.message); }

@@ -27,7 +27,7 @@ test('salted native scrypt hashes verify exact passwords without storing plainte
 });
 test('unauthenticated HTML, scripts, runtime config and QMS cannot bypass login', async t => {
   const f = await start(t, false);
-  for (const path of ['/', '/index.html', '/accounts', '/cpk']) { const res = await f.request(path); assert.equal(res.status, 303); assert.match(res.headers.get('Location'), /^\/login\?next=/); }
+  for (const path of ['/', '/index.html', '/accounts', '/cpk', '/settings', '/settings/employees', '/settings/notifications', '/settings/history', '/settings/connection']) { const res = await f.request(path); assert.equal(res.status, 303); assert.match(res.headers.get('Location'), /^\/login\?next=/); }
   for (const path of ['/assets/dashboard.js', '/assets/runtime-config.js', '/auth/accounts.js', '/auth/cpk.js', '/api/auth/me', '/api/quality/factories']) assert.equal((await f.request(path)).status, 401, path);
   assert.equal((await f.request('/api/qms', { path: '/qmsData/sys/dict/type/factory', query: {} })).status, 401);
   assert.equal(f.qmsCalls.length, 0);
@@ -120,6 +120,14 @@ test('reminder administration is role and CSRF protected, with no browser creden
   assert.equal((await f.request('/api/admin/reminders/warehouse', undefined, viewer.session)).status, 403);
   assert.equal((await f.request('/api/admin/reminders/warehouse', {}, f.admin, { 'X-CSRF-Token': '' })).status, 403);
   assert.equal((await f.request('/api/admin/reminders/warehouse', undefined, f.admin)).status, 200);
+  assert.equal((await f.request('/settings', undefined, viewer.session)).status, 200);
+  for (const path of ['employees', 'notifications', 'history', 'connection']) {
+    assert.equal((await f.request('/settings/' + path, undefined, viewer.session)).status, 403);
+    assert.equal((await f.request('/settings/' + path, undefined, f.admin)).status, 200);
+  }
+  assert.equal((await f.request('/api/admin/reminders/employees', undefined, viewer.session)).status, 403);
+  assert.equal((await f.request('/api/admin/reminders/employees', {}, f.admin, { 'X-CSRF-Token': '' })).status, 403);
+  assert.equal((await f.request('/api/admin/reminders/employees', undefined, f.admin)).status, 200);
   for (const operation of ['preview', 'send']) {
     const path = '/api/admin/reminders/urgent/' + operation, count = calls.length;
     assert.equal((await f.request(path, {}, viewer.session)).status, 403);

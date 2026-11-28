@@ -7,8 +7,8 @@ export function createFeishuClient(appId, appSecret, { fetchImpl = fetch, now = 
     let response;
     // Workers supports manual/follow only. Inspect 3xx as an HTTP failure so
     // application credentials and message bodies can never follow a redirect.
-    try { response = await fetchImpl('https://open.feishu.cn/open-apis/' + path, { method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(15000),
-      headers: { 'Content-Type': 'application/json', ...(bearer ? { Authorization: 'Bearer ' + bearer } : {}) }, body: JSON.stringify(body) }); }
+    try { response = await fetchImpl('https://open.feishu.cn/open-apis/' + path, { method: body === undefined ? 'GET' : 'POST', redirect: 'manual', signal: AbortSignal.timeout(15000),
+      headers: { 'Content-Type': 'application/json', ...(bearer ? { Authorization: 'Bearer ' + bearer } : {}) }, body: body === undefined ? undefined : JSON.stringify(body) }); }
     catch { throw new FeishuError('FEISHU_NETWORK_ERROR', true, Boolean(bearer)); }
     if (!response.ok) { await response.body?.cancel(); throw new FeishuError('FEISHU_HTTP_' + response.status, response.status === 429 || response.status >= 500, Boolean(bearer) && response.status >= 500); }
     let data;
@@ -24,7 +24,14 @@ export function createFeishuClient(appId, appSecret, { fetchImpl = fetch, now = 
     if (cache.size > 8) cache.clear(); cache.set(key, { value: data.tenant_access_token, expires: now() + Math.max(0, data.expire - 120) * 1000 });
     return data.tenant_access_token;
   }
-  return { verify: (force = false) => token(force), async send(openId, message, uuid) {
+  return { verify: (force = false) => token(force), async contacts(path, params) {
+    // Fixed read-only contact routes; callers cannot select another host or API.
+    if (!/^(?:scopes|users\/find_by_department|departments\/[A-Za-z0-9_@.-]+\/children)$/.test(path)) throw new FeishuError('FEISHU_INVALID_CONTACT_ROUTE');
+    return (await request('contact/v3/' + path + '?' + new URLSearchParams(params), undefined, await token())).data;
+  }, async profiles(ids) {
+    if (!Array.isArray(ids) || !ids.length || ids.length > 10 || ids.some(id => !/^ou_[A-Za-z0-9_-]{4,124}$/.test(id))) throw new FeishuError('FEISHU_INVALID_CONTACT_ROUTE');
+    return (await request('contact/v3/users/basic_batch?user_id_type=open_id', { user_ids: ids }, await token())).data;
+  }, async send(openId, message, uuid) {
     const envelope = typeof message === 'string' ? { msg_type: 'text', content: { text: message } } : message;
     if (!envelope || !['text', 'interactive'].includes(envelope.msg_type) || !envelope.content || typeof envelope.content !== 'object' ||
       (envelope.msg_type === 'text' && typeof envelope.content.text !== 'string') ||

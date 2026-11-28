@@ -177,3 +177,5 @@ iqc-quality-dashboard/
 - 大屏自动滚动支持鼠标悬停暂停；页面切到后台时暂停动画，系统启用“减少动态效果”时保留手动操作。
 
 详细的统计口径、缓存机制和运维边界见[维护指南](docs/MAINTENANCE.md)；验证记录见[验证文档](docs/VALIDATION.md)。
+
+员工姓名选择、通知配置和权限边界见[设置中心说明](docs/SETTINGS.md)。
