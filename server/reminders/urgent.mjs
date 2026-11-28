@@ -11,7 +11,7 @@ async function currentUrgent(env, factoryCode, clock) {
     const groups = filterGroups(snapshot.groups, (_, item) => item.urgent);
     return { ...snapshot, groups, total: groups.reduce((n, group) => n + group.total, 0) };
   });
-  const recipients = recipientGroups(settings, snapshots), diagnostics = snapshotDiagnostics(settings, snapshots);
+  const recipients = recipientGroups(settings, snapshots, 'urgent'), diagnostics = snapshotDiagnostics(settings, snapshots);
   const fingerprint = digest(JSON.stringify([settings.revision, [...recipients].map(([openId, groups]) => [openId, groups.map(group => [group.factoryCode, group.name, group.items.map(item => item.orderNumber)])]), diagnostics.unmappedInspectors]));
   return { settings, snapshots, recipients, diagnostics, fingerprint };
 }

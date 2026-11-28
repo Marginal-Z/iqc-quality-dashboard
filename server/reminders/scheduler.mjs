@@ -56,6 +56,7 @@ export async function runReminderCycle(env, { clock = () => Date.now(), fetchImp
     }
     if (!settings.appSecret || settings.verified_key !== credentialKey(settings.app_id, settings.appSecret)) throw new ReminderError('CONNECTION_NOT_VERIFIED', 503);
     const snapshots = await collectSnapshots(env, settings, instant), groupsByRecipient = recipientGroups(settings, snapshots);
+    const urgentGroups = recipientGroups(settings, snapshots, 'urgent');
     const currentKeys = [...groupsByRecipient].flatMap(([openId, groups]) => groups.flatMap(group => group.items.map(item => taskKey(settings.app_id, openId, group, item))));
     const receipts = [], receiptQueries = Math.max(1, Math.ceil(currentKeys.length / 4000));
     for (let i = 0; i < receiptQueries; i++) receipts.push(...(await db.prepare('SELECT task_key,job_id FROM reminder_task_receipts WHERE task_key IN(SELECT value FROM json_each(?))').bind(JSON.stringify(currentKeys.slice(i * 4000, (i + 1) * 4000))).all()).results);
@@ -86,7 +87,7 @@ export async function runReminderCycle(env, { clock = () => Date.now(), fetchImp
       let payload = row.payload, total = row.total, urgent = row.urgent, overdue = row.overdue;
       if (!row.attempts && row.kind) {
         const scope = JSON.parse(row.scope), keys = new Set(row.kind === 'urgent' ? scope.keys : reserved.filter(value => value.job_id === row.id).map(value => value.task_key));
-        const current = filterGroups(groupsByRecipient.get(row.open_id) || [], (group, item) => scope.groups.some(([code, name]) => code === group.factoryCode && name === group.name) && keys.has(taskKey(settings.app_id, row.open_id, group, item)) && (row.kind !== 'urgent' || item.urgent));
+        const current = filterGroups((row.kind==='urgent'?urgentGroups:groupsByRecipient).get(row.open_id) || [], (group, item) => scope.groups.some(([code, name]) => code === group.factoryCode && name === group.name) && keys.has(taskKey(settings.app_id, row.open_id, group, item)) && (row.kind !== 'urgent' || item.urgent));
         if (!current.length) {
           await db.batch([db.prepare("UPDATE reminder_deliveries SET status='cancelled',payload='' WHERE id=? AND attempts=0").bind(row.id), db.prepare('DELETE FROM reminder_task_receipts WHERE job_id=?').bind(row.id)]);
           result.skipped++; continue;

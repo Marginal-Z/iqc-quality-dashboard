@@ -16,9 +16,11 @@ export async function collectSnapshots(env, settings, now) {
   }
   return snapshots;
 }
-export function recipientGroups(settings, snapshots) {
+export function recipientGroups(settings, snapshots, kind = 'new_tasks') {
   const groups = new Map();
   for (const recipient of settings.recipients) {
+    const policy=settings.policies?.find(row=>row.factory_code===recipient.factory_code&&row.open_id===recipient.open_id);
+    if(policy&&(!policy.enabled||!policy[kind==='urgent'?'notify_urgent':'notify_new_tasks']))continue;
     const snapshot = snapshots.find(row => row.factoryCode === recipient.factory_code), group = snapshot?.groups.find(row => row.name === recipient.inspector_name);
     if (!group?.total) continue;
     if (!groups.has(recipient.open_id)) groups.set(recipient.open_id, []);

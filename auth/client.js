@@ -44,7 +44,7 @@ export async function api(path, body, csrf) {
 }
 export function clearData() { try { ['qms_dash_cache', 'qms_factories_cache', 'qms_factory'].forEach(key => localStorage.removeItem(key)); } catch {} }
 export function signedOut() { clearData(); try { localStorage.setItem('iqc_logout_event', String(Date.now())); } catch {} location.replace('/login'); }
-export function safeNext(value) { return /^(?:\/|\/index\.html|\/accounts|\/reminders|\/cpk|\/settings(?:\/(?:employees|notifications|history|connection))?)(?:#[a-z]+)?$/.test(value || '') ? value : '/'; }
+export function safeNext(value) { return /^(?:\/|\/index\.html|\/accounts|\/reminders|\/cpk|\/settings(?:\/(?:employees|qc|warehouse|notifications|history|connection))?)(?:#[a-z]+)?$/.test(value || '') ? value : '/'; }
 export async function submitForm(form, action) {
   const button = form.querySelector('[type="submit"]'), status = form.querySelector('[role="alert"]');
   message(status, ''); button.disabled = true; const label = button.textContent; button.textContent = text('busy');

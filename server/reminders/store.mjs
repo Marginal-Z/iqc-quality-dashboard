@@ -25,18 +25,24 @@ export const credentialKey = (appId, secret) => digest(appId + '\n' + secret);
 export async function readSettings(env) {
   const row = await env.REMINDER_DB.prepare('SELECT * FROM reminder_settings WHERE id = 1').first();
   if (!row) throw new ReminderError('DATABASE_NOT_INITIALIZED', 503);
-  const recipients = (await env.REMINDER_DB.prepare('SELECT factory_code, inspector_name, open_id FROM reminder_recipients ORDER BY factory_code, inspector_name').all()).results;
+  const mapped = (await env.REMINDER_DB.prepare(`SELECT r.factory_code,r.inspector_name,r.open_id,
+    json_object('factory_code',r.factory_code,'open_id',r.open_id,'display_name',COALESCE(NULLIF(p.display_name,''),d.name,r.inspector_name),'enabled',COALESCE(p.enabled,1),'notify_new_tasks',COALESCE(p.notify_new_tasks,1),'notify_urgent',COALESCE(p.notify_urgent,1)) policy
+    FROM reminder_recipients r LEFT JOIN qc_recipient_policies p ON p.factory_code=r.factory_code AND p.open_id=r.open_id
+    LEFT JOIN feishu_directory_state ds ON ds.id=1 AND ds.app_id=?
+    LEFT JOIN feishu_directory_members d ON d.generation=ds.active_generation AND d.open_id=r.open_id AND d.resolved=1
+    ORDER BY r.factory_code,r.inspector_name`).bind(row.app_id).all()).results;
+  const recipients=mapped.map(({policy,...row})=>row),policies=[...new Map(mapped.filter(row=>row.policy).map(row=>[row.factory_code+'\n'+row.open_id,JSON.parse(row.policy)])).values()];
   const appSecret = row.app_secret ? decrypt(env, row.app_secret) : '';
   const runtime = await env.REMINDER_DB.prepare('SELECT diagnostics FROM reminder_runtime WHERE id=1').first();
-  return { ...row, enabled: Boolean(row.enabled), appSecret, factories: JSON.parse(row.factories), recipients, diagnostics: JSON.parse(runtime?.diagnostics || '{}') };
+  return { ...row, enabled: Boolean(row.enabled), appSecret, factories: JSON.parse(row.factories), recipients, policies, diagnostics: JSON.parse(runtime?.diagnostics || '{}') };
 }
 export function publicSettings(settings) {
   return { enabled: settings.enabled, appId: settings.app_id, configured: Boolean(settings.app_id && settings.appSecret),
     verified: Boolean(settings.appSecret && settings.verified_key === credentialKey(settings.app_id, settings.appSecret)),
-    factories: settings.factories, dailyStart: settings.daily_start, recipients: settings.recipients,
+    factories: settings.factories, dailyStart: settings.daily_start, recipients: settings.recipients, policies:settings.policies,
     lastCheckedAt: settings.last_checked_at, lastError: settings.last_error, revision: settings.revision, timeZone: 'Asia/Bangkok', mode: 'new_tasks', diagnostics: settings.diagnostics };
 }
-export async function saveSettings(env, body, actor, availableFactories, now) {
+export async function saveSettings(env, body, actor, availableFactories, now, { policy } = {}) {
   const old = await readSettings(env), appId = String(body.appId || '').trim();
   if (body.revision !== old.revision) throw new ReminderError('SETTINGS_CHANGED', 409);
   if (appId && !/^cli_[A-Za-z0-9_-]{4,100}$/.test(appId)) throw new ReminderError('INVALID_APP_ID');
@@ -62,7 +68,13 @@ export async function saveSettings(env, body, actor, availableFactories, now) {
     env.REMINDER_DB.prepare('UPDATE reminder_settings SET enabled=?, app_id=?, app_secret=?, verified_key=?, factories=?, daily_start=?, updated_at=?, updated_by=?, revision=revision+1, write_nonce=?, last_error=\'\' WHERE id=1 AND revision=?')
       .bind(Number(body.enabled), appId, encryptedSecret, verifiedKey, JSON.stringify(body.factories), body.dailyStart, now, actor, nonce, old.revision),
     env.REMINDER_DB.prepare('DELETE FROM reminder_recipients WHERE EXISTS(SELECT 1 FROM reminder_settings WHERE write_nonce=?)').bind(nonce),
-    ...recipients.map(row => env.REMINDER_DB.prepare('INSERT INTO reminder_recipients(factory_code,inspector_name,open_id) SELECT ?,?,? WHERE EXISTS(SELECT 1 FROM reminder_settings WHERE write_nonce=?)').bind(row.factory_code, row.inspector_name, row.open_id, nonce))
+    ...recipients.map(row => env.REMINDER_DB.prepare('INSERT INTO reminder_recipients(factory_code,inspector_name,open_id) SELECT ?,?,? WHERE EXISTS(SELECT 1 FROM reminder_settings WHERE write_nonce=?)').bind(row.factory_code, row.inspector_name, row.open_id, nonce)),
+    ...(policy?[env.REMINDER_DB.prepare(`INSERT INTO qc_recipient_policies(factory_code,open_id,display_name,enabled,notify_new_tasks,notify_urgent)
+      SELECT ?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM reminder_settings WHERE write_nonce=?)
+      ON CONFLICT(factory_code,open_id) DO UPDATE SET display_name=excluded.display_name,enabled=excluded.enabled,notify_new_tasks=excluded.notify_new_tasks,notify_urgent=excluded.notify_urgent`)
+      .bind(policy.factoryCode,policy.openId,policy.name,Number(policy.enabled),Number(policy.newTasks),Number(policy.urgent),nonce)]:[]),
+    env.REMINDER_DB.prepare(`DELETE FROM qc_recipient_policies WHERE NOT EXISTS(SELECT 1 FROM reminder_recipients r WHERE r.factory_code=qc_recipient_policies.factory_code AND r.open_id=qc_recipient_policies.open_id)
+      AND EXISTS(SELECT 1 FROM reminder_settings WHERE write_nonce=?)`).bind(nonce)
   ]);
   if (!result[0]?.meta?.changes) throw new ReminderError('SETTINGS_CHANGED', 409);
   return publicSettings(await readSettings(env));
